@@ -8,8 +8,9 @@ data class Planta(
     val familia: String,
     val especie: String?,
     val lugar: String,
-    val fechaIngreso: LocalDate,
+    val fechaIngreso: Long,
     val cantidad: Int,
     val aLaVenta: Boolean,
     val observaciones: String?
 )
+

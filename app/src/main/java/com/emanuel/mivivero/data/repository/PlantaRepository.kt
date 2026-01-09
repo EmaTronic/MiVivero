@@ -17,7 +17,7 @@ class PlantaRepository {
                 familia = "Cactaceae",
                 especie = "Gymnocalycium",
                 lugar = "Estantería A",
-                fechaIngreso = LocalDate.now(),
+                fechaIngreso = System.currentTimeMillis(),
                 cantidad = 2,
                 aLaVenta = true,
                 observaciones = "Buen estado"
