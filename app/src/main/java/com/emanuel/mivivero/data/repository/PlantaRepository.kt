@@ -40,4 +40,9 @@ class PlantaRepository {
     fun getFotosDePlanta(plantaId: Long): List<FotoPlanta> {
         return fotos.filter { it.plantaId == plantaId }
     }
+
+    fun getPlantaById(id: Long): Planta? {
+        return plantas.find { it.id == id }
+    }
+
 }

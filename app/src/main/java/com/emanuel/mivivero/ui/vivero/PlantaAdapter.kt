@@ -9,8 +9,10 @@ import com.emanuel.mivivero.R
 import com.emanuel.mivivero.data.model.Planta
 
 class PlantaAdapter(
-    private val plantas: List<Planta>
+    private val plantas: List<Planta>,
+    private val onItemClick: (Planta) -> Unit
 ) : RecyclerView.Adapter<PlantaAdapter.PlantaViewHolder>() {
+
 
     class PlantaViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val txtNumeroPlanta: TextView = itemView.findViewById(R.id.txtNumeroPlanta)
@@ -39,6 +41,12 @@ class PlantaAdapter(
 
         holder.txtVenta.visibility =
             if (planta.aLaVenta) View.VISIBLE else View.GONE
+
+        holder.itemView.setOnClickListener {
+            onItemClick(planta)
+        }
+
+
     }
 
     override fun getItemCount(): Int = plantas.size

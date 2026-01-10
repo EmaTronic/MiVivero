@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.emanuel.mivivero.R
@@ -18,6 +19,18 @@ class ViveroFragment : Fragment(R.layout.fragment_vivero) {
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerPlantas)
 
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        recyclerView.adapter = PlantaAdapter(viewModel.getPlantas())
+
+        recyclerView.adapter = PlantaAdapter(viewModel.getPlantas()) { planta ->
+            val bundle = Bundle().apply {
+                putLong("plantaId", planta.id)
+            }
+            findNavController().navigate(
+                R.id.plantaDetalleFragment,
+                bundle
+            )
+        }
+
+
+
     }
 }

@@ -9,4 +9,16 @@
         android:name="com.emanuel.mivivero.ui.vivero.ViveroFragment"
         android:label="Mi Vivero" />
 
+
+    <fragment
+        android:id="@+id/plantaDetalleFragment"
+        android:name="com.emanuel.mivivero.ui.vivero.PlantaDetalleFragment"
+        android:label="Detalle Planta">
+
+        <argument
+            android:name="plantaId"
+            app:argType="long" />
+    </fragment>
+
+
 </navigation>
