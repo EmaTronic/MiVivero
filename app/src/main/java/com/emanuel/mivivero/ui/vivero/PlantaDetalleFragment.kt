@@ -16,7 +16,10 @@ import com.emanuel.mivivero.data.repository.PlantaRepository
 import java.io.File
 import android.Manifest
 import android.content.pm.PackageManager
+import android.widget.ImageView
 import androidx.core.content.ContextCompat
+import com.bumptech.glide.Glide
+
 
 
 class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
@@ -24,8 +27,11 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
     // Launcher galería
     private val seleccionarFoto =
         registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
-            uri?.let { guardarFoto(it) }
+            uri?.let {
+                mostrarImagenPrueba(it)
+            }
         }
+
 
     // Cámara
     private var uriFotoCamara: Uri? = null
@@ -86,6 +92,7 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
             seleccionarFoto.launch("image/*")
         }
 
+
         // Botón cámara
         val btnSacarFoto = view.findViewById<Button>(R.id.btnSacarFoto)
         btnSacarFoto.setOnClickListener {
@@ -100,6 +107,17 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
         // Mostrar fotos
         mostrarFotos(plantaId)
     }
+
+    private fun mostrarImagenPrueba(uri: Uri) {
+        val imageView = view?.findViewById<ImageView>(R.id.imgPlantaTest) ?: return
+
+        Glide.with(this)
+            .load(uri)
+            .centerCrop()
+            .into(imageView)
+    }
+
+
 
     private fun crearUriFoto(context: Context): Uri {
         val dir = File(context.cacheDir, "images")
