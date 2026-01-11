@@ -5,12 +5,13 @@
     android:orientation="vertical"
     android:padding="16dp">
 
+    <!-- Datos de la planta -->
     <TextView
         android:id="@+id/txtDetalleNumero"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="18sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:textSize="18sp" />
 
     <TextView
         android:id="@+id/txtDetalleFamilia"
@@ -26,5 +27,29 @@
         android:id="@+id/txtDetalleCantidad"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
+
+    <!-- Botón agregar foto -->
+    <Button
+        android:id="@+id/btnAgregarFoto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Agregar foto"
+        android:layout_marginTop="16dp" />
+
+    <Button
+        android:id="@+id/btnSacarFoto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sacar foto"
+        android:layout_marginTop="8dp" />
+
+
+    <!-- Lista de fotos (por ahora solo texto) -->
+    <LinearLayout
+        android:id="@+id/layoutFotos"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="16dp" />
 
 </LinearLayout>
