@@ -25,6 +25,9 @@ import java.io.File
 
 class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
 
+
+    private var plantaId: Long = -1L
+
     private val viewModel: PlantaDetalleViewModel by viewModels {
         PlantaDetalleViewModelFactory(requireContext())
     }
@@ -53,7 +56,8 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val plantaId = arguments?.getLong("plantaId") ?: return
+        plantaId = arguments?.getLong("plantaId") ?: return
+
 
         // ===== DATOS DE LA PLANTA =====
         viewModel.cargarPlanta(plantaId)
@@ -80,7 +84,27 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
 
         // ===== FOTOS (SLIDER HORIZONTAL) =====
         val recyclerFotos = view.findViewById<RecyclerView>(R.id.recyclerFotos)
-        val fotoAdapter = FotoAdapter()
+
+
+
+        //==== ADAPTER =====
+
+        val fotoAdapter = FotoAdapter { foto, accion ->
+            when (accion) {
+
+                AccionFoto.PRINCIPAL -> {
+                    viewModel.marcarComoPrincipal(foto.plantaId, foto.id)
+                }
+
+                AccionFoto.BORRAR -> {
+                    viewModel.borrarFoto(foto)
+                }
+
+                AccionFoto.COMPARAR -> {
+                    // reservado para pantalla de comparación
+                }
+            }
+        }
 
         recyclerFotos.layoutManager =
             LinearLayoutManager(
@@ -91,8 +115,10 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
 
         recyclerFotos.adapter = fotoAdapter
 
+// cargar fotos existentes
         viewModel.cargarFotos(plantaId)
 
+// observar cambios
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.fotos.collect { fotos ->
@@ -100,6 +126,13 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
                 }
             }
         }
+
+
+
+
+
+
+
 
         // ===== BOTONES =====
         view.findViewById<Button>(R.id.btnAgregarFoto).setOnClickListener {
@@ -142,7 +175,7 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
     }
 
     private fun guardarFoto(uri: Uri) {
-        val plantaId = arguments?.getLong("plantaId") ?: return
+        if (plantaId == -1L) return
 
         val foto = FotoEntity(
             id = System.currentTimeMillis(),
@@ -156,4 +189,5 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
 
         viewModel.agregarFoto(foto)
     }
+
 }
