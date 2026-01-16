@@ -7,8 +7,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
-import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
@@ -18,7 +16,8 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.bumptech.glide.Glide
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.emanuel.mivivero.R
 import com.emanuel.mivivero.data.db.entity.FotoEntity
 import kotlinx.coroutines.launch
@@ -56,7 +55,7 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
 
         val plantaId = arguments?.getLong("plantaId") ?: return
 
-        // ===== CARGAR PLANTA =====
+        // ===== DATOS DE LA PLANTA =====
         viewModel.cargarPlanta(plantaId)
 
         viewLifecycleOwner.lifecycleScope.launch {
@@ -79,30 +78,25 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
             }
         }
 
-        // ===== FOTOS =====
+        // ===== FOTOS (SLIDER HORIZONTAL) =====
+        val recyclerFotos = view.findViewById<RecyclerView>(R.id.recyclerFotos)
+        val fotoAdapter = FotoAdapter()
+
+        recyclerFotos.layoutManager =
+            LinearLayoutManager(
+                requireContext(),
+                LinearLayoutManager.HORIZONTAL,
+                false
+            )
+
+        recyclerFotos.adapter = fotoAdapter
+
         viewModel.cargarFotos(plantaId)
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.fotos.collect { fotos ->
-                    val layout = view.findViewById<LinearLayout>(R.id.layoutFotos)
-                    layout.removeAllViews()
-
-                    fotos.forEach { foto ->
-                        val imageView = ImageView(requireContext()).apply {
-                            layoutParams = LinearLayout.LayoutParams(
-                                LinearLayout.LayoutParams.MATCH_PARENT,
-                                500
-                            )
-                            scaleType = ImageView.ScaleType.CENTER_CROP
-                        }
-
-                        Glide.with(this@PlantaDetalleFragment)
-                            .load(foto.rutaLocal)
-                            .into(imageView)
-
-                        layout.addView(imageView)
-                    }
+                    fotoAdapter.submitList(fotos)
                 }
             }
         }

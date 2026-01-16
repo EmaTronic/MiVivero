@@ -1,65 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp">
+    android:layout_height="match_parent">
 
-    <!-- Datos de la planta -->
-    <TextView
-        android:id="@+id/txtDetalleNumero"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textStyle="bold"
-        android:textSize="18sp" />
-
-    <TextView
-        android:id="@+id/txtDetalleFamilia"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
-    <TextView
-        android:id="@+id/txtDetalleEspecie"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
-    <TextView
-        android:id="@+id/txtDetalleCantidad"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
-    <!-- Botón agregar foto -->
-    <Button
-        android:id="@+id/btnAgregarFoto"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Agregar foto"
-        android:layout_marginTop="16dp" />
-
-    <Button
-        android:id="@+id/btnSacarFoto"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Sacar foto"
-        android:layout_marginTop="8dp" />
-
-
-    <ImageView
-        android:id="@+id/imgPlantaTest"
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:layout_marginTop="16dp"
-        android:scaleType="centerCrop"
-        android:src="@drawable/planta_test" />
-
-
-
-    <!-- Lista de fotos (por ahora solo texto) -->
     <LinearLayout
-        android:id="@+id/layoutFotos"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_marginTop="16dp" />
+        android:padding="16dp">
 
-</LinearLayout>
+        <!-- DATOS DE LA PLANTA -->
+        <TextView
+            android:id="@+id/txtDetalleNumero"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Número"
+            android:textStyle="bold"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/txtDetalleFamilia"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Familia" />
+
+        <TextView
+            android:id="@+id/txtDetalleEspecie"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Especie" />
+
+        <TextView
+            android:id="@+id/txtDetalleCantidad"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cantidad" />
+
+        <!-- BOTONES DE FOTOS -->
+        <Button
+            android:id="@+id/btnAgregarFoto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Agregar foto (galería)" />
+
+        <Button
+            android:id="@+id/btnSacarFoto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Sacar foto (cámara)" />
+
+        <!-- SLIDER DE FOTOS (máx 3 visibles) -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerFotos"
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:overScrollMode="never"
+            android:layout_marginTop="12dp" />
+
+    </LinearLayout>
+</ScrollView>
