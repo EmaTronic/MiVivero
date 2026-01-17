@@ -12,13 +12,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.emanuel.mivivero.R
 import kotlinx.coroutines.launch
-import com.emanuel.mivivero.ui.vivero.PlantaAdapter
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
-import kotlinx.coroutines.launch
-
-
-
 
 class ViveroFragment : Fragment(R.layout.fragment_vivero) {
 
@@ -29,13 +22,11 @@ class ViveroFragment : Fragment(R.layout.fragment_vivero) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
-
-
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerPlantas)
-        val adapter = PlantaAdapter { planta ->
+
+        val adapter = PlantaAdapter { plantaId ->
             val bundle = Bundle().apply {
-                putLong("plantaId", planta.id)
+                putLong("plantaId", plantaId)
             }
             findNavController().navigate(
                 R.id.plantaDetalleFragment,
@@ -43,8 +34,8 @@ class ViveroFragment : Fragment(R.layout.fragment_vivero) {
             )
         }
 
-        recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.adapter = adapter
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -53,15 +44,6 @@ class ViveroFragment : Fragment(R.layout.fragment_vivero) {
                 }
             }
         }
-
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.plantas.collect { lista ->
-                    adapter.submitList(lista)
-                }
-            }
-        }
-
 
     }
 }

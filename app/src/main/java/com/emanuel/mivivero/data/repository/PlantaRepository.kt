@@ -1,48 +1,47 @@
 package com.emanuel.mivivero.data.repository
 
-import com.emanuel.mivivero.data.model.Planta
-import com.emanuel.mivivero.data.model.FotoPlanta
-import java.time.LocalDate
+import com.emanuel.mivivero.data.db.dao.FotoDao
+import com.emanuel.mivivero.data.db.dao.PlantaDao
+import com.emanuel.mivivero.data.db.entity.FotoEntity
+import com.emanuel.mivivero.data.db.entity.PlantaEntity
+import com.emanuel.mivivero.data.model.PlantaConFoto
+import kotlinx.coroutines.flow.Flow
 
-class PlantaRepository {
+class PlantaRepository(
+    private val plantaDao: PlantaDao,
+    private val fotoDao: FotoDao
+) {
 
-    private val plantas = mutableListOf<Planta>()
-    private val fotos = mutableListOf<FotoPlanta>()
-
-    init {
-        plantas.add(
-            Planta(
-                id = 1,
-                numeroPlanta = "P-001",
-                familia = "Cactaceae",
-                especie = "Gymnocalycium",
-                lugar = "Estantería A",
-                fechaIngreso = System.currentTimeMillis(),
-                cantidad = 2,
-                aLaVenta = true,
-                observaciones = "Buen estado"
-            )
-        )
+    // ===== VIVERO (lista principal con foto) =====
+    fun getPlantasConFoto(): Flow<List<PlantaConFoto>> {
+        return plantaDao.getPlantasConFoto()
     }
 
-    fun addPlanta(planta: Planta) {
-        plantas.add(planta)
+    // ===== DETALLE PLANTA =====
+    suspend fun getPlantaById(id: Long): PlantaEntity? {
+        return plantaDao.getPlantaById(id)
     }
 
-    fun addFoto(foto: FotoPlanta) {
-        fotos.add(foto)
+    // ===== PLANTAS =====
+    suspend fun insertarPlanta(planta: PlantaEntity) {
+        plantaDao.insert(planta)
     }
 
-    fun getPlantas(): List<Planta> {
-        return plantas
+    // ===== FOTOS =====
+    suspend fun insertarFoto(foto: FotoEntity) {
+        fotoDao.insert(foto)
     }
 
-    fun getFotosDePlanta(plantaId: Long): List<FotoPlanta> {
-        return fotos.filter { it.plantaId == plantaId }
+    suspend fun getFotosDePlanta(plantaId: Long): List<FotoEntity> {
+        return fotoDao.getFotosDePlanta(plantaId)
     }
 
-    fun getPlantaById(id: Long): Planta? {
-        return plantas.find { it.id == id }
+    suspend fun marcarFotoPrincipal(plantaId: Long, fotoId: Long) {
+        fotoDao.limpiarPrincipal(plantaId)
+        fotoDao.marcarPrincipal(fotoId)
     }
 
+    suspend fun borrarFoto(foto: FotoEntity) {
+        fotoDao.delete(foto)
+    }
 }

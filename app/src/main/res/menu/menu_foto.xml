@@ -1,4 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <item
+        android:id="@+id/action_principal"
+        android:title="Marcar como principal" />
+
+    <item
+        android:id="@+id/action_comparar"
+        android:title="Seleccionar para comparar" />
+
+    <item
+        android:id="@+id/action_borrar"
+        android:title="Borrar foto" />
+
 </menu>

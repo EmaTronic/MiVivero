@@ -115,17 +115,22 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
 
         recyclerFotos.adapter = fotoAdapter
 
-// cargar fotos existentes
-        viewModel.cargarFotos(plantaId)
+        // cargar fotos existentes
+            viewModel.cargarFotos(plantaId)
 
-// observar cambios
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.fotos.collect { fotos ->
-                    fotoAdapter.submitList(fotos)
+        // observar cambios COLLECT  ====
+            viewLifecycleOwner.lifecycleScope.launch {
+                viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                    viewModel.fotos.collect { fotos ->
+                        fotoAdapter.submitList(fotos)
+
+                        if (fotos.isNotEmpty()) {
+                            recyclerFotos.scrollToPosition(fotos.size - 1)
+                        }
+                    }
                 }
             }
-        }
+
 
 
 

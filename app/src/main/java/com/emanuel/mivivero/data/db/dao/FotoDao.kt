@@ -10,18 +10,27 @@ import com.emanuel.mivivero.data.db.entity.FotoEntity
 @Dao
 interface FotoDao {
 
-    @Query("SELECT * FROM fotos WHERE plantaId = :plantaId")
-    suspend fun getFotosDePlanta(plantaId: Long): List<FotoEntity>
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(foto: FotoEntity)
 
-    @Delete
-    suspend fun delete(foto: FotoEntity)
+    @Query("SELECT * FROM fotos WHERE plantaId = :plantaId")
+    suspend fun getFotosDePlanta(plantaId: Long): List<FotoEntity>
 
     @Query("UPDATE fotos SET esPrincipal = 0 WHERE plantaId = :plantaId")
     suspend fun limpiarPrincipal(plantaId: Long)
 
     @Query("UPDATE fotos SET esPrincipal = 1 WHERE id = :fotoId")
     suspend fun marcarPrincipal(fotoId: Long)
+
+    @Delete
+    suspend fun delete(foto: FotoEntity)
+
+    @Query("""
+    SELECT * FROM fotos 
+    WHERE plantaId = :plantaId AND esPrincipal = 1 
+    LIMIT 1
+""")
+    suspend fun getFotoPrincipal(plantaId: Long): FotoEntity?
+
+
 }

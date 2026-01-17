@@ -10,12 +10,8 @@ import com.emanuel.mivivero.data.db.entity.FotoEntity
 import com.emanuel.mivivero.data.db.entity.PlantaEntity
 
 @Database(
-    entities = [
-        PlantaEntity::class,
-        FotoEntity::class
-    ],
-    version = 1,
-    exportSchema = false
+    entities = [PlantaEntity::class, FotoEntity::class],
+    version = 1
 )
 abstract class AppDatabase : RoomDatabase() {
 
@@ -31,7 +27,7 @@ abstract class AppDatabase : RoomDatabase() {
                 INSTANCE ?: Room.databaseBuilder(
                     context.applicationContext,
                     AppDatabase::class.java,
-                    "mivivero.db"
+                    "mi_vivero_db"
                 ).build().also { INSTANCE = it }
             }
         }
