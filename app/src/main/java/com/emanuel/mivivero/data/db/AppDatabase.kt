@@ -1,13 +1,13 @@
-package com.emanuel.mivivero.data.db
+package com.emanuel.mivivero.data.local.database
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.emanuel.mivivero.data.db.dao.FotoDao
-import com.emanuel.mivivero.data.db.dao.PlantaDao
-import com.emanuel.mivivero.data.db.entity.FotoEntity
-import com.emanuel.mivivero.data.db.entity.PlantaEntity
+import com.emanuel.mivivero.data.local.dao.FotoDao
+import com.emanuel.mivivero.data.local.dao.PlantaDao
+import com.emanuel.mivivero.data.local.entity.FotoEntity
+import com.emanuel.mivivero.data.local.entity.PlantaEntity
 
 @Database(
     entities = [
@@ -23,16 +23,19 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun fotoDao(): FotoDao
 
     companion object {
+
         @Volatile
         private var INSTANCE: AppDatabase? = null
 
-        fun getInstance(context: Context): AppDatabase {
+        fun getDatabase(context: Context): AppDatabase {
             return INSTANCE ?: synchronized(this) {
-                INSTANCE ?: Room.databaseBuilder(
+                val instance = Room.databaseBuilder(
                     context.applicationContext,
                     AppDatabase::class.java,
-                    "mivivero.db"
-                ).build().also { INSTANCE = it }
+                    "mivivero_database"
+                ).build()
+                INSTANCE = instance
+                instance
             }
         }
     }

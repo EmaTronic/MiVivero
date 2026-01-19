@@ -1,61 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:padding="24dp">
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/txtDetalle"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
-
-        <!-- DATOS DE LA PLANTA -->
-        <TextView
-            android:id="@+id/txtDetalleNumero"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Número"
-            android:textStyle="bold"
-            android:textSize="18sp" />
-
-        <TextView
-            android:id="@+id/txtDetalleFamilia"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Familia" />
-
-        <TextView
-            android:id="@+id/txtDetalleEspecie"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Especie" />
-
-        <TextView
-            android:id="@+id/txtDetalleCantidad"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Cantidad" />
-
-        <!-- BOTONES DE FOTOS -->
-        <Button
-            android:id="@+id/btnAgregarFoto"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Agregar foto (galería)" />
-
-        <Button
-            android:id="@+id/btnSacarFoto"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Sacar foto (cámara)" />
-
-        <!-- SLIDER DE FOTOS (máx 3 visibles) -->
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerFotos"
-            android:layout_width="match_parent"
-            android:layout_height="120dp"
-            android:overScrollMode="never"
-            android:layout_marginTop="12dp" />
-
-    </LinearLayout>
-</ScrollView>
+        android:text="Detalle"
+        android:textSize="20sp" />
+</FrameLayout>

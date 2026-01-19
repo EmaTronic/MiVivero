@@ -1,24 +1,22 @@
-package com.emanuel.mivivero.ui.vivero
+package com.emanuel.mivivero.ui.adapter
 
+import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.emanuel.mivivero.R
-import com.emanuel.mivivero.data.model.Planta
+import com.emanuel.mivivero.data.local.entity.PlantaEntity
 
 class PlantaAdapter(
-    private val plantas: List<Planta>,
-    private val onItemClick: (Planta) -> Unit
+    private val plantas: List<PlantaEntity>
 ) : RecyclerView.Adapter<PlantaAdapter.PlantaViewHolder>() {
 
-
-    class PlantaViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val txtNumeroPlanta: TextView = itemView.findViewById(R.id.txtNumeroPlanta)
-        val txtFamiliaEspecie: TextView = itemView.findViewById(R.id.txtFamiliaEspecie)
-        val txtCantidad: TextView = itemView.findViewById(R.id.txtCantidad)
-        val txtVenta: TextView = itemView.findViewById(R.id.txtVenta)
+    inner class PlantaViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val txtNombre: TextView = itemView.findViewById(R.id.txtNombre)
+        val txtPrecio: TextView = itemView.findViewById(R.id.txtPrecio)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlantaViewHolder {
@@ -30,26 +28,18 @@ class PlantaAdapter(
     override fun onBindViewHolder(holder: PlantaViewHolder, position: Int) {
         val planta = plantas[position]
 
-        holder.txtNumeroPlanta.text = planta.numeroPlanta
-        holder.txtFamiliaEspecie.text =
-            if (planta.especie != null)
-                "${planta.familia} - ${planta.especie}"
-            else
-                planta.familia
-
-        holder.txtCantidad.text = "x${planta.cantidad}"
-
-        holder.txtVenta.visibility =
-            if (planta.aLaVenta) View.VISIBLE else View.GONE
+        holder.txtNombre.text = planta.nombre
+        holder.txtPrecio.text = "$${planta.precio}"
 
         holder.itemView.setOnClickListener {
-            onItemClick(planta)
+            val bundle = Bundle().apply {
+                putLong("plantaId", planta.id.toLong())
+            }
+
+            it.findNavController()
+                .navigate(R.id.plantaDetalleFragment, bundle)
         }
-
-
     }
 
     override fun getItemCount(): Int = plantas.size
 }
-
-

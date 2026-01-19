@@ -1,22 +1,47 @@
-package com.emanuel.mivivero.ui.vivero
+package com.emanuel.mivivero.ui.viewmodel
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.emanuel.mivivero.data.db.entity.PlantaEntity
-import com.emanuel.mivivero.data.repository.PlantaRepository
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.stateIn
+import com.emanuel.mivivero.data.local.database.AppDatabase
+import com.emanuel.mivivero.data.local.entity.PlantaEntity
+import kotlinx.coroutines.launch
 
-class ViveroViewModel(
-    private val repository: PlantaRepository
-) : ViewModel() {
+class ViveroViewModel(application: Application) : AndroidViewModel(application) {
 
-    val plantas: StateFlow<List<PlantaEntity>> =
-        repository.getPlantas()
-            .stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(5_000),
-                initialValue = emptyList()
-            )
+    private val plantaDao = AppDatabase
+        .getDatabase(application)
+        .plantaDao()
+
+    private val _plantas = MutableLiveData<List<PlantaEntity>>()
+    val plantas: LiveData<List<PlantaEntity>> = _plantas
+
+    /*
+    fun cargarPlantas() {
+        viewModelScope.launch {
+            _plantas.postValue(plantaDao.getAll())
+        }
+    }
+
+
+     */
+    fun cargarPlantas() {
+        viewModelScope.launch {
+            val existentes = plantaDao.getAll()
+            if (existentes.isEmpty()) {
+                plantaDao.insert(
+                    PlantaEntity(
+                        nombre = "Lavanda",
+                        descripcion = "Planta aromática",
+                        precio = 2500.0,
+                        stock = 10
+                    )
+                )
+            }
+            _plantas.postValue(plantaDao.getAll())
+        }
+    }
+
 }

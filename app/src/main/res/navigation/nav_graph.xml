@@ -6,19 +6,22 @@
 
     <fragment
         android:id="@+id/viveroFragment"
-        android:name="com.emanuel.mivivero.ui.vivero.ViveroFragment"
-        android:label="Mi Vivero" />
+        android:name="com.emanuel.mivivero.ui.fragment.ViveroFragment"
+        android:label="Mi Vivero">
 
+        <action
+            android:id="@+id/action_viveroFragment_to_plantaDetalleFragment"
+            app:destination="@id/plantaDetalleFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/plantaDetalleFragment"
-        android:name="com.emanuel.mivivero.ui.vivero.PlantaDetalleFragment"
+        android:name="com.emanuel.mivivero.ui.fragment.PlantaDetalleFragment"
         android:label="Detalle Planta">
 
         <argument
             android:name="plantaId"
             app:argType="long" />
     </fragment>
-
 
 </navigation>

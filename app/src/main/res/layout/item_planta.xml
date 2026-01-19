@@ -1,53 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:orientation="vertical"
     android:padding="12dp">
 
     <TextView
-        android:id="@+id/txtNumeroPlanta"
+        android:id="@+id/txtNombre"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="P-001"
-        android:textStyle="bold"
-        android:textSize="16sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="P-001" />
+        android:text="Nombre"
+        android:textSize="18sp"
+        android:textStyle="bold" />
 
     <TextView
-        android:id="@+id/txtFamiliaEspecie"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Cactaceae - Gymnocalycium"
-        android:textSize="14sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/txtNumeroPlanta"
-        app:layout_constraintEnd_toStartOf="@id/txtCantidad"
-        tools:text="Cactaceae - Gymnocalycium" />
-
-    <TextView
-        android:id="@+id/txtCantidad"
+        android:id="@+id/txtPrecio"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="x2"
-        android:textSize="14sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="x2" />
-
-    <TextView
-        android:id="@+id/txtVenta"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="A la venta"
-        android:textSize="12sp"
-        android:textColor="@android:color/holo_green_dark"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/txtCantidad"
-        tools:text="A la venta" />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:text="$0"
+        android:textSize="16sp" />
+</LinearLayout>

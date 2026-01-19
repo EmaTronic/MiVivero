@@ -1,19 +1,16 @@
-package com.emanuel.mivivero.data.db.entity
+package com.emanuel.mivivero.data.local.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "plantas")
 data class PlantaEntity(
-    @PrimaryKey val id: Long,
-    val numeroPlanta: String,
-    val familia: String,
-    val especie: String?,
-    val lugar: String,
-    val fechaIngreso: Long,
-    val cantidad: Int,
-    val aLaVenta: Boolean,
-    val observaciones: String?
+
+    @PrimaryKey(autoGenerate = true)
+    val id: Int = 0,
+
+    val nombre: String,
+    val descripcion: String,
+    val precio: Double,
+    val stock: Int
 )
-
-
