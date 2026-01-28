@@ -16,7 +16,8 @@ object PlantaMapper {
             cantidad = entity.cantidad,
             aLaVenta = entity.aLaVenta,
             observaciones = entity.observaciones,
-            fotoRuta = entity.fotoRuta
+            fotoRuta = entity.fotoRuta,
+            fechaFoto = entity.fechaFoto
         )
     }
 
@@ -31,7 +32,8 @@ object PlantaMapper {
             cantidad = model.cantidad,
             aLaVenta = model.aLaVenta,
             observaciones = model.observaciones,
-            fotoRuta = model.fotoRuta
+            fotoRuta = model.fotoRuta,
+            fechaFoto = model.fechaFoto
         )
     }
 }

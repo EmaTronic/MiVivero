@@ -17,6 +17,9 @@ import com.emanuel.mivivero.data.model.Planta
 import com.emanuel.mivivero.databinding.FragmentCrearPlantaBinding
 import com.emanuel.mivivero.ui.viewmodel.ViveroViewModel
 import java.io.File
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
 
@@ -26,6 +29,7 @@ class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
     private val viewModel: ViveroViewModel by activityViewModels()
 
     private var fotoUri: Uri? = null
+    private var fechaFoto: Long? = null
 
     /* =========================
        PERMISO DE CÁMARA
@@ -33,25 +37,36 @@ class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
 
     private val pedirPermisoCamara =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { concedido ->
-            if (concedido) {
-                abrirCamara()
-            } else {
-                Toast.makeText(
-                    requireContext(),
-                    "Permiso de cámara denegado",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
+            if (concedido) abrirCamara()
+            else Toast.makeText(
+                requireContext(),
+                "Permiso de cámara denegado",
+                Toast.LENGTH_SHORT
+            ).show()
         }
 
     /* =========================
-       TOMAR FOTO
+       CÁMARA
        ========================= */
 
     private val tomarFoto =
         registerForActivityResult(ActivityResultContracts.TakePicture()) { ok ->
             if (ok) {
-                binding.imgFoto.setImageURI(fotoUri)
+                fechaFoto = System.currentTimeMillis()
+                mostrarFotoYFecha()
+            }
+        }
+
+    /* =========================
+       GALERÍA
+       ========================= */
+
+    private val elegirGaleria =
+        registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+            uri?.let {
+                fotoUri = it
+                fechaFoto = System.currentTimeMillis()
+                mostrarFotoYFecha()
             }
         }
 
@@ -61,6 +76,10 @@ class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
 
         binding.btnFoto.setOnClickListener {
             verificarPermisoCamara()
+        }
+
+        binding.btnGaleria.setOnClickListener {
+            elegirGaleria.launch("image/*")
         }
 
         binding.btnGuardar.setOnClickListener {
@@ -75,7 +94,8 @@ class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
                 cantidad = binding.etCantidad.text.toString().toIntOrNull() ?: 0,
                 aLaVenta = binding.cbALaVenta.isChecked,
                 observaciones = binding.etObservaciones.text.toString().ifBlank { null },
-                fotoRuta = fotoUri?.toString()
+                fotoRuta = fotoUri?.toString(),
+                fechaFoto = fechaFoto
             )
 
             viewModel.agregarPlanta(planta)
@@ -92,13 +112,9 @@ class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
             ContextCompat.checkSelfPermission(
                 requireContext(),
                 Manifest.permission.CAMERA
-            ) == PackageManager.PERMISSION_GRANTED -> {
-                abrirCamara()
-            }
+            ) == PackageManager.PERMISSION_GRANTED -> abrirCamara()
 
-            else -> {
-                pedirPermisoCamara.launch(Manifest.permission.CAMERA)
-            }
+            else -> pedirPermisoCamara.launch(Manifest.permission.CAMERA)
         }
     }
 
@@ -115,6 +131,15 @@ class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
         )
 
         tomarFoto.launch(fotoUri)
+    }
+
+    private fun mostrarFotoYFecha() {
+        binding.imgFoto.setImageURI(fotoUri)
+
+        val formato = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
+        val textoFecha = formato.format(Date(fechaFoto!!))
+
+        binding.txtFechaFoto.text = "Foto: $textoFecha"
     }
 
     override fun onDestroyView() {

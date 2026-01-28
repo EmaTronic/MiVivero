@@ -17,5 +17,6 @@ data class PlantaEntity(
     val cantidad: Int,
     val aLaVenta: Boolean,
     val observaciones: String?,
-    val fotoRuta: String?        // 👈 EXISTE ACÁ TAMBIÉN
+    val fotoRuta: String?,
+    val fechaFoto: Long?         // 👈 EXISTE ACÁ TAMBIÉN
 )

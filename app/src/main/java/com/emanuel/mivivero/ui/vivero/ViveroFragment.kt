@@ -16,31 +16,22 @@ class ViveroFragment : Fragment(R.layout.fragment_vivero) {
     private var _binding: FragmentViveroBinding? = null
     private val binding get() = _binding!!
 
+    // 🔥 CLAVE: ViewModel compartido con la Activity
     private val viewModel: ViveroViewModel by activityViewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         _binding = FragmentViveroBinding.bind(view)
 
         binding.recyclerVivero.layoutManager =
             LinearLayoutManager(requireContext())
 
         viewModel.plantas.observe(viewLifecycleOwner) { lista ->
-            binding.recyclerVivero.adapter =
-                PlantaAdapter(lista) { planta ->
-                    // 🔥 MÉTODO QUE SÍ EXISTE
-                    viewModel.seleccionarPlanta(planta)
-
-                    // 🔥 ID QUE SÍ EXISTE EN nav_graph
-                    findNavController().navigate(R.id.detallePlantaFragment)
-                }
+            binding.recyclerVivero.adapter = PlantaAdapter(lista)
         }
 
-        binding.fabAgregar.setOnClickListener {
-            findNavController().navigate(
-                R.id.action_viveroFragment_to_crearPlantaFragment
-            )
+        binding.fabAgregarPlanta.setOnClickListener {
+            findNavController().navigate(R.id.crearPlantaFragment)
         }
     }
 

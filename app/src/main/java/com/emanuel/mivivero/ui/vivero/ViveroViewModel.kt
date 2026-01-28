@@ -7,20 +7,18 @@ import com.emanuel.mivivero.data.model.Planta
 
 class ViveroViewModel : ViewModel() {
 
+    // 🔒 backing property
     private val _plantas = MutableLiveData<List<Planta>>(emptyList())
     val plantas: LiveData<List<Planta>> = _plantas
 
-    private val _plantaSeleccionada = MutableLiveData<Planta>()
-    val plantaSeleccionada: LiveData<Planta> = _plantaSeleccionada
-
     fun agregarPlanta(planta: Planta) {
-        val actual = _plantas.value?.toMutableList() ?: mutableListOf()
-        actual.add(planta)
-        _plantas.value = actual
+        val listaActual = _plantas.value ?: emptyList()
+
+        // 👇 CREAR UNA LISTA NUEVA (clave)
+        _plantas.value = listaActual + planta
     }
 
-    // 🔥 ESTE MÉTODO EXISTE Y SE USA
-    fun seleccionarPlanta(planta: Planta) {
-        _plantaSeleccionada.value = planta
+    fun obtenerPlantaPorId(id: Long): Planta? {
+        return _plantas.value?.find { it.id == id }
     }
 }

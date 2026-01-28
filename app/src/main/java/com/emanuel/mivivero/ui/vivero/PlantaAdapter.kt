@@ -6,13 +6,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.emanuel.mivivero.R
 import com.emanuel.mivivero.data.model.Planta
 
 class PlantaAdapter(
-    private val plantas: List<Planta>,
-    private val onClick: (Planta) -> Unit
+    private val plantas: List<Planta>
 ) : RecyclerView.Adapter<PlantaAdapter.PlantaViewHolder>() {
 
     inner class PlantaViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -22,7 +22,6 @@ class PlantaAdapter(
         val txtCantidad: TextView = itemView.findViewById(R.id.txtCantidad)
         val txtVenta: TextView = itemView.findViewById(R.id.txtVenta)
     }
-
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlantaViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -43,18 +42,25 @@ class PlantaAdapter(
             }
 
         holder.txtCantidad.text = "Cantidad: ${planta.cantidad}"
+
         holder.txtVenta.text =
             if (planta.aLaVenta) "A la venta" else "No disponible"
 
         // FOTO
-        if (planta.fotoRuta != null) {
+        if (!planta.fotoRuta.isNullOrBlank()) {
             holder.imgPlanta.setImageURI(Uri.parse(planta.fotoRuta))
         } else {
             holder.imgPlanta.setImageResource(R.drawable.ic_launcher_foreground)
         }
 
+        // NAVEGACIÓN A DETALLE
         holder.itemView.setOnClickListener {
-            onClick(planta)
+            val bundle = android.os.Bundle().apply {
+                putLong("plantaId", planta.id)
+            }
+
+            it.findNavController()
+                .navigate(R.id.detallePlantaFragment, bundle)
         }
     }
 

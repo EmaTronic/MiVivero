@@ -28,6 +28,7 @@
         android:name="com.emanuel.mivivero.ui.fragment.CrearPlantaFragment"
         android:label="Crear Planta" />
 
+
     <!-- DETALLE DE PLANTA -->
     <fragment
         android:id="@+id/detallePlantaFragment"
