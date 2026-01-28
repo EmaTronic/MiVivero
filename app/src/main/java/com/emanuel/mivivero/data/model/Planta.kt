@@ -11,6 +11,7 @@ data class Planta(
     val fechaIngreso: Long,
     val cantidad: Int,
     val aLaVenta: Boolean,
-    val observaciones: String?
+    val observaciones: String?,
+    val fotoRuta: String?
 )
 

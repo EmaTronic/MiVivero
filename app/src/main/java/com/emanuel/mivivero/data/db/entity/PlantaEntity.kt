@@ -7,10 +7,15 @@ import androidx.room.PrimaryKey
 data class PlantaEntity(
 
     @PrimaryKey(autoGenerate = true)
-    val id: Int = 0,
+    val id: Long = 0L,           // 👈 Long (NO Int)
 
-    val nombre: String,
-    val descripcion: String,
-    val precio: Double,
-    val stock: Int
+    val numeroPlanta: String,
+    val familia: String,
+    val especie: String?,
+    val lugar: String,
+    val fechaIngreso: Long,
+    val cantidad: Int,
+    val aLaVenta: Boolean,
+    val observaciones: String?,
+    val fotoRuta: String?        // 👈 EXISTE ACÁ TAMBIÉN
 )

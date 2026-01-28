@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <EditText
+            android:id="@+id/etNumeroPlanta"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Número de planta" />
+
+        <EditText
+            android:id="@+id/etFamilia"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Familia" />
+
+        <EditText
+            android:id="@+id/etEspecie"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Especie (opcional)" />
+
+        <EditText
+            android:id="@+id/etLugar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Lugar" />
+
+        <EditText
+            android:id="@+id/etCantidad"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Cantidad"
+            android:inputType="number" />
+
+        <CheckBox
+            android:id="@+id/cbALaVenta"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Disponible para la venta" />
+
+        <EditText
+            android:id="@+id/etObservaciones"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Observaciones- Por ej. Nombre vulgar"
+            android:minLines="3"
+            android:gravity="top"
+            android:inputType="textMultiLine" />
+
+
+        <ImageView
+            android:id="@+id/imgFoto"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_marginTop="12dp"
+            android:scaleType="centerCrop"
+            android:background="#DDDDDD" />
+
+        <Button
+            android:id="@+id/btnFoto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Sacar foto"
+            android:layout_marginTop="8dp" />
+
+
+        <Button
+            android:id="@+id/btnGuardar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Guardar planta"
+            android:layout_marginTop="16dp" />
+
+    </LinearLayout>
+</ScrollView>

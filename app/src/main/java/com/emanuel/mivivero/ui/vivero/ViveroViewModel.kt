@@ -1,47 +1,26 @@
 package com.emanuel.mivivero.ui.viewmodel
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
-import com.emanuel.mivivero.data.local.database.AppDatabase
-import com.emanuel.mivivero.data.local.entity.PlantaEntity
-import kotlinx.coroutines.launch
+import androidx.lifecycle.ViewModel
+import com.emanuel.mivivero.data.model.Planta
 
-class ViveroViewModel(application: Application) : AndroidViewModel(application) {
+class ViveroViewModel : ViewModel() {
 
-    private val plantaDao = AppDatabase
-        .getDatabase(application)
-        .plantaDao()
+    private val _plantas = MutableLiveData<List<Planta>>(emptyList())
+    val plantas: LiveData<List<Planta>> = _plantas
 
-    private val _plantas = MutableLiveData<List<PlantaEntity>>()
-    val plantas: LiveData<List<PlantaEntity>> = _plantas
+    private val _plantaSeleccionada = MutableLiveData<Planta>()
+    val plantaSeleccionada: LiveData<Planta> = _plantaSeleccionada
 
-    /*
-    fun cargarPlantas() {
-        viewModelScope.launch {
-            _plantas.postValue(plantaDao.getAll())
-        }
+    fun agregarPlanta(planta: Planta) {
+        val actual = _plantas.value?.toMutableList() ?: mutableListOf()
+        actual.add(planta)
+        _plantas.value = actual
     }
 
-
-     */
-    fun cargarPlantas() {
-        viewModelScope.launch {
-            val existentes = plantaDao.getAll()
-            if (existentes.isEmpty()) {
-                plantaDao.insert(
-                    PlantaEntity(
-                        nombre = "Lavanda",
-                        descripcion = "Planta aromática",
-                        precio = 2500.0,
-                        stock = 10
-                    )
-                )
-            }
-            _plantas.postValue(plantaDao.getAll())
-        }
+    // 🔥 ESTE MÉTODO EXISTE Y SE USA
+    fun seleccionarPlanta(planta: Planta) {
+        _plantaSeleccionada.value = planta
     }
-
 }

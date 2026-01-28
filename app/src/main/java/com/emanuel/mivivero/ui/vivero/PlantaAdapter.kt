@@ -1,23 +1,28 @@
 package com.emanuel.mivivero.ui.adapter
 
-import android.os.Bundle
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
-import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.emanuel.mivivero.R
-import com.emanuel.mivivero.data.local.entity.PlantaEntity
+import com.emanuel.mivivero.data.model.Planta
 
 class PlantaAdapter(
-    private val plantas: List<PlantaEntity>
+    private val plantas: List<Planta>,
+    private val onClick: (Planta) -> Unit
 ) : RecyclerView.Adapter<PlantaAdapter.PlantaViewHolder>() {
 
     inner class PlantaViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val txtNombre: TextView = itemView.findViewById(R.id.txtNombre)
-        val txtPrecio: TextView = itemView.findViewById(R.id.txtPrecio)
+        val imgPlanta: ImageView = itemView.findViewById(R.id.imgPlanta)
+        val txtNumero: TextView = itemView.findViewById(R.id.txtNumero)
+        val txtFamiliaEspecie: TextView = itemView.findViewById(R.id.txtFamiliaEspecie)
+        val txtCantidad: TextView = itemView.findViewById(R.id.txtCantidad)
+        val txtVenta: TextView = itemView.findViewById(R.id.txtVenta)
     }
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlantaViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -28,16 +33,28 @@ class PlantaAdapter(
     override fun onBindViewHolder(holder: PlantaViewHolder, position: Int) {
         val planta = plantas[position]
 
-        holder.txtNombre.text = planta.nombre
-        holder.txtPrecio.text = "$${planta.precio}"
+        holder.txtNumero.text = planta.numeroPlanta
 
-        holder.itemView.setOnClickListener {
-            val bundle = Bundle().apply {
-                putLong("plantaId", planta.id.toLong())
+        holder.txtFamiliaEspecie.text =
+            if (planta.especie.isNullOrBlank()) {
+                planta.familia
+            } else {
+                "${planta.familia} · ${planta.especie}"
             }
 
-            it.findNavController()
-                .navigate(R.id.plantaDetalleFragment, bundle)
+        holder.txtCantidad.text = "Cantidad: ${planta.cantidad}"
+        holder.txtVenta.text =
+            if (planta.aLaVenta) "A la venta" else "No disponible"
+
+        // FOTO
+        if (planta.fotoRuta != null) {
+            holder.imgPlanta.setImageURI(Uri.parse(planta.fotoRuta))
+        } else {
+            holder.imgPlanta.setImageResource(R.drawable.ic_launcher_foreground)
+        }
+
+        holder.itemView.setOnClickListener {
+            onClick(planta)
         }
     }
 

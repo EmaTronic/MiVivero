@@ -1,0 +1,128 @@
+[33mcommit 43f1921d1a41746e7042c86bb4d134b74718f12d[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m)[m
+Author: EmaTronic <emanuelrodriguezcorchea@gmail.com>
+Date:   Sun Jan 18 22:14:30 2026 -0300
+
+    Navegación a detalle de planta con Bundle (sin Safe Args)
+
+[33mcommit 83dbfcff5da44e560cd3390844654d517bd4ecbd[m
+Author: EmaTronic <emanuelrodriguezcorchea@gmail.com>
+Date:   Fri Jan 16 20:37:51 2026 -0300
+
+    fix: conectar RecyclerView de fotos con ViewModel
+
+[33mcommit b7779cc96ea574f239fb10152bb446b418637ca0[m
+Author: EmaTronic <emanuelrodriguezcorchea@gmail.com>
+Date:   Fri Jan 16 20:22:15 2026 -0300
+
+    feat: detalle de planta con fotos y slider horizontal (max 3 visibles)
+
+[33mcommit 31cf57f67f9fb8dfa6f876adcdadfd282f7769dd[m
+Author: EmaTronic <emanuelrodriguezcorchea@gmail.com>
+Date:   Fri Jan 16 15:58:47 2026 -0300
+
+    feat: fotos por planta con camara y galeria
+
+[33mcommit 56d04375296b2414626a17b7ef19ed50c6eb3760[m
+Author: EmaTronic <emanuelrodriguezcorchea@gmail.com>
+Date:   Fri Jan 16 15:45:52 2026 -0300
+
+    chore: limpiar coleccion de StateFlow en ViveroFragment
+
+[33mcommit 1dcc2dcae59b90ef2e951279adb87a4854023852[m
+Author: EmaTronic <emanuelrodriguezcorchea@gmail.com>
+Date:   Fri Jan 16 14:39:10 2026 -0300
+
+    feat: ViveroViewModel expone plantas como StateFlow
+
+[33mcommit 19d538cb869454cdbdfe643b8570bcc27de93b0f[m
+Author: EmaTronic <emanuelrodriguezcorchea@gmail.com>
+Date:   Fri Jan 16 12:27:47 2026 -0300
+
+    Empezar de 0
+
+[33mcommit 3f18ba9d2aeb75741ad281832386f920aee6639f[m
+Merge: c3759a4 3587c15
+Author: EmaTronic <emanuelrodriguezcorchea@gmail.com>
+Date:   Fri Jan 16 02:40:42 2026 -0300
+
+    Merge remote-tracking branch 'origin/master'
+
+[33mcommit c3759a490fd4e5cb7c021447a74cf6d87a030cfc[m
+Author: EmaTronic <emanuelrodriguezcorchea@gmail.com>
+Date:   Fri Jan 16 02:38:22 2026 -0300
+
+    Agregar pantalla de comparación
+
+[33mcommit ff6116ddfcfd15b468b3668e7dd117a4fc048fe4[m
+Author: EmaTronic <emanuelrodriguezcorchea@gmail.com>
+Date:   Sun Jan 11 15:27:33 2026 -0300
+
+    elegir foto de la galerai
+
+[33mcommit 947fdf091e7af5c9f164b7d48f77712e0e75b537[m
+Author: EmaTronic <emanuelrodriguezcorchea@gmail.com>
+Date:   Sun Jan 11 12:06:05 2026 -0300
+
+    Agregué seleccionar fotos de la galería
+
+[33mcommit ad54b8baff15aca0cd5db85af131fb4bf33a83dd[m
+Author: EmaTronic <emanuelrodriguezcorchea@gmail.com>
+Date:   Sun Jan 11 10:42:45 2026 -0300
+
+    Add camera and gallery support for plant photos
+
+[33mcommit 37b3d6ee80b832eec4f5070649eed9428e618a67[m
+Author: EmaTronic <emanuelrodriguezcorchea@gmail.com>
+Date:   Sat Jan 10 18:15:45 2026 -0300
+
+    Show plant details on item click
+
+[33mcommit 84c869a41f4ee652b0dac5041a2631a098bb7f68[m
+Author: EmaTronic <emanuelrodriguezcorchea@gmail.com>
+Date:   Fri Jan 9 20:13:40 2026 -0300
+
+    Remove template fragments and layouts
+
+[33mcommit d3a524bbee24b12e9d45500796d256fc46305e42[m
+Author: EmaTronic <emanuelrodriguezcorchea@gmail.com>
+Date:   Fri Jan 9 19:55:55 2026 -0300
+
+    Add vivero list UI base with ViewModel
+
+[33mcommit ed4e7aadf3933e6f13c73242f6789a1a4abb9bdc[m
+Author: EmaTronic <emanuelrodriguezcorchea@gmail.com>
+Date:   Fri Jan 9 19:46:13 2026 -0300
+
+    Add PlantaRepository with in-memory relationship
+
+[33mcommit 623d0c91a9b9c271b2019a4e3bb349b9fdef5942[m
+Author: EmaTronic <emanuelrodriguezcorchea@gmail.com>
+Date:   Fri Jan 9 19:43:06 2026 -0300
+
+    Add FotoPlanta domain model
+
+[33mcommit f1b7cc9fc157300371bda879c7c4eb0787fc02dd[m
+Author: EmaTronic <emanuelrodriguezcorchea@gmail.com>
+Date:   Fri Jan 9 16:15:44 2026 -0300
+
+    Add Planta domain model
+
+[33mcommit 3587c158f60189babc216eee34042cf309cb74d0[m
+Author: EmaTronic <126925991+EmaTronic@users.noreply.github.com>
+Date:   Fri Jan 9 01:52:44 2026 -0300
+
+    Add initial README.md for MiVivero project
+    
+    Initial project structure and README
+
+[33mcommit c4965d29dfe0faad291611660e64f7419eb8c74e[m
+Author: EmaTronic <emanuelrodriguezcorchea@gmail.com>
+Date:   Fri Jan 9 01:50:27 2026 -0300
+
+    Create base project and initial packages
+
+[33mcommit c26c8f2290f736478fa9cf7479088007948801cb[m
+Author: EmaTronic <emanuelrodriguezcorchea@gmail.com>
+Date:   Fri Jan 9 01:28:28 2026 -0300
+
+    Initial commit
