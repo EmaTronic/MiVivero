@@ -6,8 +6,8 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "plantas")
 data class PlantaEntity(
 
-    @PrimaryKey(autoGenerate = true)
-    val id: Long = 0L,           // 👈 Long (NO Int)
+    @PrimaryKey
+    val id: Long,
 
     val numeroPlanta: String,
     val familia: String,
@@ -18,5 +18,5 @@ data class PlantaEntity(
     val aLaVenta: Boolean,
     val observaciones: String?,
     val fotoRuta: String?,
-    val fechaFoto: Long?         // 👈 EXISTE ACÁ TAMBIÉN
+    val fechaFoto: Long?
 )

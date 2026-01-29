@@ -1,6 +1,5 @@
 package com.emanuel.mivivero.data.local.dao
 
-import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -18,8 +17,4 @@ interface PlantaDao {
 
     @Query("DELETE FROM plantas")
     suspend fun deleteAll()
-
-    @Query("SELECT * FROM plantas")
-    fun getAllLive(): LiveData<List<PlantaEntity>>
-
 }

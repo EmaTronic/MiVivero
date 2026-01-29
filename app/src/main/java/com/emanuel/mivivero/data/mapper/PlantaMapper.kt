@@ -5,8 +5,23 @@ import com.emanuel.mivivero.data.model.Planta
 
 object PlantaMapper {
 
-    fun entityToModel(entity: PlantaEntity): Planta {
-        return Planta(
+    fun toEntity(planta: Planta): PlantaEntity =
+        PlantaEntity(
+            id = planta.id,
+            numeroPlanta = planta.numeroPlanta,
+            familia = planta.familia,
+            especie = planta.especie,
+            lugar = planta.lugar,
+            fechaIngreso = planta.fechaIngreso,
+            cantidad = planta.cantidad,
+            aLaVenta = planta.aLaVenta,
+            observaciones = planta.observaciones,
+            fotoRuta = planta.fotoRuta,
+            fechaFoto = planta.fechaFoto
+        )
+
+    fun toModel(entity: PlantaEntity): Planta =
+        Planta(
             id = entity.id,
             numeroPlanta = entity.numeroPlanta,
             familia = entity.familia,
@@ -19,21 +34,4 @@ object PlantaMapper {
             fotoRuta = entity.fotoRuta,
             fechaFoto = entity.fechaFoto
         )
-    }
-
-    fun modelToEntity(model: Planta): PlantaEntity {
-        return PlantaEntity(
-            id = model.id,
-            numeroPlanta = model.numeroPlanta,
-            familia = model.familia,
-            especie = model.especie,
-            lugar = model.lugar,
-            fechaIngreso = model.fechaIngreso,
-            cantidad = model.cantidad,
-            aLaVenta = model.aLaVenta,
-            observaciones = model.observaciones,
-            fotoRuta = model.fotoRuta,
-            fechaFoto = model.fechaFoto
-        )
-    }
 }
