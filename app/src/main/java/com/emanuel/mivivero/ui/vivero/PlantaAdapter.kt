@@ -1,6 +1,7 @@
 package com.emanuel.mivivero.ui.adapter
 
 import android.net.Uri
+import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,52 +16,61 @@ class PlantaAdapter(
     private val plantas: List<Planta>
 ) : RecyclerView.Adapter<PlantaAdapter.PlantaViewHolder>() {
 
-    inner class PlantaViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class PlantaViewHolder(itemView: View) :
+        RecyclerView.ViewHolder(itemView) {
+
         val imgPlanta: ImageView = itemView.findViewById(R.id.imgPlanta)
         val txtNumero: TextView = itemView.findViewById(R.id.txtNumero)
-        val txtFamiliaEspecie: TextView = itemView.findViewById(R.id.txtFamiliaEspecie)
+        val txtFamiliaEspecie: TextView =
+            itemView.findViewById(R.id.txtFamiliaEspecie)
         val txtCantidad: TextView = itemView.findViewById(R.id.txtCantidad)
         val txtVenta: TextView = itemView.findViewById(R.id.txtVenta)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlantaViewHolder {
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int
+    ): PlantaViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_planta, parent, false)
         return PlantaViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: PlantaViewHolder, position: Int) {
+    override fun onBindViewHolder(
+        holder: PlantaViewHolder,
+        position: Int
+    ) {
         val planta = plantas[position]
 
-        holder.txtNumero.text = planta.numeroPlanta
+        // 🔢 Número
+        holder.txtNumero.text = "Nro ${planta.numeroPlanta}"
 
+        // 🌿 Familia + especie
         holder.txtFamiliaEspecie.text =
-            if (planta.especie.isNullOrBlank()) {
-                planta.familia
-            } else {
-                "${planta.familia} · ${planta.especie}"
-            }
+            "${planta.familia} ${planta.especie ?: ""}"
 
-        holder.txtCantidad.text = "Cantidad: ${planta.cantidad}"
+        // 📦 Cantidad
+        holder.txtCantidad.text = "Stock: ${planta.cantidad}"
 
+        // 💰 Venta
         holder.txtVenta.text =
-            if (planta.aLaVenta) "A la venta" else "No disponible"
+            if (planta.aLaVenta) "En venta" else "No disponible"
 
-        // FOTO
-        if (!planta.fotoRuta.isNullOrBlank()) {
+        // 📷 Foto
+        if (planta.fotoRuta != null) {
             holder.imgPlanta.setImageURI(Uri.parse(planta.fotoRuta))
         } else {
-            holder.imgPlanta.setImageResource(R.drawable.ic_launcher_foreground)
+            holder.imgPlanta.setImageResource(R.drawable.ic_planta_placeholder)
         }
 
-        // NAVEGACIÓN A DETALLE
+        // 👉 Navegar a detalle
         holder.itemView.setOnClickListener {
-            val bundle = android.os.Bundle().apply {
+            val bundle = Bundle().apply {
                 putLong("plantaId", planta.id)
             }
 
             it.findNavController()
-                .navigate(R.id.detallePlantaFragment, bundle)
+                .navigate(R.id.plantaDetalleFragment, bundle)
         }
     }
 

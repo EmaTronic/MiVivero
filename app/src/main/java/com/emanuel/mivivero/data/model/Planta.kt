@@ -4,7 +4,7 @@ import java.time.LocalDate
 
 data class Planta(
     val id: Long = 0L,
-    val numeroPlanta: String,
+    val numeroPlanta: Int,
     val familia: String,
     val especie: String?,
     val lugar: String,
@@ -14,5 +14,7 @@ data class Planta(
     val observaciones: String?,
     val fotoRuta: String?,
     val fechaFoto: Long?
-)
+
+
+    )
 

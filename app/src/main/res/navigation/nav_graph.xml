@@ -1,38 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<navigation
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/nav_graph"
     app:startDestination="@id/viveroFragment">
 
-    <!-- LISTA DE PLANTAS -->
     <fragment
         android:id="@+id/viveroFragment"
         android:name="com.emanuel.mivivero.ui.fragment.ViveroFragment"
-        android:label="Vivero">
+        android:label="Vivero" />
 
-        <!-- Ir a crear planta -->
-        <action
-            android:id="@+id/action_viveroFragment_to_crearPlantaFragment"
-            app:destination="@id/crearPlantaFragment" />
-
-        <!-- Ir a detalle de planta -->
-        <action
-            android:id="@+id/action_viveroFragment_to_detallePlantaFragment"
-            app:destination="@id/detallePlantaFragment" />
-    </fragment>
-
-    <!-- CREAR PLANTA -->
     <fragment
         android:id="@+id/crearPlantaFragment"
         android:name="com.emanuel.mivivero.ui.fragment.CrearPlantaFragment"
-        android:label="Crear Planta" />
+        android:label="Crear / Editar Planta">
 
+        <argument
+            android:name="plantaId"
+            app:argType="long"
+            android:defaultValue="-1L" />
+    </fragment>
 
-    <!-- DETALLE DE PLANTA -->
     <fragment
-        android:id="@+id/detallePlantaFragment"
+        android:id="@+id/plantaDetalleFragment"
         android:name="com.emanuel.mivivero.ui.fragment.PlantaDetalleFragment"
         android:label="Detalle Planta" />
-
 </navigation>

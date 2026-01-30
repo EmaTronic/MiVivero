@@ -15,6 +15,13 @@ interface PlantaDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(planta: PlantaEntity)
 
+    @Query("DELETE FROM plantas WHERE id = :id")
+    suspend fun deleteById(id: Long)
+
+    // 🔥 CLAVE: último número de planta
+    @Query("SELECT MAX(numeroPlanta) FROM plantas")
+    suspend fun getUltimoNumeroPlanta(): Int?
+
     @Query("DELETE FROM plantas")
     suspend fun deleteAll()
 }

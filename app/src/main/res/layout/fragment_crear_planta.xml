@@ -9,11 +9,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <EditText
-            android:id="@+id/etNumeroPlanta"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Número de planta" />
+
 
         <EditText
             android:id="@+id/etFamilia"

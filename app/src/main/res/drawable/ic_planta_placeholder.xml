@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="64dp"
+    android:height="64dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <!-- COPA -->
+    <path
+        android:fillColor="#4CAF50"
+        android:pathData="
+            M12,2
+            C7,6 5,9 5,13
+            c0,3.9 3.1,7 7,7
+            s7-3.1 7-7
+            c0-4-2-7-7-11z" />
+
+    <!-- TRONCO (ABAJO) -->
+    <path
+        android:fillColor="#795548"
+        android:pathData="M11,16h2v6h-2z" />
+
+</vector>

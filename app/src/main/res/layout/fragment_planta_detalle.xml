@@ -50,6 +50,24 @@
             android:textStyle="italic"
             android:layout_marginTop="12dp" />
 
+        <Button
+            android:id="@+id/btnEditar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Editar planta"
+            android:layout_marginTop="16dp" />
+
+        <Button
+            android:id="@+id/btnEliminar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Eliminar planta"
+            android:textColor="@android:color/white"
+            android:backgroundTint="@android:color/holo_red_dark"
+            android:layout_marginTop="12dp" />
+
+
+
     </LinearLayout>
 
 </ScrollView>

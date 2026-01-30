@@ -1,10 +1,12 @@
 package com.emanuel.mivivero.ui.fragment
 
+import android.app.AlertDialog
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import com.emanuel.mivivero.R
 import com.emanuel.mivivero.databinding.FragmentPlantaDetalleBinding
 import com.emanuel.mivivero.ui.viewmodel.ViveroViewModel
@@ -19,39 +21,53 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
 
     private val viewModel: ViveroViewModel by activityViewModels()
 
+    private var plantaId: Long = -1L
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentPlantaDetalleBinding.bind(view)
 
-        val plantaId = arguments?.getLong("plantaId") ?: return
+        plantaId = arguments?.getLong("plantaId") ?: return
 
-        // 👇 OBSERVAMOS, NO LEEMOS DIRECTO
         viewModel.plantas.observe(viewLifecycleOwner) { lista ->
-
             val planta = lista.find { it.id == plantaId } ?: return@observe
 
-            // FOTO
             if (planta.fotoRuta != null) {
-                binding.imgDetallePlanta.visibility = View.VISIBLE
                 binding.imgDetallePlanta.setImageURI(Uri.parse(planta.fotoRuta))
             }
 
-            // DATOS
             binding.txtFamilia.text = planta.familia
             binding.txtEspecie.text = planta.especie ?: "Sin especie"
             binding.txtCantidad.text = "Cantidad: ${planta.cantidad}"
             binding.txtVenta.text =
-                if (planta.aLaVenta) "Disponible para la venta"
-                else "No disponible"
+                if (planta.aLaVenta) "Disponible para la venta" else "No disponible"
 
-            // FECHA FOTO (solo detalle)
             binding.txtFechaFoto.text =
-                if (planta.fechaFoto != null) {
-                    val formato = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
-                    "Foto tomada el ${formato.format(Date(planta.fechaFoto))}"
-                } else {
-                    "Sin foto"
+                planta.fechaFoto?.let {
+                    val f = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
+                    "Foto tomada el ${f.format(Date(it))}"
+                } ?: "Sin foto"
+        }
+
+        // ✏️ Editar
+        binding.btnEditar.setOnClickListener {
+            val bundle = Bundle().apply {
+                putLong("plantaId", plantaId)
+            }
+            findNavController().navigate(R.id.crearPlantaFragment, bundle)
+        }
+
+        // 🗑️ Eliminar
+        binding.btnEliminar.setOnClickListener {
+            AlertDialog.Builder(requireContext())
+                .setTitle("Eliminar planta")
+                .setMessage("¿Seguro que querés eliminar esta planta?")
+                .setPositiveButton("Eliminar") { _, _ ->
+                    viewModel.borrarPlanta(plantaId)
+                    findNavController().popBackStack()
                 }
+                .setNegativeButton("Cancelar", null)
+                .show()
         }
     }
 

@@ -17,9 +17,6 @@ import com.emanuel.mivivero.data.model.Planta
 import com.emanuel.mivivero.databinding.FragmentCrearPlantaBinding
 import com.emanuel.mivivero.ui.viewmodel.ViveroViewModel
 import java.io.File
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
 
@@ -28,45 +25,39 @@ class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
 
     private val viewModel: ViveroViewModel by activityViewModels()
 
+    private var plantaId: Long = -1L
     private var fotoUri: Uri? = null
-    private var fechaFoto: Long? = null
 
-    /* =========================
-       PERMISO DE CÁMARA
-       ========================= */
+    /* =====================
+       PERMISO CÁMARA
+       ===================== */
 
-    private val pedirPermisoCamara =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) { concedido ->
-            if (concedido) abrirCamara()
-            else Toast.makeText(
-                requireContext(),
-                "Permiso de cámara denegado",
-                Toast.LENGTH_SHORT
-            ).show()
+    private val permisoCamaraLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { ok ->
+            if (ok) abrirCamara()
+            else Toast.makeText(requireContext(), "Permiso de cámara denegado", Toast.LENGTH_SHORT).show()
         }
 
-    /* =========================
+    /* =====================
        CÁMARA
-       ========================= */
+       ===================== */
 
-    private val tomarFoto =
+    private val camaraLauncher =
         registerForActivityResult(ActivityResultContracts.TakePicture()) { ok ->
-            if (ok) {
-                fechaFoto = System.currentTimeMillis()
-                mostrarFotoYFecha()
+            if (ok && fotoUri != null) {
+                binding.imgFoto.setImageURI(fotoUri)
             }
         }
 
-    /* =========================
+    /* =====================
        GALERÍA
-       ========================= */
+       ===================== */
 
-    private val elegirGaleria =
+    private val galeriaLauncher =
         registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
             uri?.let {
                 fotoUri = it
-                fechaFoto = System.currentTimeMillis()
-                mostrarFotoYFecha()
+                binding.imgFoto.setImageURI(it)
             }
         }
 
@@ -74,28 +65,67 @@ class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentCrearPlantaBinding.bind(view)
 
+        plantaId = arguments?.getLong("plantaId") ?: -1L
+
+
+
+
+        // ✏️ MODO EDICIÓN
+        if (plantaId != -1L) {
+            val planta = viewModel.obtenerPlantaPorId(plantaId)
+
+            planta?.let {
+
+                binding.etFamilia.setText(it.familia)
+                binding.etEspecie.setText(it.especie)
+                binding.etLugar.setText(it.lugar)
+                binding.etCantidad.setText(it.cantidad.toString())
+                binding.cbALaVenta.isChecked = it.aLaVenta
+                binding.etObservaciones.setText(it.observaciones)
+
+                it.fotoRuta?.let { ruta ->
+                    fotoUri = Uri.parse(ruta)
+                    binding.imgFoto.setImageURI(fotoUri)
+                }
+            }
+        }
+
+        // 📸 Cámara
         binding.btnFoto.setOnClickListener {
             verificarPermisoCamara()
         }
 
+        // 🖼️ Galería
         binding.btnGaleria.setOnClickListener {
-            elegirGaleria.launch("image/*")
+            galeriaLauncher.launch("image/*")
         }
 
+        // 💾 Guardar
         binding.btnGuardar.setOnClickListener {
 
+            val ahora = System.currentTimeMillis()
+
+
+            val plantaExistente =
+                if (plantaId != -1L) viewModel.obtenerPlantaPorId(plantaId)
+                else null
+
             val planta = Planta(
-                id = System.currentTimeMillis(),
-                numeroPlanta = binding.etNumeroPlanta.text.toString(),
+                id = if (plantaId == -1L) ahora else plantaId,
+
+                // 🔒 CLAVE: si edito, CONSERVO el número
+                numeroPlanta = plantaExistente?.numeroPlanta ?: -1,
+
+
                 familia = binding.etFamilia.text.toString(),
                 especie = binding.etEspecie.text.toString().ifBlank { null },
                 lugar = binding.etLugar.text.toString(),
-                fechaIngreso = System.currentTimeMillis(),
+                fechaIngreso = ahora,
                 cantidad = binding.etCantidad.text.toString().toIntOrNull() ?: 0,
                 aLaVenta = binding.cbALaVenta.isChecked,
                 observaciones = binding.etObservaciones.text.toString().ifBlank { null },
                 fotoRuta = fotoUri?.toString(),
-                fechaFoto = fechaFoto
+                fechaFoto = if (fotoUri != null) ahora else null
             )
 
             viewModel.agregarPlanta(planta)
@@ -103,9 +133,9 @@ class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
         }
     }
 
-    /* =========================
-       FUNCIONES AUXILIARES
-       ========================= */
+    /* =====================
+       FUNCIONES AUX
+       ===================== */
 
     private fun verificarPermisoCamara() {
         when {
@@ -114,7 +144,7 @@ class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
                 Manifest.permission.CAMERA
             ) == PackageManager.PERMISSION_GRANTED -> abrirCamara()
 
-            else -> pedirPermisoCamara.launch(Manifest.permission.CAMERA)
+            else -> permisoCamaraLauncher.launch(Manifest.permission.CAMERA)
         }
     }
 
@@ -130,16 +160,7 @@ class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
             archivo
         )
 
-        tomarFoto.launch(fotoUri)
-    }
-
-    private fun mostrarFotoYFecha() {
-        binding.imgFoto.setImageURI(fotoUri)
-
-        val formato = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
-        val textoFecha = formato.format(Date(fechaFoto!!))
-
-        binding.txtFechaFoto.text = "Foto: $textoFecha"
+        camaraLauncher.launch(fotoUri)
     }
 
     override fun onDestroyView() {
