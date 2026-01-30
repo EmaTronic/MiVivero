@@ -6,67 +6,96 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.emanuel.mivivero.data.local.AppDatabase
+import com.emanuel.mivivero.data.mapper.FotoMapper
 import com.emanuel.mivivero.data.mapper.PlantaMapper
+import com.emanuel.mivivero.data.model.FotoPlanta
 import com.emanuel.mivivero.data.model.Planta
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class ViveroViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val dao = AppDatabase
-        .getInstance(application)
-        .plantaDao()
+    // =========================
+    // DATABASE & DAOs
+    // =========================
 
-    private val _plantas = MutableLiveData<List<Planta>>(emptyList())
+    private val database = AppDatabase.getInstance(application)
+
+    private val plantaDao = database.plantaDao()
+    private val fotoDao = database.fotoDao()   // 🔥 ESTE ERA EL PROBLEMA
+
+    // =========================
+    // PLANTAS
+    // =========================
+
+    private val _plantas = MutableLiveData<List<Planta>>()
     val plantas: LiveData<List<Planta>> = _plantas
-
-    init {
-        cargarPlantas()
-    }
 
     fun cargarPlantas() {
         viewModelScope.launch(Dispatchers.IO) {
-            val lista = dao.getAll()
+            val lista = plantaDao.getAll()
                 .map { PlantaMapper.toModel(it) }
-                .sortedBy { it.numeroPlanta }   // 🔥 CLAVE
+                .sortedBy { it.numeroPlanta }
+
             _plantas.postValue(lista)
         }
     }
 
-
     fun agregarPlanta(planta: Planta) {
         viewModelScope.launch(Dispatchers.IO) {
 
-            val numero = if (planta.numeroPlanta == -1) {
-                obtenerProximoNumeroPlanta()
-            } else {
-                planta.numeroPlanta
-            }
+            val numeroFinal =
+                if (planta.numeroPlanta == -1) {
+                    obtenerProximoNumeroPlanta()
+                } else {
+                    planta.numeroPlanta
+                }
 
-            val plantaFinal = planta.copy(numeroPlanta = numero)
+            val plantaFinal = planta.copy(numeroPlanta = numeroFinal)
 
-            dao.insert(PlantaMapper.toEntity(plantaFinal))
+            plantaDao.insert(PlantaMapper.toEntity(plantaFinal))
             cargarPlantas()
         }
     }
 
+    private suspend fun obtenerProximoNumeroPlanta(): Int {
+        val max = plantaDao.getMaxNumeroPlanta()
+        return (max ?: 0) + 1
+    }
 
     fun obtenerPlantaPorId(id: Long): Planta? {
         return _plantas.value?.find { it.id == id }
     }
 
-    fun borrarPlanta(id: Long) {
+    // =========================
+    // FOTOS
+    // =========================
+
+    fun agregarFoto(plantaId: Long, ruta: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            dao.deleteById(id)
+
+            val foto = FotoPlanta(
+                id = System.currentTimeMillis(),
+                plantaId = plantaId,
+                ruta = ruta,
+                fecha = System.currentTimeMillis(),
+                observaciones = null
+            )
+
+            fotoDao.insert(FotoMapper.toEntity(foto))
+        }
+    }
+
+    suspend fun obtenerFotos(plantaId: Long): List<FotoPlanta> {
+        return fotoDao.getFotosPorPlanta(plantaId)
+            .map { FotoMapper.toModel(it) }
+    }
+
+    fun borrarPlanta(plantaId: Long) {
+        viewModelScope.launch(Dispatchers.IO) {
+            plantaDao.deleteById(plantaId)
             cargarPlantas()
         }
     }
-    suspend fun obtenerProximoNumeroPlanta(): Int {
-        val ultimo = dao.getUltimoNumeroPlanta()
-        return (ultimo ?: 0) + 1
-    }
-
-
-
 
 }

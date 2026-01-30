@@ -1,10 +1,10 @@
 package com.emanuel.mivivero.data.model
 
 data class FotoPlanta(
-    val id: Long = 0L,
+    val id: Long,
     val plantaId: Long,
-    val rutaLocal: String,
-    val fechaFoto: Long,
-    val fechaGuardado: Long,
+    val ruta: String,
+    val fecha: Long,
     val observaciones: String?
 )
+
