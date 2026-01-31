@@ -66,6 +66,14 @@
             android:backgroundTint="@android:color/holo_red_dark"
             android:layout_marginTop="12dp" />
 
+        <Button
+            android:id="@+id/btnAgregarFotoExtra"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Agregar otra foto"
+            android:layout_marginTop="8dp" />
+
+
 
 
     </LinearLayout>

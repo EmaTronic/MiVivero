@@ -4,6 +4,7 @@ import android.app.AlertDialog
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -15,6 +16,15 @@ import java.util.Date
 import java.util.Locale
 
 class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
+
+    private val galeriaFotoExtraLauncher =
+        registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+            uri?.let {
+                viewModel.agregarFotoExtra(plantaId, it.toString())
+            }
+        }
+
+
 
     private var _binding: FragmentPlantaDetalleBinding? = null
     private val binding get() = _binding!!
@@ -34,7 +44,13 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
 
             if (planta.fotoRuta != null) {
                 binding.imgDetallePlanta.setImageURI(Uri.parse(planta.fotoRuta))
+                binding.imgDetallePlanta.visibility = View.VISIBLE
             }
+            binding.btnAgregarFotoExtra.setOnClickListener {
+                galeriaFotoExtraLauncher.launch("image/*")
+            }
+
+
 
             binding.txtFamilia.text = planta.familia
             binding.txtEspecie.text = planta.especie ?: "Sin especie"
