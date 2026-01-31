@@ -1,30 +1,31 @@
 package com.emanuel.mivivero.ui.fragment
 
+import android.Manifest
 import android.app.AlertDialog
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.emanuel.mivivero.R
 import com.emanuel.mivivero.databinding.FragmentPlantaDetalleBinding
+import com.emanuel.mivivero.data.model.FotoPlanta
 import com.emanuel.mivivero.ui.adapter.FotoAdapter
 import com.emanuel.mivivero.ui.viewmodel.ViveroViewModel
-import kotlinx.coroutines.launch
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import androidx.navigation.fragment.findNavController
-import android.Manifest
-import android.content.pm.PackageManager
-import androidx.core.content.ContextCompat
-
-
+import kotlinx.coroutines.launch
 
 class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
 
@@ -36,35 +37,33 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
     private var plantaId: Long = -1L
     private var fotoUri: Uri? = null
 
-    /* =====================
-       GALERÍA
-       ===================== */
-    private val galeriaLauncher =
-        registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
-            uri?.let {
-                viewModel.agregarFotoExtra(plantaId, it.toString())
-                cargarFotos()
-            }
+    private val fotosSeleccionadas = mutableListOf<FotoPlanta>()
+
+    // ===== PERMISO CÁMARA =====
+    private val permisoCamaraLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { ok ->
+            if (ok) abrirCamara()
         }
 
-    /* =====================
-       CÁMARA
-       ===================== */
+    // ===== CÁMARA =====
     private val camaraLauncher =
         registerForActivityResult(ActivityResultContracts.TakePicture()) { ok ->
             if (ok && fotoUri != null) {
-                viewModel.agregarFotoExtra(plantaId, fotoUri.toString())
+                val rutaFinal = fotoUri.toString() + "?t=" + System.currentTimeMillis()
+                viewModel.agregarFotoExtra(plantaId, rutaFinal)
                 cargarFotos()
             }
         }
 
-    private val permisoCamaraLauncher =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) { ok ->
-            if (ok) {
-                abrirCamara()
+    // ===== GALERÍA =====
+    private val galeriaLauncher =
+        registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+            uri?.let {
+                val rutaFinal = it.toString() + "?t=" + System.currentTimeMillis()
+                viewModel.agregarFotoExtra(plantaId, rutaFinal)
+                cargarFotos()
             }
         }
-
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -72,12 +71,12 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
 
         plantaId = arguments?.getLong("plantaId") ?: return
 
-        // 📷 Foto principal + datos
+        // Datos planta
         viewModel.plantas.observe(viewLifecycleOwner) { lista ->
             val planta = lista.find { it.id == plantaId } ?: return@observe
 
-            if (planta.fotoRuta != null) {
-                binding.imgDetallePlanta.setImageURI(Uri.parse(planta.fotoRuta))
+            planta.fotoRuta?.let {
+                binding.imgDetallePlanta.setImageURI(Uri.parse(it))
                 binding.imgDetallePlanta.visibility = View.VISIBLE
             }
 
@@ -94,35 +93,55 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
                 } ?: "Sin foto"
         }
 
-        // 🟩 Grilla de fotos (2 columnas)
-        binding.recyclerFotos.layoutManager =
-            GridLayoutManager(requireContext(), 2)
-
+        // Grilla
+        binding.recyclerFotos.layoutManager = GridLayoutManager(requireContext(), 2)
         cargarFotos()
 
-        // ➕ Agregar otra foto
+        // Agregar foto
         binding.btnAgregarFotoExtra.setOnClickListener {
             AlertDialog.Builder(requireContext())
                 .setTitle("Agregar foto")
                 .setItems(arrayOf("Sacar foto", "Elegir de la galería")) { _, which ->
                     when (which) {
                         0 -> verificarPermisoCamara()
-
                         1 -> galeriaLauncher.launch("image/*")
                     }
                 }
                 .show()
         }
 
-        // ✏️ Editar
-        binding.btnEditar.setOnClickListener {
-            val bundle = Bundle().apply {
-                putLong("plantaId", plantaId)
+        // Comparar
+        binding.btnCompararFotos.setOnClickListener {
+            if (fotosSeleccionadas.size != 2) {
+                Toast.makeText(
+                    requireContext(),
+                    "Seleccioná 2 fotos",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@setOnClickListener
             }
-            findNavController().navigate(R.id.crearPlantaFragment, bundle)
+
+            val f1 = fotosSeleccionadas[0]
+            val f2 = fotosSeleccionadas[1]
+
+            findNavController().navigate(
+                R.id.compararFotosFragment,
+                bundleOf(
+                    "fotoArriba" to f1.ruta,
+                    "fotoAbajo" to f2.ruta
+                )
+            )
         }
 
-        // 🗑️ Eliminar
+        // Editar
+        binding.btnEditar.setOnClickListener {
+            findNavController().navigate(
+                R.id.crearPlantaFragment,
+                bundleOf("plantaId" to plantaId)
+            )
+        }
+
+        // Eliminar
         binding.btnEliminar.setOnClickListener {
             AlertDialog.Builder(requireContext())
                 .setTitle("Eliminar planta")
@@ -136,9 +155,34 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
         }
     }
 
-    /* =====================
-       FUNCIONES AUX
-       ===================== */
+    private fun cargarFotos() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            val fotos = viewModel.obtenerFotos(plantaId)
+
+            binding.recyclerFotos.adapter =
+                FotoAdapter(
+                    fotos = fotos,
+                    esSeleccionable = { true },
+                    estaSeleccionada = { fotosSeleccionadas.contains(it) }
+                ) { foto ->
+                    if (fotosSeleccionadas.contains(foto)) {
+                        fotosSeleccionadas.remove(foto)
+                    } else if (fotosSeleccionadas.size < 2) {
+                        fotosSeleccionadas.add(foto)
+                    }
+                }
+        }
+    }
+
+    private fun verificarPermisoCamara() {
+        when {
+            ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.CAMERA
+            ) == PackageManager.PERMISSION_GRANTED -> abrirCamara()
+            else -> permisoCamaraLauncher.launch(Manifest.permission.CAMERA)
+        }
+    }
 
     private fun abrirCamara() {
         val archivo = File(
@@ -154,29 +198,6 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
 
         camaraLauncher.launch(fotoUri)
     }
-
-    private fun cargarFotos() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            val fotos = viewModel.obtenerFotos(plantaId)
-            binding.recyclerFotos.adapter = FotoAdapter(fotos)
-        }
-    }
-
-
-    private fun verificarPermisoCamara() {
-        when {
-            ContextCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.CAMERA
-            ) == PackageManager.PERMISSION_GRANTED -> {
-                abrirCamara()
-            }
-            else -> {
-                permisoCamaraLauncher.launch(Manifest.permission.CAMERA)
-            }
-        }
-    }
-
 
     override fun onDestroyView() {
         super.onDestroyView()

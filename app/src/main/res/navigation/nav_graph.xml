@@ -24,4 +24,10 @@
         android:id="@+id/plantaDetalleFragment"
         android:name="com.emanuel.mivivero.ui.fragment.PlantaDetalleFragment"
         android:label="Detalle Planta" />
+
+    <fragment
+        android:id="@+id/compararFotosFragment"
+        android:name="com.emanuel.mivivero.ui.fragment.CompararFotosFragment"
+        android:label="Comparar fotos" />
+
 </navigation>

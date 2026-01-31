@@ -21,7 +21,10 @@
             android:id="@+id/recyclerFotos"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp" />
+            android:layout_marginTop="12dp"
+            android:focusable="false"
+            android:focusableInTouchMode="false" />
+
 
 
         <TextView
@@ -79,6 +82,18 @@
             android:layout_height="wrap_content"
             android:text="Agregar otra foto"
             android:layout_marginTop="8dp" />
+
+        <Button
+            android:id="@+id/btnCompararFotos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Comparar fotos"
+            android:clickable="true"
+            android:enabled="true"
+            android:layout_marginTop="8dp" />
+
+
+
 
 
 
