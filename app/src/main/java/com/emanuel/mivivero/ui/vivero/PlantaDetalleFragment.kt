@@ -57,7 +57,6 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
             }
         }
 
-
     // ===== GALERÍA =====
     private val galeriaLauncher =
         registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
@@ -70,21 +69,15 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
             }
         }
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentPlantaDetalleBinding.bind(view)
 
         plantaId = arguments?.getLong("plantaId") ?: return
 
-        // Datos planta
+        // ===== DATOS DE LA PLANTA =====
         viewModel.plantas.observe(viewLifecycleOwner) { lista ->
             val planta = lista.find { it.id == plantaId } ?: return@observe
-
-            planta.fotoRuta?.let {
-                binding.imgDetallePlanta.setImageURI(Uri.parse(it))
-                binding.imgDetallePlanta.visibility = View.VISIBLE
-            }
 
             binding.txtFamilia.text = planta.familia
             binding.txtEspecie.text = planta.especie ?: "Sin especie"
@@ -99,11 +92,11 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
                 } ?: "Sin foto"
         }
 
-        // Grilla
+        // ===== GRILLA =====
         binding.recyclerFotos.layoutManager = GridLayoutManager(requireContext(), 2)
         cargarFotos()
 
-        // Agregar foto
+        // ===== AGREGAR FOTO =====
         binding.btnAgregarFotoExtra.setOnClickListener {
             AlertDialog.Builder(requireContext())
                 .setTitle("Agregar foto")
@@ -116,7 +109,7 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
                 .show()
         }
 
-        // Comparar
+        // ===== COMPARAR =====
         binding.btnCompararFotos.setOnClickListener {
             if (fotosSeleccionadas.size != 2) {
                 Toast.makeText(
@@ -134,12 +127,14 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
                 R.id.compararFotosFragment,
                 bundleOf(
                     "fotoArriba" to f1.ruta,
-                    "fotoAbajo" to f2.ruta
+                    "fotoAbajo" to f2.ruta,
+                    "fechaArriba" to f1.fecha,
+                    "fechaAbajo" to f2.fecha
                 )
             )
         }
 
-        // Editar
+        // ===== EDITAR =====
         binding.btnEditar.setOnClickListener {
             findNavController().navigate(
                 R.id.crearPlantaFragment,
@@ -147,7 +142,7 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
             )
         }
 
-        // Eliminar
+        // ===== ELIMINAR =====
         binding.btnEliminar.setOnClickListener {
             AlertDialog.Builder(requireContext())
                 .setTitle("Eliminar planta")
@@ -161,9 +156,25 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
         }
     }
 
+    // ===== CARGAR FOTOS (INCLUYE FOTO PRINCIPAL UNA SOLA VEZ) =====
     private fun cargarFotos() {
         viewLifecycleOwner.lifecycleScope.launch {
-            val fotos = viewModel.obtenerFotos(plantaId)
+
+            val fotos = viewModel.obtenerFotos(plantaId).toMutableList()
+
+            val planta = viewModel.obtenerPlantaPorId(plantaId)
+            if (planta != null && planta.fotoRuta != null) {
+
+                val yaExiste = fotos.any { it.ruta.startsWith(planta.fotoRuta!!) }
+
+                if (!yaExiste) {
+                    viewModel.agregarFotoExtra(
+                        plantaId,
+                        planta.fotoRuta + "?principal=true"
+                    )
+                    return@launch
+                }
+            }
 
             binding.recyclerFotos.adapter =
                 FotoAdapter(
