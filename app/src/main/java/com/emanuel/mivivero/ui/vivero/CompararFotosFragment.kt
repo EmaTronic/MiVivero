@@ -6,27 +6,45 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import com.emanuel.mivivero.R
 import com.emanuel.mivivero.databinding.FragmentCompararFotosBinding
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class CompararFotosFragment : Fragment(R.layout.fragment_comparar_fotos) {
 
     private var _binding: FragmentCompararFotosBinding? = null
     private val binding get() = _binding!!
 
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentCompararFotosBinding.bind(view)
 
-        val arriba = arguments?.getString("fotoArriba")
-        val abajo = arguments?.getString("fotoAbajo")
+        val rutaArriba = arguments?.getString("fotoArriba")
+        val fechaArriba = arguments?.getLong("fechaArriba")
 
-        arriba?.let {
+        val rutaAbajo = arguments?.getString("fotoAbajo")
+        val fechaAbajo = arguments?.getLong("fechaAbajo")
+
+        val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+
+        rutaArriba?.let {
             binding.imgArriba.setImageURI(Uri.parse(it))
         }
+        fechaArriba?.let {
+            binding.txtFechaArriba.text = sdf.format(Date(it))
+        }
 
-        abajo?.let {
+        rutaAbajo?.let {
             binding.imgAbajo.setImageURI(Uri.parse(it))
         }
+        fechaAbajo?.let {
+            binding.txtFechaAbajo.text = sdf.format(Date(it))
+        }
     }
+
+
+
 
     override fun onDestroyView() {
         super.onDestroyView()
