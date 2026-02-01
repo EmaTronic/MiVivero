@@ -98,17 +98,15 @@ class ViveroViewModel(application: Application) : AndroidViewModel(application) 
         }
     }
 
-    fun agregarFotoExtra(plantaId: Long, ruta: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val foto = FotoPlanta(
-                id = System.currentTimeMillis(),
-                plantaId = plantaId,
-                ruta = ruta,
-                fecha = System.currentTimeMillis(),
-                observaciones = null
-            )
-            fotoDao.insert(FotoMapper.toEntity(foto))
-        }
+    suspend fun agregarFotoExtra(plantaId: Long, ruta: String) {
+        val foto = FotoPlanta(
+            id = System.currentTimeMillis(),
+            plantaId = plantaId,
+            ruta = ruta,
+            fecha = System.currentTimeMillis(),
+            observaciones = null
+        )
+        fotoDao.insert(FotoMapper.toEntity(foto))
     }
 
 

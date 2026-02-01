@@ -50,20 +50,26 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
         registerForActivityResult(ActivityResultContracts.TakePicture()) { ok ->
             if (ok && fotoUri != null) {
                 val rutaFinal = fotoUri.toString() + "?t=" + System.currentTimeMillis()
-                viewModel.agregarFotoExtra(plantaId, rutaFinal)
-                cargarFotos()
+                viewLifecycleOwner.lifecycleScope.launch {
+                    viewModel.agregarFotoExtra(plantaId, rutaFinal)
+                    cargarFotos()
+                }
             }
         }
+
 
     // ===== GALERÍA =====
     private val galeriaLauncher =
         registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
             uri?.let {
                 val rutaFinal = it.toString() + "?t=" + System.currentTimeMillis()
-                viewModel.agregarFotoExtra(plantaId, rutaFinal)
-                cargarFotos()
+                viewLifecycleOwner.lifecycleScope.launch {
+                    viewModel.agregarFotoExtra(plantaId, rutaFinal)
+                    cargarFotos()
+                }
             }
         }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
