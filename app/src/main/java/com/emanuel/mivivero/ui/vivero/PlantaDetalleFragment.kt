@@ -95,8 +95,12 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
                     "Foto tomada el ${f.format(Date(it))}"
                 } ?: "Sin foto"
 
+            // 🔥 CLAVE: recién ahora cargar fotos
             cargarFotos()
         }
+
+
+
 
         // ===== GRILLA =====
         binding.recyclerFotos.layoutManager = GridLayoutManager(requireContext(), 2)
@@ -169,19 +173,31 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
             val fotos = viewModel.obtenerFotos(plantaId).toMutableList()
             val planta = plantaActual
 
-            // asegurar foto principal
+            // 1️⃣ asegurar foto principal
             if (planta != null && planta.fotoRuta != null) {
                 val yaExiste = fotos.any { it.ruta.startsWith(planta.fotoRuta!!) }
+
                 if (!yaExiste) {
                     viewModel.agregarFotoExtra(
                         plantaId,
                         planta.fotoRuta + "?principal=true"
                     )
-                    return@launch
+
+                    // 👉 agregarla también a la lista actual
+                    fotos.add(
+                        FotoPlanta(
+                            id = System.currentTimeMillis(),
+                            plantaId = plantaId,
+                            ruta = planta.fotoRuta + "?principal=true",
+                            fecha = planta.fechaFoto ?: System.currentTimeMillis(),
+                            observaciones = null
+                        )
+                    )
                 }
             }
 
-            // mover principal a posición 0
+
+            // 2️⃣ mover principal a posición 0
             if (planta?.fotoRuta != null) {
                 val index = fotos.indexOfFirst {
                     it.ruta.startsWith(planta.fotoRuta!!)
@@ -192,6 +208,16 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
                 }
             }
 
+            // 3️⃣ resaltar principal SOLO si no hay selección previa
+            if (fotosSeleccionadas.isEmpty()) {
+                planta?.fotoRuta?.let { ruta ->
+                    fotos.firstOrNull { it.ruta.startsWith(ruta) }?.let {
+                        fotosSeleccionadas.add(it)
+                    }
+                }
+            }
+
+            // 4️⃣ adapter
             binding.recyclerFotos.adapter =
                 FotoAdapter(
                     fotos = fotos,
@@ -201,7 +227,7 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
                     onClickFoto = { foto ->
                         if (fotosSeleccionadas.contains(foto)) {
                             fotosSeleccionadas.remove(foto)
-                        } else if (fotosSeleccionadas.size < 1) {
+                        } else if (fotosSeleccionadas.size < 2 ) {
                             fotosSeleccionadas.add(foto)
                         }
                         binding.btnEliminarFoto.isEnabled = fotosSeleccionadas.size == 1
@@ -210,8 +236,14 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
                         confirmarCambioFotoPrincipal(foto)
                     }
                 )
+
+            // 5️⃣ feedback visual
+            if (planta?.fotoRuta != null) {
+                binding.recyclerFotos.scrollToPosition(0)
+            }
         }
     }
+
 
     private fun confirmarCambioFotoPrincipal(foto: FotoPlanta) {
         AlertDialog.Builder(requireContext())
@@ -226,17 +258,27 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
 
     private fun cambiarFotoPrincipal(foto: FotoPlanta) {
         viewLifecycleOwner.lifecycleScope.launch {
+
             val planta = plantaActual ?: return@launch
+
             viewModel.actualizarPlanta(
                 planta.copy(
                     fotoRuta = foto.ruta,
                     fechaFoto = foto.fecha
                 )
             )
+
             fotosSeleccionadas.clear()
             binding.btnEliminarFoto.isEnabled = false
+
+            Toast.makeText(
+                requireContext(),
+                "Foto principal actualizada",
+                Toast.LENGTH_SHORT
+            ).show()
         }
     }
+
 
     private fun intentarBorrarFoto(foto: FotoPlanta) {
         val planta = plantaActual ?: return

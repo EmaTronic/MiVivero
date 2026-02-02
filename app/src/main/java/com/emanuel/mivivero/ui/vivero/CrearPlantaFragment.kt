@@ -46,8 +46,12 @@ class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
         registerForActivityResult(ActivityResultContracts.TakePicture()) { ok ->
             if (ok && fotoUri != null) {
                 binding.imgFoto.setImageURI(fotoUri)
+
+                ocultarTeclado()
+                binding.root.requestFocus()
             }
         }
+
 
     /* =====================
        GALERÍA
@@ -58,8 +62,12 @@ class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
             uri?.let {
                 fotoUri = it
                 binding.imgFoto.setImageURI(it)
+
+                ocultarTeclado()
+                binding.root.requestFocus()
             }
         }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -68,6 +76,8 @@ class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
         plantaId = arguments?.getLong("plantaId") ?: -1L
 
 
+        binding.root.isFocusableInTouchMode = true
+        binding.root.requestFocus()
 
 
         // ✏️ MODO EDICIÓN
@@ -162,6 +172,16 @@ class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
 
         camaraLauncher.launch(fotoUri)
     }
+
+
+    private fun ocultarTeclado() {
+        val imm = requireContext()
+            .getSystemService(android.content.Context.INPUT_METHOD_SERVICE)
+                as android.view.inputmethod.InputMethodManager
+
+        imm.hideSoftInputFromWindow(requireView().windowToken, 0)
+    }
+
 
     override fun onDestroyView() {
         super.onDestroyView()
