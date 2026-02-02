@@ -19,13 +19,13 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.emanuel.mivivero.R
 import com.emanuel.mivivero.databinding.FragmentPlantaDetalleBinding
 import com.emanuel.mivivero.data.model.FotoPlanta
+import com.emanuel.mivivero.data.model.Planta
 import com.emanuel.mivivero.ui.adapter.FotoAdapter
 import com.emanuel.mivivero.ui.viewmodel.ViveroViewModel
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import android.util.Log
 import kotlinx.coroutines.launch
 
 class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
@@ -37,6 +37,9 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
 
     private var plantaId: Long = -1L
     private var fotoUri: Uri? = null
+
+    // 🔥 estado REAL de la planta observada
+    private var plantaActual: Planta? = null
 
     private val fotosSeleccionadas = mutableListOf<FotoPlanta>()
 
@@ -76,9 +79,10 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
 
         plantaId = arguments?.getLong("plantaId") ?: return
 
-        // ===== DATOS DE LA PLANTA =====
+        // ===== OBSERVAR PLANTA =====
         viewModel.plantas.observe(viewLifecycleOwner) { lista ->
             val planta = lista.find { it.id == plantaId } ?: return@observe
+            plantaActual = planta
 
             binding.txtFamilia.text = planta.familia
             binding.txtEspecie.text = planta.especie ?: "Sin especie"
@@ -91,11 +95,13 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
                     val f = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
                     "Foto tomada el ${f.format(Date(it))}"
                 } ?: "Sin foto"
+
+            // 🔥 clave: refrescar UI cuando cambia la planta
+            cargarFotos()
         }
 
         // ===== GRILLA =====
         binding.recyclerFotos.layoutManager = GridLayoutManager(requireContext(), 2)
-        cargarFotos()
 
         // ===== AGREGAR FOTO =====
         binding.btnAgregarFotoExtra.setOnClickListener {
@@ -157,17 +163,15 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
         }
     }
 
-    // ===== CARGAR FOTOS (INCLUYE FOTO PRINCIPAL UNA SOLA VEZ) =====
+    // ===== CARGAR FOTOS =====
     private fun cargarFotos() {
         viewLifecycleOwner.lifecycleScope.launch {
 
             val fotos = viewModel.obtenerFotos(plantaId).toMutableList()
+            val planta = plantaActual
 
-            val planta = viewModel.obtenerPlantaPorId(plantaId)
             if (planta != null && planta.fotoRuta != null) {
-
                 val yaExiste = fotos.any { it.ruta.startsWith(planta.fotoRuta!!) }
-
                 if (!yaExiste) {
                     viewModel.agregarFotoExtra(
                         plantaId,
@@ -180,6 +184,7 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
             binding.recyclerFotos.adapter =
                 FotoAdapter(
                     fotos = fotos,
+                    rutaFotoPrincipal = planta?.fotoRuta,
                     esSeleccionable = { true },
                     estaSeleccionada = { fotosSeleccionadas.contains(it) },
                     onClickFoto = { foto ->
@@ -193,7 +198,6 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
                         confirmarCambioFotoPrincipal(foto)
                     }
                 )
-
         }
     }
 
@@ -208,11 +212,10 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
             .show()
     }
 
-
     private fun cambiarFotoPrincipal(foto: FotoPlanta) {
         viewLifecycleOwner.lifecycleScope.launch {
 
-            val planta = viewModel.obtenerPlantaPorId(plantaId) ?: return@launch
+            val planta = plantaActual ?: return@launch
 
             val plantaActualizada = planta.copy(
                 fotoRuta = foto.ruta,
@@ -220,12 +223,9 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
             )
 
             viewModel.actualizarPlanta(plantaActualizada)
-
-            cargarFotos()
+            fotosSeleccionadas.clear()
         }
     }
-
-
 
     private fun verificarPermisoCamara() {
         when {
