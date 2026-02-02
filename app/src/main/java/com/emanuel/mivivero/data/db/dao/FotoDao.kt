@@ -12,6 +12,10 @@ interface FotoDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(foto: FotoEntity)
 
+    @Query("DELETE FROM fotos WHERE id = :fotoId")
+    suspend fun deleteById(fotoId: Long)
+
+
     @Query("""
         SELECT * FROM fotos 
         WHERE plantaId = :plantaId 

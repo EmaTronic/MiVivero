@@ -38,7 +38,6 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
     private var plantaId: Long = -1L
     private var fotoUri: Uri? = null
 
-    // 🔥 estado REAL de la planta observada
     private var plantaActual: Planta? = null
 
     private val fotosSeleccionadas = mutableListOf<FotoPlanta>()
@@ -96,7 +95,6 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
                     "Foto tomada el ${f.format(Date(it))}"
                 } ?: "Sin foto"
 
-            // 🔥 clave: refrescar UI cuando cambia la planta
             cargarFotos()
         }
 
@@ -116,14 +114,16 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
                 .show()
         }
 
+        // ===== ELIMINAR FOTO =====
+        binding.btnEliminarFoto.setOnClickListener {
+            val foto = fotosSeleccionadas.firstOrNull() ?: return@setOnClickListener
+            intentarBorrarFoto(foto)
+        }
+
         // ===== COMPARAR =====
         binding.btnCompararFotos.setOnClickListener {
             if (fotosSeleccionadas.size != 2) {
-                Toast.makeText(
-                    requireContext(),
-                    "Seleccioná 2 fotos",
-                    Toast.LENGTH_SHORT
-                ).show()
+                Toast.makeText(requireContext(), "Seleccioná 2 fotos", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
@@ -141,7 +141,7 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
             )
         }
 
-        // ===== EDITAR =====
+        // ===== EDITAR / ELIMINAR PLANTA =====
         binding.btnEditar.setOnClickListener {
             findNavController().navigate(
                 R.id.crearPlantaFragment,
@@ -149,7 +149,6 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
             )
         }
 
-        // ===== ELIMINAR =====
         binding.btnEliminar.setOnClickListener {
             AlertDialog.Builder(requireContext())
                 .setTitle("Eliminar planta")
@@ -170,7 +169,7 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
             val fotos = viewModel.obtenerFotos(plantaId).toMutableList()
             val planta = plantaActual
 
-            // 1️⃣ asegurar que la foto principal exista
+            // asegurar foto principal
             if (planta != null && planta.fotoRuta != null) {
                 val yaExiste = fotos.any { it.ruta.startsWith(planta.fotoRuta!!) }
                 if (!yaExiste) {
@@ -182,19 +181,17 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
                 }
             }
 
-            // 2️⃣ mover la foto principal a la posición 0
+            // mover principal a posición 0
             if (planta?.fotoRuta != null) {
-                val indexPrincipal = fotos.indexOfFirst {
+                val index = fotos.indexOfFirst {
                     it.ruta.startsWith(planta.fotoRuta!!)
                 }
-
-                if (indexPrincipal > 0) {
-                    val fotoPrincipal = fotos.removeAt(indexPrincipal)
-                    fotos.add(0, fotoPrincipal)
+                if (index > 0) {
+                    val principal = fotos.removeAt(index)
+                    fotos.add(0, principal)
                 }
             }
 
-            // 3️⃣ crear adapter
             binding.recyclerFotos.adapter =
                 FotoAdapter(
                     fotos = fotos,
@@ -204,9 +201,10 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
                     onClickFoto = { foto ->
                         if (fotosSeleccionadas.contains(foto)) {
                             fotosSeleccionadas.remove(foto)
-                        } else if (fotosSeleccionadas.size < 2) {
+                        } else if (fotosSeleccionadas.size < 1) {
                             fotosSeleccionadas.add(foto)
                         }
+                        binding.btnEliminarFoto.isEnabled = fotosSeleccionadas.size == 1
                     },
                     onLongClickFoto = { foto ->
                         confirmarCambioFotoPrincipal(foto)
@@ -214,7 +212,6 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
                 )
         }
     }
-
 
     private fun confirmarCambioFotoPrincipal(foto: FotoPlanta) {
         AlertDialog.Builder(requireContext())
@@ -229,16 +226,49 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
 
     private fun cambiarFotoPrincipal(foto: FotoPlanta) {
         viewLifecycleOwner.lifecycleScope.launch {
-
             val planta = plantaActual ?: return@launch
-
-            val plantaActualizada = planta.copy(
-                fotoRuta = foto.ruta,
-                fechaFoto = foto.fecha
+            viewModel.actualizarPlanta(
+                planta.copy(
+                    fotoRuta = foto.ruta,
+                    fechaFoto = foto.fecha
+                )
             )
-
-            viewModel.actualizarPlanta(plantaActualizada)
             fotosSeleccionadas.clear()
+            binding.btnEliminarFoto.isEnabled = false
+        }
+    }
+
+    private fun intentarBorrarFoto(foto: FotoPlanta) {
+        val planta = plantaActual ?: return
+        val esPrincipal =
+            planta.fotoRuta != null &&
+                    foto.ruta.startsWith(planta.fotoRuta!!)
+
+        if (esPrincipal) {
+            Toast.makeText(
+                requireContext(),
+                "No podés borrar la foto principal.\nElegí otra primero.",
+                Toast.LENGTH_LONG
+            ).show()
+            return
+        }
+
+        AlertDialog.Builder(requireContext())
+            .setTitle("Eliminar foto")
+            .setMessage("¿Seguro que querés eliminar esta foto?")
+            .setPositiveButton("Eliminar") { _, _ ->
+                borrarFoto(foto)
+            }
+            .setNegativeButton("Cancelar", null)
+            .show()
+    }
+
+    private fun borrarFoto(foto: FotoPlanta) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.borrarFoto(foto.id)
+            fotosSeleccionadas.clear()
+            binding.btnEliminarFoto.isEnabled = false
+            cargarFotos()
         }
     }
 

@@ -83,6 +83,15 @@
             android:text="Agregar otra foto"
             android:layout_marginTop="8dp" />
 
+
+        <Button
+            android:id="@+id/btnEliminarFoto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Eliminar foto"
+            android:enabled="false"/>
+
+
         <Button
             android:id="@+id/btnCompararFotos"
             android:layout_width="match_parent"

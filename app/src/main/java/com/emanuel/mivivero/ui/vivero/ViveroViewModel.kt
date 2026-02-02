@@ -116,6 +116,13 @@ class ViveroViewModel(application: Application) : AndroidViewModel(application) 
         }
     }
 
+    fun borrarFoto(fotoId: Long) {
+        viewModelScope.launch(Dispatchers.IO) {
+            fotoDao.deleteById(fotoId)
+        }
+    }
+
+
 
 
 }
