@@ -25,6 +25,7 @@ import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import android.util.Log
 import kotlinx.coroutines.launch
 
 class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
@@ -180,16 +181,51 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
                 FotoAdapter(
                     fotos = fotos,
                     esSeleccionable = { true },
-                    estaSeleccionada = { fotosSeleccionadas.contains(it) }
-                ) { foto ->
-                    if (fotosSeleccionadas.contains(foto)) {
-                        fotosSeleccionadas.remove(foto)
-                    } else if (fotosSeleccionadas.size < 2) {
-                        fotosSeleccionadas.add(foto)
+                    estaSeleccionada = { fotosSeleccionadas.contains(it) },
+                    onClickFoto = { foto ->
+                        if (fotosSeleccionadas.contains(foto)) {
+                            fotosSeleccionadas.remove(foto)
+                        } else if (fotosSeleccionadas.size < 2) {
+                            fotosSeleccionadas.add(foto)
+                        }
+                    },
+                    onLongClickFoto = { foto ->
+                        confirmarCambioFotoPrincipal(foto)
                     }
-                }
+                )
+
         }
     }
+
+    private fun confirmarCambioFotoPrincipal(foto: FotoPlanta) {
+        AlertDialog.Builder(requireContext())
+            .setTitle("Cambiar foto principal")
+            .setMessage("¿Querés usar esta foto como principal?")
+            .setPositiveButton("Aceptar") { _, _ ->
+                cambiarFotoPrincipal(foto)
+            }
+            .setNegativeButton("Cancelar", null)
+            .show()
+    }
+
+
+    private fun cambiarFotoPrincipal(foto: FotoPlanta) {
+        viewLifecycleOwner.lifecycleScope.launch {
+
+            val planta = viewModel.obtenerPlantaPorId(plantaId) ?: return@launch
+
+            val plantaActualizada = planta.copy(
+                fotoRuta = foto.ruta,
+                fechaFoto = foto.fecha
+            )
+
+            viewModel.actualizarPlanta(plantaActualizada)
+
+            cargarFotos()
+        }
+    }
+
+
 
     private fun verificarPermisoCamara() {
         when {

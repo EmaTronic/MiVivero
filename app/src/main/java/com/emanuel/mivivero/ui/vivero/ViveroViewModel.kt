@@ -109,5 +109,13 @@ class ViveroViewModel(application: Application) : AndroidViewModel(application) 
         fotoDao.insert(FotoMapper.toEntity(foto))
     }
 
+    fun actualizarPlanta(planta: Planta) {
+        viewModelScope.launch(Dispatchers.IO) {
+            plantaDao.update(PlantaMapper.toEntity(planta))
+            cargarPlantas()
+        }
+    }
+
+
 
 }

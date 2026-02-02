@@ -1,6 +1,7 @@
 package com.emanuel.mivivero.ui.adapter
 
 import android.net.Uri
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,7 +18,9 @@ class FotoAdapter(
     private val fotos: List<FotoPlanta>,
     private val esSeleccionable: () -> Boolean,
     private val estaSeleccionada: (FotoPlanta) -> Boolean,
-    private val onClickFoto: (FotoPlanta) -> Unit
+    private val onClickFoto: (FotoPlanta) -> Unit,
+    private val onLongClickFoto: (FotoPlanta) -> Unit
+
 ) : RecyclerView.Adapter<FotoAdapter.FotoViewHolder>() {
 
     inner class FotoViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -49,6 +52,15 @@ class FotoAdapter(
                 notifyItemChanged(position)
             }
         }
+
+        holder.itemView.setOnLongClickListener {
+
+            Log.d("LONG_CLICK_TEST", "Long click detectado en foto: ${foto.ruta}")
+
+            onLongClickFoto(foto)
+            true
+        }
+
     }
 
     override fun getItemCount(): Int = fotos.size
