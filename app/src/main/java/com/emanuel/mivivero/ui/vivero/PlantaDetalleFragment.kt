@@ -170,6 +170,7 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
             val fotos = viewModel.obtenerFotos(plantaId).toMutableList()
             val planta = plantaActual
 
+            // 1️⃣ asegurar que la foto principal exista
             if (planta != null && planta.fotoRuta != null) {
                 val yaExiste = fotos.any { it.ruta.startsWith(planta.fotoRuta!!) }
                 if (!yaExiste) {
@@ -181,6 +182,19 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
                 }
             }
 
+            // 2️⃣ mover la foto principal a la posición 0
+            if (planta?.fotoRuta != null) {
+                val indexPrincipal = fotos.indexOfFirst {
+                    it.ruta.startsWith(planta.fotoRuta!!)
+                }
+
+                if (indexPrincipal > 0) {
+                    val fotoPrincipal = fotos.removeAt(indexPrincipal)
+                    fotos.add(0, fotoPrincipal)
+                }
+            }
+
+            // 3️⃣ crear adapter
             binding.recyclerFotos.adapter =
                 FotoAdapter(
                     fotos = fotos,
@@ -200,6 +214,7 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
                 )
         }
     }
+
 
     private fun confirmarCambioFotoPrincipal(foto: FotoPlanta) {
         AlertDialog.Builder(requireContext())
