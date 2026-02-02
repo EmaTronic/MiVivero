@@ -126,6 +126,7 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
 
         // ===== COMPARAR =====
         binding.btnCompararFotos.setOnClickListener {
+
             if (fotosSeleccionadas.size != 2) {
                 Toast.makeText(requireContext(), "Seleccioná 2 fotos", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
@@ -133,6 +134,10 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
 
             val f1 = fotosSeleccionadas[0]
             val f2 = fotosSeleccionadas[1]
+
+            // 🔥 limpiar selección ANTES de navegar
+            fotosSeleccionadas.clear()
+            binding.btnEliminarFoto.isEnabled = false
 
             findNavController().navigate(
                 R.id.compararFotosFragment,
@@ -144,6 +149,7 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
                 )
             )
         }
+
 
         // ===== EDITAR / ELIMINAR PLANTA =====
         binding.btnEditar.setOnClickListener {
@@ -208,14 +214,6 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
                 }
             }
 
-            // 3️⃣ resaltar principal SOLO si no hay selección previa
-            if (fotosSeleccionadas.isEmpty()) {
-                planta?.fotoRuta?.let { ruta ->
-                    fotos.firstOrNull { it.ruta.startsWith(ruta) }?.let {
-                        fotosSeleccionadas.add(it)
-                    }
-                }
-            }
 
             // 4️⃣ adapter
             binding.recyclerFotos.adapter =
@@ -246,6 +244,22 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
 
 
     private fun confirmarCambioFotoPrincipal(foto: FotoPlanta) {
+
+        val planta = plantaActual ?: return
+
+        val yaEsPrincipal =
+            planta.fotoRuta != null &&
+                    foto.ruta.startsWith(planta.fotoRuta!!)
+
+        if (yaEsPrincipal) {
+            Toast.makeText(
+                requireContext(),
+                "Esta foto ya es la principal",
+                Toast.LENGTH_SHORT
+            ).show()
+            return
+        }
+
         AlertDialog.Builder(requireContext())
             .setTitle("Cambiar foto principal")
             .setMessage("¿Querés usar esta foto como principal?")
@@ -255,6 +269,7 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
             .setNegativeButton("Cancelar", null)
             .show()
     }
+
 
     private fun cambiarFotoPrincipal(foto: FotoPlanta) {
         viewLifecycleOwner.lifecycleScope.launch {
@@ -268,6 +283,7 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
                 )
             )
 
+            // 🔥 limpiar selección
             fotosSeleccionadas.clear()
             binding.btnEliminarFoto.isEnabled = false
 
@@ -278,6 +294,7 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
             ).show()
         }
     }
+
 
 
     private fun intentarBorrarFoto(foto: FotoPlanta) {

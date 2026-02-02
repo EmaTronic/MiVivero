@@ -16,7 +16,6 @@ class ViveroFragment : Fragment(R.layout.fragment_vivero) {
     private var _binding: FragmentViveroBinding? = null
     private val binding get() = _binding!!
 
-    // 🔥 CLAVE: ViewModel compartido con la Activity
     private val viewModel: ViveroViewModel by activityViewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -33,6 +32,13 @@ class ViveroFragment : Fragment(R.layout.fragment_vivero) {
         binding.fabAgregarPlanta.setOnClickListener {
             findNavController().navigate(R.id.crearPlantaFragment)
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        // 🔥 CLAVE ABSOLUTA
+        viewModel.cargarPlantas()
     }
 
     override fun onDestroyView() {

@@ -35,7 +35,11 @@ class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
     private val permisoCamaraLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { ok ->
             if (ok) abrirCamara()
-            else Toast.makeText(requireContext(), "Permiso de cámara denegado", Toast.LENGTH_SHORT).show()
+            else Toast.makeText(
+                requireContext(),
+                "Permiso de cámara denegado",
+                Toast.LENGTH_SHORT
+            ).show()
         }
 
     /* =====================
@@ -46,12 +50,11 @@ class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
         registerForActivityResult(ActivityResultContracts.TakePicture()) { ok ->
             if (ok && fotoUri != null) {
                 binding.imgFoto.setImageURI(fotoUri)
-
+                binding.btnGuardar.isEnabled = true
                 ocultarTeclado()
                 binding.root.requestFocus()
             }
         }
-
 
     /* =====================
        GALERÍA
@@ -62,30 +65,31 @@ class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
             uri?.let {
                 fotoUri = it
                 binding.imgFoto.setImageURI(it)
-
+                binding.btnGuardar.isEnabled = true
                 ocultarTeclado()
                 binding.root.requestFocus()
             }
         }
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentCrearPlantaBinding.bind(view)
 
-        plantaId = arguments?.getLong("plantaId") ?: -1L
+        binding.btnGuardar.isEnabled = false
 
+        plantaId = arguments?.getLong("plantaId") ?: -1L
 
         binding.root.isFocusableInTouchMode = true
         binding.root.requestFocus()
 
+        /* =====================
+           MODO EDICIÓN
+           ===================== */
 
-        // ✏️ MODO EDICIÓN
         if (plantaId != -1L) {
             val planta = viewModel.obtenerPlantaPorId(plantaId)
 
             planta?.let {
-
                 binding.etFamilia.setText(it.familia)
                 binding.etEspecie.setText(it.especie)
                 binding.etLugar.setText(it.lugar)
@@ -96,46 +100,60 @@ class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
                 it.fotoRuta?.let { ruta ->
                     fotoUri = Uri.parse(ruta)
                     binding.imgFoto.setImageURI(fotoUri)
+                    binding.btnGuardar.isEnabled = true
                 }
             }
         }
 
-        // 📸 Cámara
+        /* =====================
+           BOTONES FOTO
+           ===================== */
+
         binding.btnFoto.setOnClickListener {
             verificarPermisoCamara()
         }
 
-        // 🖼️ Galería
         binding.btnGaleria.setOnClickListener {
             galeriaLauncher.launch("image/*")
         }
 
-        // 💾 Guardar
+        /* =====================
+           GUARDAR
+           ===================== */
+
         binding.btnGuardar.setOnClickListener {
 
-            val ahora = System.currentTimeMillis()
+            // ❌ FOTO OBLIGATORIA
+            if (fotoUri == null) {
+                Toast.makeText(
+                    requireContext(),
+                    "Debés agregar una foto de la planta",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@setOnClickListener
+            }
 
+            val ahora = System.currentTimeMillis()
 
             val plantaExistente =
                 if (plantaId != -1L) viewModel.obtenerPlantaPorId(plantaId)
                 else null
 
+            val fechaIngresoFinal =
+                plantaExistente?.fechaIngreso ?: ahora
+
             val planta = Planta(
                 id = if (plantaId == -1L) ahora else plantaId,
-
-                // 🔒 CLAVE: si edito, CONSERVO el número
                 numeroPlanta = plantaExistente?.numeroPlanta ?: -1,
-
-
                 familia = binding.etFamilia.text.toString(),
                 especie = binding.etEspecie.text.toString().ifBlank { null },
                 lugar = binding.etLugar.text.toString(),
-                fechaIngreso = ahora,
+                fechaIngreso = fechaIngresoFinal,
                 cantidad = binding.etCantidad.text.toString().toIntOrNull() ?: 0,
                 aLaVenta = binding.cbALaVenta.isChecked,
                 observaciones = binding.etObservaciones.text.toString().ifBlank { null },
-                fotoRuta = fotoUri?.toString(),
-                fechaFoto = if (fotoUri != null) ahora else null
+                fotoRuta = fotoUri!!.toString(),
+                fechaFoto = ahora
             )
 
             viewModel.agregarPlanta(planta)
@@ -173,7 +191,6 @@ class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
         camaraLauncher.launch(fotoUri)
     }
 
-
     private fun ocultarTeclado() {
         val imm = requireContext()
             .getSystemService(android.content.Context.INPUT_METHOD_SERVICE)
@@ -181,7 +198,6 @@ class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
 
         imm.hideSoftInputFromWindow(requireView().windowToken, 0)
     }
-
 
     override fun onDestroyView() {
         super.onDestroyView()
