@@ -42,6 +42,9 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
 
     private val fotosSeleccionadas = mutableListOf<FotoPlanta>()
 
+    private val fotosActuales = mutableListOf<FotoPlanta>()
+
+
     // ===== PERMISO CÁMARA =====
     private val permisoCamaraLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { ok ->
@@ -54,6 +57,15 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
             if (ok && fotoUri != null) {
                 val rutaFinal = fotoUri.toString() + "?t=" + System.currentTimeMillis()
                 viewLifecycleOwner.lifecycleScope.launch {
+
+                    if (fotoYaExiste(rutaFinal)) {
+                        Toast.makeText(
+                            requireContext(),
+                            "Esta foto ya fue agregada",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        return@launch
+                    }
                     viewModel.agregarFotoExtra(plantaId, rutaFinal)
                     cargarFotos()
                 }
@@ -66,6 +78,16 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
             uri?.let {
                 val rutaFinal = it.toString() + "?t=" + System.currentTimeMillis()
                 viewLifecycleOwner.lifecycleScope.launch {
+
+                    if (fotoYaExiste(rutaFinal)) {
+                        Toast.makeText(
+                            requireContext(),
+                            "Esta foto ya fue agregada",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        return@launch
+                    }
+
                     viewModel.agregarFotoExtra(plantaId, rutaFinal)
                     cargarFotos()
                 }
@@ -118,12 +140,14 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
                 .show()
         }
 
+
+        /*
         // ===== ELIMINAR FOTO =====
         binding.btnEliminarFoto.setOnClickListener {
 
             val foto = fotosSeleccionadas.firstOrNull() ?: return@setOnClickListener
 
-            // 🔒 BLOQUEAR FOTO PRINCIPAL
+            // 🔒 1. bloquear si es principal
             if (esFotoPrincipal(foto)) {
                 Toast.makeText(
                     requireContext(),
@@ -133,9 +157,19 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
                 return@setOnClickListener
             }
 
+            // 🔒 2. bloquear si es la última foto
+            if (!hayMasDeUnaFoto()) {
+                Toast.makeText(
+                    requireContext(),
+                    "La planta debe tener al menos una foto",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@setOnClickListener
+            }
+
             confirmarEliminarFoto(foto)
         }
-
+        */
 
         // ===== COMPARAR =====
         binding.btnCompararFotos.setOnClickListener {
@@ -224,7 +258,15 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
     private fun cargarFotos() {
         viewLifecycleOwner.lifecycleScope.launch {
 
+
+            // 1️⃣ Traer fotos desde DB
             val fotos = viewModel.obtenerFotos(plantaId).toMutableList()
+
+            // 2️⃣ SINCRONIZAR estado actual
+            fotosActuales.clear()          // 🔥 ACÁ VA
+            fotosActuales.addAll(fotos)    // 🔥 Y ACÁ
+
+
             val planta = plantaActual
 
             // 1️⃣ asegurar foto principal
@@ -299,6 +341,7 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
             planta.fotoRuta != null &&
                     foto.ruta.startsWith(planta.fotoRuta!!)
 
+        // 🔒 No permitir re-elegir la misma foto
         if (yaEsPrincipal) {
             Toast.makeText(
                 requireContext(),
@@ -307,6 +350,16 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
             ).show()
             return
         }
+
+        // ⚠️ Advertencia de flujo si hay álbum activo
+        val mensaje =
+            if (viewModel.hayAlbumActivo) {
+                "Esta planta forma parte de un álbum de venta.\n\n" +
+                        "Si cambiás la foto principal, el álbum puede quedar desactualizado.\n\n" +
+                        "¿Querés continuar?"
+            } else {
+                "¿Querés usar esta foto como principal?"
+            }
 
         AlertDialog.Builder(requireContext())
             .setTitle("Cambiar foto principal")
@@ -345,6 +398,7 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
 
 
 
+    /*
     private fun intentarBorrarFoto(foto: FotoPlanta) {
         val planta = plantaActual ?: return
         val esPrincipal =
@@ -369,6 +423,8 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
             .setNegativeButton("Cancelar", null)
             .show()
     }
+    */
+
 
     private fun borrarFoto(foto: FotoPlanta) {
         viewLifecycleOwner.lifecycleScope.launch {
@@ -409,6 +465,19 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
         return planta.fotoRuta != null &&
                 foto.ruta.startsWith(planta.fotoRuta!!)
     }
+
+    private fun hayMasDeUnaFoto(): Boolean {
+        return fotosActuales.size > 1
+    }
+
+    private fun fotoYaExiste(rutaNueva: String): Boolean {
+        return fotosActuales.any {
+            it.ruta.substringBefore("?") ==
+                    rutaNueva.substringBefore("?")
+        }
+    }
+
+
 
 
 

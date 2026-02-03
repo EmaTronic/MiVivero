@@ -19,6 +19,8 @@ class ViveroViewModel(application: Application) : AndroidViewModel(application) 
     // DATABASE & DAOs
     // =========================
 
+    var hayAlbumActivo: Boolean = false
+
     private val database = AppDatabase.getInstance(application)
 
     private val plantaDao = database.plantaDao()
