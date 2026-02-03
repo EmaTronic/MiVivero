@@ -120,9 +120,22 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
 
         // ===== ELIMINAR FOTO =====
         binding.btnEliminarFoto.setOnClickListener {
+
             val foto = fotosSeleccionadas.firstOrNull() ?: return@setOnClickListener
-            intentarBorrarFoto(foto)
+
+            // 🔒 BLOQUEAR FOTO PRINCIPAL
+            if (esFotoPrincipal(foto)) {
+                Toast.makeText(
+                    requireContext(),
+                    "No se puede eliminar la foto principal",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@setOnClickListener
+            }
+
+            confirmarEliminarFoto(foto)
         }
+
 
         // ===== COMPARAR =====
         binding.btnCompararFotos.setOnClickListener {
@@ -171,6 +184,41 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
                 .show()
         }
     }
+
+
+    private fun confirmarEliminarFoto(foto: FotoPlanta) {
+        AlertDialog.Builder(requireContext())
+            .setTitle("Eliminar foto")
+            .setMessage("¿Seguro que querés eliminar esta foto?")
+            .setPositiveButton("Eliminar") { _, _ ->
+                eliminarFoto(foto)
+            }
+            .setNegativeButton("Cancelar", null)
+            .show()
+    }
+
+    private fun eliminarFoto(foto: FotoPlanta) {
+        viewLifecycleOwner.lifecycleScope.launch {
+
+            // 1️⃣ borrar de DB
+            viewModel.eliminarFoto(foto)
+
+            // 2️⃣ limpiar selección
+            fotosSeleccionadas.clear()
+
+            // 3️⃣ recargar lista
+            cargarFotos()
+
+            // 4️⃣ feedback opcional
+            Toast.makeText(
+                requireContext(),
+                "Foto eliminada",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+
+
 
     // ===== CARGAR FOTOS =====
     private fun cargarFotos() {
@@ -355,6 +403,14 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
 
         camaraLauncher.launch(fotoUri)
     }
+
+    private fun esFotoPrincipal(foto: FotoPlanta): Boolean {
+        val planta = plantaActual ?: return false
+        return planta.fotoRuta != null &&
+                foto.ruta.startsWith(planta.fotoRuta!!)
+    }
+
+
 
     override fun onDestroyView() {
         super.onDestroyView()

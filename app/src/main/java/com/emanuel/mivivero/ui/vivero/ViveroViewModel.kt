@@ -122,6 +122,13 @@ class ViveroViewModel(application: Application) : AndroidViewModel(application) 
         }
     }
 
+    fun eliminarFoto(foto: FotoPlanta) {
+        viewModelScope.launch(Dispatchers.IO) {
+            fotoDao.delete(FotoMapper.toEntity(foto))
+        }
+    }
+
+
 
 
 
