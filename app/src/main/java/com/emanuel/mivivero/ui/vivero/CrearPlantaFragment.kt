@@ -156,8 +156,16 @@ class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
                 fechaFoto = ahora
             )
 
-            viewModel.agregarPlanta(planta)
+            if (plantaId == -1L) {
+                // 🆕 CREAR
+                viewModel.agregarPlanta(planta)
+            } else {
+                // ✏️ EDITAR
+                viewModel.actualizarPlanta(planta)
+            }
+
             findNavController().popBackStack()
+
         }
     }
 

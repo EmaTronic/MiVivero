@@ -105,6 +105,8 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
             val planta = lista.find { it.id == plantaId } ?: return@observe
             plantaActual = planta
 
+
+
             binding.txtFamilia.text = planta.familia
             binding.txtEspecie.text = planta.especie ?: "Sin especie"
             binding.txtCantidad.text = "Cantidad: ${planta.cantidad}"
@@ -117,11 +119,15 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
                     "Foto tomada el ${f.format(Date(it))}"
                 } ?: "Sin foto"
 
-            // 🔥 CLAVE: recién ahora cargar fotos
-            cargarFotos()
+            // 🔥 CLAVE: recién ahora cargar fotos   cargarFotos()
         }
 
-
+        // 2️⃣ MIGRACIÓN + CARGA (una sola vez)
+        viewLifecycleOwner.lifecycleScope.launch {
+            val planta = viewModel.obtenerPlantaPorId(plantaId) ?: return@launch
+            asegurarFotoPrincipalEnDb(planta)
+            cargarFotos()
+        }
 
 
         // ===== GRILLA =====
@@ -141,35 +147,7 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
         }
 
 
-        /*
-        // ===== ELIMINAR FOTO =====
-        binding.btnEliminarFoto.setOnClickListener {
 
-            val foto = fotosSeleccionadas.firstOrNull() ?: return@setOnClickListener
-
-            // 🔒 1. bloquear si es principal
-            if (esFotoPrincipal(foto)) {
-                Toast.makeText(
-                    requireContext(),
-                    "No se puede eliminar la foto principal",
-                    Toast.LENGTH_SHORT
-                ).show()
-                return@setOnClickListener
-            }
-
-            // 🔒 2. bloquear si es la última foto
-            if (!hayMasDeUnaFoto()) {
-                Toast.makeText(
-                    requireContext(),
-                    "La planta debe tener al menos una foto",
-                    Toast.LENGTH_SHORT
-                ).show()
-                return@setOnClickListener
-            }
-
-            confirmarEliminarFoto(foto)
-        }
-        */
 
         // ===== COMPARAR =====
         binding.btnCompararFotos.setOnClickListener {
@@ -255,80 +233,68 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
 
 
     // ===== CARGAR FOTOS =====
+
     private fun cargarFotos() {
         viewLifecycleOwner.lifecycleScope.launch {
-
 
             // 1️⃣ Traer fotos desde DB
             val fotos = viewModel.obtenerFotos(plantaId).toMutableList()
 
-            // 2️⃣ SINCRONIZAR estado actual
-            fotosActuales.clear()          // 🔥 ACÁ VA
-            fotosActuales.addAll(fotos)    // 🔥 Y ACÁ
-
+            // 2️⃣ Sincronizar estado en memoria
+            fotosActuales.clear()
+            fotosActuales.addAll(fotos)
 
             val planta = plantaActual
 
-            // 1️⃣ asegurar foto principal
-            if (planta != null && planta.fotoRuta != null) {
-                val yaExiste = fotos.any { it.ruta.startsWith(planta.fotoRuta!!) }
-
-                if (!yaExiste) {
-                    viewModel.agregarFotoExtra(
-                        plantaId,
-                        planta.fotoRuta + "?principal=true"
-                    )
-
-                    // 👉 agregarla también a la lista actual
-                    fotos.add(
-                        FotoPlanta(
-                            id = System.currentTimeMillis(),
-                            plantaId = plantaId,
-                            ruta = planta.fotoRuta + "?principal=true",
-                            fecha = planta.fechaFoto ?: System.currentTimeMillis(),
-                            observaciones = null
-                        )
-                    )
-                }
-            }
-
-
-            // 2️⃣ mover principal a posición 0
+            // 3️⃣ Mover la foto principal a posición 0
             if (planta?.fotoRuta != null) {
-                val index = fotos.indexOfFirst {
+                val indexPrincipal = fotos.indexOfFirst {
                     it.ruta.startsWith(planta.fotoRuta!!)
                 }
-                if (index > 0) {
-                    val principal = fotos.removeAt(index)
+
+                if (indexPrincipal > 0) {
+                    val principal = fotos.removeAt(indexPrincipal)
                     fotos.add(0, principal)
                 }
             }
 
+            // 4️⃣ Limpiar selección y estado UI
+            fotosSeleccionadas.clear()
+            binding.btnCompararFotos.isEnabled = false
+            binding.btnEliminarFoto.isEnabled = false
 
-            // 4️⃣ adapter
+            // 5️⃣ Adapter
             binding.recyclerFotos.adapter =
                 FotoAdapter(
                     fotos = fotos,
                     rutaFotoPrincipal = planta?.fotoRuta,
-                    esSeleccionable = { true },
+
+                    // 👉 solo lógica, sin Toast
+                    esSeleccionable = { fotos.size > 1 },
+
                     estaSeleccionada = { fotosSeleccionadas.contains(it) },
+
                     onClickFoto = { foto ->
                         if (fotosSeleccionadas.contains(foto)) {
                             fotosSeleccionadas.remove(foto)
-                        } else if (fotosSeleccionadas.size < 2 ) {
+                        } else if (fotosSeleccionadas.size < 2) {
                             fotosSeleccionadas.add(foto)
                         }
-                        binding.btnEliminarFoto.isEnabled = fotosSeleccionadas.size == 1
+
+                        // 🔁 actualizar botones
+                        binding.btnCompararFotos.isEnabled =
+                            fotosSeleccionadas.size == 2
+
+                        binding.btnEliminarFoto.isEnabled =
+                            fotosSeleccionadas.size == 1
                     },
+
                     onLongClickFoto = { foto ->
                         confirmarCambioFotoPrincipal(foto)
                     }
                 )
 
-            // 5️⃣ feedback visual
-            if (planta?.fotoRuta != null) {
-                binding.recyclerFotos.scrollToPosition(0)
-            }
+            binding.recyclerFotos.scrollToPosition(0)
         }
     }
 
@@ -474,6 +440,25 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
         return fotosActuales.any {
             it.ruta.substringBefore("?") ==
                     rutaNueva.substringBefore("?")
+        }
+    }
+
+
+    private suspend fun asegurarFotoPrincipalEnDb(planta: Planta) {
+
+        if (planta.fotoRuta == null) return
+
+        val fotos = viewModel.obtenerFotos(planta.id)
+
+        val yaExiste = fotos.any {
+            it.ruta.startsWith(planta.fotoRuta)
+        }
+
+        if (!yaExiste) {
+            viewModel.agregarFotoExtra(
+                planta.id,
+                planta.fotoRuta
+            )
         }
     }
 
