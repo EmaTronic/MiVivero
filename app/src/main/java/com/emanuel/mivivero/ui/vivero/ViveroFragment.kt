@@ -32,6 +32,13 @@ class ViveroFragment : Fragment(R.layout.fragment_vivero) {
         binding.fabAgregarPlanta.setOnClickListener {
             findNavController().navigate(R.id.crearPlantaFragment)
         }
+
+        binding.fabCrearAlbumes.setOnClickListener {
+            findNavController().navigate(
+                R.id.action_viveroFragment_to_crearAlbumesFragment
+            )
+        }
+
     }
 
     override fun onResume() {

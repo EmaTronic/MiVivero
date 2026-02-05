@@ -29,5 +29,15 @@
         android:id="@+id/compararFotosFragment"
         android:name="com.emanuel.mivivero.ui.fragment.CompararFotosFragment"
         android:label="Comparar fotos" />
+    <fragment
+        android:id="@+id/crearAlbumesFragment"
+        android:name="com.emanuel.mivivero.ui.albumes.CrearAlbumesFragment"
+        android:label="Creación de álbumes" />
+
+    <action
+        android:id="@+id/action_viveroFragment_to_crearAlbumesFragment"
+        app:destination="@id/crearAlbumesFragment" />
+
+
 
 </navigation>

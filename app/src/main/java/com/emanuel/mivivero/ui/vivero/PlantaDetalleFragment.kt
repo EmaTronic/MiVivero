@@ -337,18 +337,24 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
             .show()
     }
 
-
     private fun cambiarFotoPrincipal(foto: FotoPlanta) {
         viewLifecycleOwner.lifecycleScope.launch {
 
             val planta = plantaActual ?: return@launch
 
-            viewModel.actualizarPlanta(
-                planta.copy(
-                    fotoRuta = foto.ruta,
-                    fechaFoto = foto.fecha
-                )
+            val plantaActualizada = planta.copy(
+                fotoRuta = foto.ruta,
+                fechaFoto = foto.fecha
             )
+
+            // ✅ actualizar DB
+            viewModel.actualizarPlanta(plantaActualizada)
+
+            // 🔁 sincronizar estado local del fragment
+            plantaActual = plantaActualizada
+
+            // 🔄 refrescar UI del detalle
+            cargarFotos()
 
             // 🔥 limpiar selección
             fotosSeleccionadas.clear()
@@ -361,6 +367,7 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
             ).show()
         }
     }
+
 
 
 

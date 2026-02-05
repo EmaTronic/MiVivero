@@ -63,13 +63,23 @@ class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
     private val galeriaLauncher =
         registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
             uri?.let {
-                fotoUri = it
-                binding.imgFoto.setImageURI(it)
-                binding.btnGuardar.isEnabled = true
-                ocultarTeclado()
-                binding.root.requestFocus()
+                try {
+                    val uriLocal = copiarImagenAGaleriaInterna(it)
+                    fotoUri = uriLocal
+                    binding.imgFoto.setImageURI(uriLocal)
+                    binding.btnGuardar.isEnabled = true
+                    ocultarTeclado()
+                    binding.root.requestFocus()
+                } catch (e: Exception) {
+                    Toast.makeText(
+                        requireContext(),
+                        "Error al procesar la imagen",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             }
         }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -206,6 +216,23 @@ class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
 
         imm.hideSoftInputFromWindow(requireView().windowToken, 0)
     }
+
+    private fun copiarImagenAGaleriaInterna(uri: Uri): Uri {
+        val inputStream = requireContext().contentResolver.openInputStream(uri)
+            ?: throw IllegalArgumentException("No se pudo abrir la imagen")
+
+        val archivo = File(
+            requireContext().filesDir,
+            "planta_${System.currentTimeMillis()}.jpg"
+        )
+
+        archivo.outputStream().use { output ->
+            inputStream.copyTo(output)
+        }
+
+        return Uri.fromFile(archivo)
+    }
+
 
     override fun onDestroyView() {
         super.onDestroyView()
