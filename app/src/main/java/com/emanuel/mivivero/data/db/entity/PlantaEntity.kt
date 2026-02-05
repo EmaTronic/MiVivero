@@ -2,6 +2,7 @@ package com.emanuel.mivivero.data.local.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.emanuel.mivivero.data.model.Planta
 
 @Entity(tableName = "plantas")
 data class PlantaEntity(
@@ -20,3 +21,5 @@ data class PlantaEntity(
     val fechaFoto: Long?
 // 👈 EXISTE ACÁ TAMBIÉN
 )
+
+

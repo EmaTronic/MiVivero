@@ -1,10 +1,7 @@
 package com.emanuel.mivivero.data.local.dao
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
-import androidx.room.Update
+import androidx.lifecycle.LiveData
+import androidx.room.*
 import com.emanuel.mivivero.data.local.entity.PlantaEntity
 
 @Dao
@@ -13,17 +10,20 @@ interface PlantaDao {
     @Query("SELECT * FROM plantas")
     suspend fun getAll(): List<PlantaEntity>
 
+    @Query("SELECT * FROM plantas WHERE aLaVenta = 1")
+    fun obtenerPlantasParaAlbum(): LiveData<List<PlantaEntity>>
+
+
+    // ✅ INSERTA ENTITY, NO MODEL
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(planta: PlantaEntity)
-
-    @Query("SELECT MAX(numeroPlanta) FROM plantas")
-    suspend fun getMaxNumeroPlanta(): Int?
-
-    @Query("DELETE FROM plantas WHERE id = :id")
-    suspend fun deleteById(id: Long)
 
     @Update
     suspend fun update(planta: PlantaEntity)
 
+    @Query("DELETE FROM plantas WHERE id = :id")
+    suspend fun deleteById(id: Long)
 
+    @Query("SELECT MAX(numeroPlanta) FROM plantas")
+    suspend fun getMaxNumeroPlanta(): Int?
 }

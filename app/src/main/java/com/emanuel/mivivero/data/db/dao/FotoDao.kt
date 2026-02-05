@@ -7,6 +7,8 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.emanuel.mivivero.data.local.entity.FotoEntity
 
+
+
 @Dao
 interface FotoDao {
 

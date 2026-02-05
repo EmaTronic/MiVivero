@@ -4,15 +4,22 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.emanuel.mivivero.data.db.dao.AlbumDao
+import com.emanuel.mivivero.data.local.dao.AlbumPlantaDao
+
 import com.emanuel.mivivero.data.local.dao.FotoDao
 import com.emanuel.mivivero.data.local.dao.PlantaDao
+import com.emanuel.mivivero.data.local.entity.AlbumEntity
+import com.emanuel.mivivero.data.local.entity.AlbumPlantaEntity
 import com.emanuel.mivivero.data.local.entity.FotoEntity
 import com.emanuel.mivivero.data.local.entity.PlantaEntity
 
 @Database(
     entities = [
         PlantaEntity::class,
-        FotoEntity::class
+        AlbumEntity::class,
+        AlbumPlantaEntity::class,
+        FotoEntity::class // 🔥 ESTA FALTABA
     ],
     version = 4,
     exportSchema = false
@@ -21,6 +28,8 @@ abstract class AppDatabase : RoomDatabase() {
 
     abstract fun plantaDao(): PlantaDao
     abstract fun fotoDao(): FotoDao
+    abstract fun albumDao(): AlbumDao
+    abstract fun albumPlantaDao(): AlbumPlantaDao
 
     companion object {
 

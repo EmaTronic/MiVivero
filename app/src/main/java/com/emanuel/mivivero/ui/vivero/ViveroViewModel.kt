@@ -1,6 +1,7 @@
 package com.emanuel.mivivero.ui.viewmodel
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -129,6 +130,49 @@ class ViveroViewModel(application: Application) : AndroidViewModel(application) 
             fotoDao.delete(FotoMapper.toEntity(foto))
         }
     }
+
+    fun guardarPlanta(
+        familia: String,
+        especie: String?,
+        lugar: String,
+        cantidad: Int,
+        aLaVenta: Boolean,
+        observaciones: String?,
+        fotoRuta: String?
+    ) {
+        viewModelScope.launch {
+
+            Log.d(
+                "VIVERO_VM",
+                "Guardar planta -> familia=$familia | venta=$aLaVenta | foto=$fotoRuta"
+            )
+
+
+
+
+
+            val planta = Planta(
+                id = 0L,
+                numeroPlanta = 0, // si lo generás automático luego, se ajusta
+                familia = familia,
+                especie = especie,
+                lugar = lugar,
+                fechaIngreso = System.currentTimeMillis(),
+                cantidad = cantidad,
+                aLaVenta = aLaVenta,
+                observaciones = observaciones,
+                fotoRuta = fotoRuta,
+                fechaFoto = System.currentTimeMillis()
+            )
+
+            plantaDao.insert(
+                PlantaMapper.toEntity(planta)
+            )
+
+            Log.d("VIVERO_VM", "Planta guardada correctamente")
+        }
+    }
+
 
 
 

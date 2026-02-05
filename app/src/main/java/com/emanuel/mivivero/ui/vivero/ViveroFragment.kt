@@ -1,6 +1,7 @@
 package com.emanuel.mivivero.ui.fragment
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -16,36 +17,31 @@ class ViveroFragment : Fragment(R.layout.fragment_vivero) {
     private var _binding: FragmentViveroBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: ViveroViewModel by activityViewModels()
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentViveroBinding.bind(view)
 
-        binding.recyclerVivero.layoutManager =
-            LinearLayoutManager(requireContext())
-
-        viewModel.plantas.observe(viewLifecycleOwner) { lista ->
-            binding.recyclerVivero.adapter = PlantaAdapter(lista)
+        binding.btnVerPlantas.setOnClickListener {
+            findNavController().navigate(
+                R.id.action_viveroFragment_to_listaPlantasFragment
+            )
         }
 
-        binding.fabAgregarPlanta.setOnClickListener {
+        binding.btnCrearPlanta.setOnClickListener {
             findNavController().navigate(R.id.crearPlantaFragment)
         }
 
-        binding.fabCrearAlbumes.setOnClickListener {
+        binding.btnVerAlbumes.setOnClickListener {
+            findNavController().navigate(
+                R.id.action_viveroFragment_to_albumesFragment
+            )
+        }
+
+        binding.btnCrearAlbum.setOnClickListener {
             findNavController().navigate(
                 R.id.action_viveroFragment_to_crearAlbumesFragment
             )
         }
-
-    }
-
-    override fun onResume() {
-        super.onResume()
-
-        // 🔥 CLAVE ABSOLUTA
-        viewModel.cargarPlantas()
     }
 
     override fun onDestroyView() {

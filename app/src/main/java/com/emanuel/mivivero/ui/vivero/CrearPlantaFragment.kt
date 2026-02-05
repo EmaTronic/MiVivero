@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -80,10 +81,13 @@ class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
             }
         }
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         _binding = FragmentCrearPlantaBinding.bind(view)
+
+        // 🔹 Placeholder por defecto
+        binding.imgFoto.setImageResource(R.drawable.ic_planta_placeholder)
 
         binding.btnGuardar.isEnabled = false
 
@@ -135,6 +139,7 @@ class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
 
             // ❌ FOTO OBLIGATORIA
             if (fotoUri == null) {
+                Log.e("CREAR_PLANTA", "Guardar bloqueado: sin foto")
                 Toast.makeText(
                     requireContext(),
                     "Debés agregar una foto de la planta",
@@ -142,6 +147,8 @@ class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
                 ).show()
                 return@setOnClickListener
             }
+
+            Log.d("CREAR_PLANTA", "Guardar planta con foto OK")
 
             val ahora = System.currentTimeMillis()
 
@@ -167,15 +174,12 @@ class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
             )
 
             if (plantaId == -1L) {
-                // 🆕 CREAR
                 viewModel.agregarPlanta(planta)
             } else {
-                // ✏️ EDITAR
                 viewModel.actualizarPlanta(planta)
             }
 
             findNavController().popBackStack()
-
         }
     }
 
@@ -232,7 +236,6 @@ class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
 
         return Uri.fromFile(archivo)
     }
-
 
     override fun onDestroyView() {
         super.onDestroyView()
