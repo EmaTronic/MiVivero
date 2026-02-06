@@ -11,6 +11,7 @@ import com.emanuel.mivivero.data.local.AppDatabase
 import com.emanuel.mivivero.data.local.entity.AlbumEntity
 import com.emanuel.mivivero.data.local.entity.AlbumPlantaEntity
 import com.emanuel.mivivero.data.mapper.PlantaMapper
+import com.emanuel.mivivero.data.model.EstadoAlbum
 import com.emanuel.mivivero.data.model.Planta
 import kotlinx.coroutines.launch
 
@@ -20,15 +21,21 @@ class CrearAlbumesViewModel(application: Application)
     private val albumDao =
         AppDatabase.getInstance(application).albumDao()
 
-    fun crearAlbum(nombre: String, observaciones: String?) {
+    fun crearAlbum(
+        nombre: String,
+        observaciones: String?,
+        onCreado: (Long) -> Unit
+    ) {
         viewModelScope.launch {
-            albumDao.insert(
+            val id = albumDao.insert(
                 AlbumEntity(
                     nombre = nombre,
                     observaciones = observaciones,
-                    estado = "BORRADOR"
+                    estado = EstadoAlbum.BORRADOR.name
                 )
             )
+            onCreado(id)
         }
     }
 }
+

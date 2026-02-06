@@ -56,12 +56,10 @@
         android:name="com.emanuel.mivivero.ui.albumes.CrearAlbumesFragment"
         android:label="Crear álbum">
 
-        <!-- preparada para etapa 2 -->
-        <!--
         <action
             android:id="@+id/action_crearAlbumesFragment_to_editarAlbumFragment"
             app:destination="@id/editarAlbumFragment" />
-        -->
+
     </fragment>
 
     <fragment
@@ -72,6 +70,10 @@
         <argument
             android:name="albumId"
             app:argType="long" />
+
+        <action
+            android:id="@+id/action_editarAlbumFragment_to_listaPlantasFragment"
+            app:destination="@id/listaPlantasFragment" />
     </fragment>
 
     <fragment

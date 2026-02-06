@@ -55,7 +55,7 @@ class AlbumesViewModel(application: Application)
                 AlbumEntity(
                     nombre = nombre,
                     observaciones = observaciones,
-                    estado = EstadoAlbum.BORRADOR
+                    estado = EstadoAlbum.BORRADOR.name
                 )
             )
         }

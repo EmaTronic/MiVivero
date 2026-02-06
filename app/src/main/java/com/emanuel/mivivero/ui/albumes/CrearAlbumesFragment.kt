@@ -36,11 +36,20 @@ class CrearAlbumesFragment : Fragment(R.layout.fragment_crear_albumes) {
                 return@setOnClickListener
             }
 
-            viewModel.crearAlbum(nombre, obs)
+            viewModel.crearAlbum(nombre, obs) { albumId ->
+                findNavController().navigate(
+                    R.id.action_crearAlbumesFragment_to_editarAlbumFragment,
+                    Bundle().apply {
+                        putLong("albumId", albumId)
+                    }
+                )
+            }
         }
     }
 
-    override fun onDestroyView() {
+
+
+        override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
