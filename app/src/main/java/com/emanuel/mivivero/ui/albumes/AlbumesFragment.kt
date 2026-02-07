@@ -34,20 +34,17 @@ class AlbumesFragment : Fragment(R.layout.fragment_albumes) {
     private fun observarAlbumes() {
         viewModel.albumes.observe(viewLifecycleOwner) { lista ->
             binding.recyclerAlbumes.adapter =
-                AlbumesAdapter(lista) { album ->
-                    // 🔜 Etapa 2 / Detalle
-                    Toast.makeText(
-                        requireContext(),
-                        "Álbum id=${album.id}",
-                        Toast.LENGTH_SHORT
-                    ).show()
 
-                    // futuro:
-                    // findNavController().navigate(
-                    //     AlbumesFragmentDirections
-                    //         .actionAlbumesFragmentToAlbumDetalleFragment(album.id)
-                    // )
+                AlbumesAdapter(lista) { album ->
+                    findNavController().navigate(
+                        R.id.albumDetalleFragment,
+                        Bundle().apply {
+                            putLong("albumId", album.id)
+                        }
+                    )
                 }
+
+
         }
     }
 

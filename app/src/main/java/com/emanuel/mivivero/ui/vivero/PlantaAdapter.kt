@@ -13,7 +13,10 @@ import com.emanuel.mivivero.R
 import com.emanuel.mivivero.data.model.Planta
 
 class PlantaAdapter(
-    private val plantas: List<Planta>
+    private val plantas: List<Planta>,
+    private val modoAgregarAlbum: Boolean = false,
+    private val onAgregarPlantaAlbum: ((Planta) -> Unit)?
+
 ) : RecyclerView.Adapter<PlantaAdapter.PlantaViewHolder>() {
 
     inner class PlantaViewHolder(itemView: View) :
@@ -65,13 +68,21 @@ class PlantaAdapter(
 
         // 👉 Navegar a detalle
         holder.itemView.setOnClickListener {
-            val bundle = Bundle().apply {
-                putLong("plantaId", planta.id)
-            }
 
-            it.findNavController()
-                .navigate(R.id.plantaDetalleFragment, bundle)
+            if (modoAgregarAlbum && onAgregarPlantaAlbum != null) {
+                // 👉 ESTÁS AGREGANDO PLANTA AL ÁLBUM
+                onAgregarPlantaAlbum.invoke(planta)
+            } else {
+                // 👉 COMPORTAMIENTO NORMAL (NO SE TOCA)
+                val bundle = Bundle().apply {
+                    putLong("plantaId", planta.id)
+                }
+
+                it.findNavController()
+                    .navigate(R.id.plantaDetalleFragment, bundle)
+            }
         }
+
     }
 
     override fun getItemCount(): Int = plantas.size

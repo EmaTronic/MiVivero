@@ -1,6 +1,7 @@
 package com.emanuel.mivivero.ui.albumes
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
@@ -14,20 +15,14 @@ import kotlinx.coroutines.launch
 class AlbumesViewModel(application: Application)
     : AndroidViewModel(application) {
 
-    // 🔥 BASE DE DATOS
     private val db = AppDatabase.getInstance(application)
-
-    // 🔥 DAOs NECESARIOS
+    private val albumDao = db.albumDao()
     private val albumPlantaDao = db.albumPlantaDao()
 
-    // 🔥 DAO
-    private val albumDao = db.albumDao()
-
-    // 🔥 ESTA PROPIEDAD TIENE QUE EXISTIR
     val albumes: LiveData<List<AlbumEntity>> =
         albumDao.getAlbumes()
 
-    // Id del álbum seleccionado
+    // 🔥 ESTE ES EL ESTADO QUE FALTABA SETEAR
     var albumActualId: Long? = null
 
     fun agregarPlantaAlAlbum(
@@ -35,9 +30,17 @@ class AlbumesViewModel(application: Application)
         cantidad: Int,
         precio: Double
     ) {
-        val albumId = albumActualId ?: return
+        val albumId = albumActualId ?: run {
+            Log.e("ALBUM_PLANTA", "albumActualId ES NULL")
+            return
+        }
 
         viewModelScope.launch {
+            Log.d(
+                "ALBUM_PLANTA",
+                "Insertando planta ${planta.id} en álbum $albumId"
+            )
+
             albumPlantaDao.insert(
                 AlbumPlantaEntity(
                     albumId = albumId,
@@ -60,6 +63,4 @@ class AlbumesViewModel(application: Application)
             )
         }
     }
-
-
 }

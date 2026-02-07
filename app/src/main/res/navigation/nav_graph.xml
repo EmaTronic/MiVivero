@@ -79,7 +79,15 @@
     <fragment
         android:id="@+id/albumDetalleFragment"
         android:name="com.emanuel.mivivero.ui.albumes.AlbumDetalleFragment"
-        android:label="Detalle del álbum" />
+        android:label="Detalle del álbum">
+    <argument
+        android:name="albumId"
+        app:argType="long" />
+
+    </fragment>
+
+
+
 
     <fragment
         android:id="@+id/albumesFragment"
@@ -91,6 +99,8 @@
             app:destination="@id/crearAlbumesFragment" />
 
     </fragment>
+
+
 
 
 </navigation>

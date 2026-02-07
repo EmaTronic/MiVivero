@@ -3,6 +3,7 @@ package com.emanuel.mivivero.data.local.dao
 import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.emanuel.mivivero.data.local.entity.PlantaEntity
+import com.emanuel.mivivero.data.model.Planta
 
 @Dao
 interface PlantaDao {
@@ -11,7 +12,8 @@ interface PlantaDao {
     suspend fun getAll(): List<PlantaEntity>
 
     @Query("SELECT * FROM plantas WHERE aLaVenta = 1")
-    fun obtenerPlantasParaAlbum(): LiveData<List<PlantaEntity>>
+    fun obtenerPlantasEnVenta(): LiveData<List<Planta>>
+
 
 
     // ✅ INSERTA ENTITY, NO MODEL

@@ -12,7 +12,7 @@ interface AlbumPlantaDao {
 
     @Query("""
         SELECT 
-            p.id AS idPlanta,
+            p.id AS plantaId,
             (p.familia || 
                 CASE 
                     WHEN p.especie IS NOT NULL THEN ' ' || p.especie 

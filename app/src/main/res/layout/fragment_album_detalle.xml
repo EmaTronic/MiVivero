@@ -1,15 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
-    android:orientation="vertical">
+    android:padding="16dp">
 
+    <!-- Nombre del álbum -->
     <TextView
-        android:id="@+id/txtMensaje"
-        android:layout_width="wrap_content"
+        android:id="@+id/txtNombreAlbum"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Planta agregada al álbum"
-        android:textSize="18sp"/>
+        android:text="Nombre del álbum"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:paddingBottom="4dp" />
+
+    <!-- Estado -->
+    <TextView
+        android:id="@+id/txtEstadoAlbum"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Estado del álbum"
+        android:textColor="#666666"
+        android:paddingBottom="12dp" />
+
+    <!-- Lista de plantas del álbum -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerPlantasAlbum"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
 </LinearLayout>
