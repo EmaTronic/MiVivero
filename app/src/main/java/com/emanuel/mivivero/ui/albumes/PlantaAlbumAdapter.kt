@@ -10,7 +10,7 @@ import com.emanuel.mivivero.databinding.ItemPlantaAlbumBinding
 
 class PlantasAlbumAdapter(
     private val items: List<PlantaAlbum>,
-    private val onClick: (PlantaAlbum) -> Unit
+    private val onItemClick: (PlantaAlbum) -> Unit
 ) : RecyclerView.Adapter<PlantasAlbumAdapter.VH>() {
 
     inner class VH(val b: ItemPlantaAlbumBinding) :
@@ -39,8 +39,9 @@ class PlantasAlbumAdapter(
             .centerCrop()
             .into(h.b.imgPlanta)
 
+        // 👉 UN SOLO CLICK
         h.b.root.setOnClickListener {
-            onClick(p)
+            onItemClick(p)
         }
     }
 

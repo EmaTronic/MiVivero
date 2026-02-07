@@ -30,16 +30,16 @@ class AlbumesViewModel(application: Application)
         cantidad: Int,
         precio: Double
     ) {
-        val albumId = albumActualId ?: run {
-            Log.e("ALBUM_PLANTA", "albumActualId ES NULL")
-            return
-        }
+        val albumId = albumActualId ?: return
 
         viewModelScope.launch {
-            Log.d(
-                "ALBUM_PLANTA",
-                "Insertando planta ${planta.id} en álbum $albumId"
-            )
+            val existe =
+                albumPlantaDao.existePlantaEnAlbum(albumId, planta.id) > 0
+
+            if (existe) {
+                // no insertamos
+                return@launch
+            }
 
             albumPlantaDao.insert(
                 AlbumPlantaEntity(
@@ -51,6 +51,7 @@ class AlbumesViewModel(application: Application)
             )
         }
     }
+
 
     fun crearAlbum(nombre: String, observaciones: String?) {
         viewModelScope.launch {

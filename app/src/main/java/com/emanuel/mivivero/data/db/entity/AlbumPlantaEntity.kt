@@ -7,6 +7,7 @@ import androidx.room.PrimaryKey
 
 @Entity(
     tableName = "album_planta",
+    primaryKeys = ["albumId", "plantaId"], // 🔥 CLAVE COMPUESTA
     foreignKeys = [
         ForeignKey(
             entity = AlbumEntity::class,
@@ -20,12 +21,9 @@ import androidx.room.PrimaryKey
             childColumns = ["plantaId"],
             onDelete = ForeignKey.CASCADE
         )
-    ],
-    indices = [Index("albumId"), Index("plantaId")]
+    ]
 )
 data class AlbumPlantaEntity(
-    @PrimaryKey(autoGenerate = true)
-    val id: Long = 0L,
     val albumId: Long,
     val plantaId: Long,
     val cantidad: Int,

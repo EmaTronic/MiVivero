@@ -31,4 +31,34 @@ class EditarAlbumViewModel(application: Application)
             )
         }
     }
+
+    fun eliminarPlantaDelAlbum(
+        albumId: Long,
+        plantaId: Long
+    ) {
+        viewModelScope.launch {
+            albumPlantaDao.eliminarPlantaDelAlbum(
+                albumId = albumId,
+                plantaId = plantaId
+            )
+        }
+    }
+
+    fun actualizarPlanta(
+        albumId: Long,
+        plantaId: Long,
+        cantidad: Int,
+        precio: Double
+    ) {
+        viewModelScope.launch {
+            albumPlantaDao.actualizarPlantaAlbum(
+                albumId = albumId,
+                plantaId = plantaId,
+                cantidad = cantidad,
+                precio = precio
+            )
+        }
+    }
+
+
 }

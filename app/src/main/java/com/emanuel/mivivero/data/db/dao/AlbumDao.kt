@@ -20,5 +20,16 @@ interface AlbumDao {
 
     @Query("UPDATE albumes SET estado = :estado WHERE id = :albumId")
     suspend fun actualizarEstado(albumId: Long, estado: String)
+
+    @Query("""
+    SELECT COUNT(*) 
+    FROM album_planta 
+    WHERE albumId = :albumId AND plantaId = :plantaId
+""")
+    suspend fun existePlantaEnAlbum(
+        albumId: Long,
+        plantaId: Long
+    ): Int
+
 }
 
