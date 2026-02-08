@@ -1,0 +1,919 @@
+{
+  "Succulent": {
+    "Adansonia": [
+      "digitata",
+      "madagascariense"
+    ],
+    "Adenia": [
+      "ellenbeckii",
+      "firingalavensis",
+      "glauca",
+      "globosa",
+      "isaloensis",
+      "olaboensis",
+      "pseudoglobosa",
+      "stylosa",
+      "subsessilifolia",
+      "venenata"
+    ],
+    "Adenium": [
+      "arabicum",
+      "multiflorum",
+      "obesum",
+      "somalense"
+    ],
+    "Aeonium": [
+      "aizoon",
+      "arboreum",
+      "aurea",
+      "balsamiferum",
+      "calderense",
+      "canariense",
+      "ciliatum",
+      "cuneatum",
+      "davidbramwellii",
+      "decorum",
+      "diplocycla",
+      "dodrentalis",
+      "haworthii",
+      "holochrysum",
+      "korneliuslemsii",
+      "lancerottense",
+      "lindleyi",
+      "longithyrsum",
+      "manriqueorum",
+      "nobile",
+      "palmense",
+      "percaneum",
+      "pseudourbicum",
+      "sedifolium",
+      "simsii",
+      "smithii",
+      "spatulatum",
+      "tabuliforme",
+      "undulatum",
+      "urbicum",
+      "volkeri",
+      "webbii"
+    ],
+    "Agave": [
+      "albopilosa",
+      "americana",
+      "angustifolia",
+      "applanata",
+      "asperrima",
+      "attenuata",
+      "cernua",
+      "chiapensis",
+      "chrysophylla",
+      "colimana",
+      "congesta",
+      "convallis",
+      "cupreata",
+      "dasylirioides",
+      "deserti",
+      "ellemeetiana",
+      "filifera",
+      "geminiflora",
+      "gentryi",
+      "guadalajarana",
+      "gypsophila",
+      "havardiana",
+      "horrida",
+      "karwinskiana",
+      "kerchovei",
+      "lechuguilla",
+      "leopoldii",
+      "lophantha",
+      "macroacantha",
+      "marmorata",
+      "maximilliana",
+      "mitis",
+      "montana",
+      "nickelsiae",
+      "nussaviorum",
+      "obscura",
+      "ocahui",
+      "oteroi",
+      "ovatifolia",
+      "parrasana",
+      "parryi",
+      "parviflora",
+      "pedunculifera",
+      "polyantiflora",
+      "potatorum",
+      "purpusorum",
+      "salmiana",
+      "scabra",
+      "seemanniana",
+      "stricta",
+      "utahensis",
+      "victoriae-reginae",
+      "xylanacantha"
+    ],
+    "Aichryson": [
+      "bethencourtianum",
+      "laxum",
+      "punctatum"
+    ],
+    "Albuca": [
+      "altissima",
+      "bracteata",
+      "concordiana",
+      "consanguinea",
+      "cooperi",
+      "corymbosa",
+      "gethyllioides",
+      "glandulosa",
+      "hallii",
+      "juncifolia",
+      "kirstenii",
+      "namaquensis",
+      "osmynella",
+      "polyphylla",
+      "psammophora",
+      "schoenlandii",
+      "secunda",
+      "spiralis",
+      "suaveolens",
+      "tortuosa",
+      "unifoliata",
+      "villosa",
+      "viscosa"
+    ],
+    "Aloe": [
+      "aculeata",
+      "acutissima",
+      "arborescens",
+      "aristata",
+      "ballyi",
+      "branddraaiensis",
+      "broomii",
+      "buhrii",
+      "bulbilifera",
+      "burgersfortensis",
+      "camperi",
+      "castanea",
+      "castilloniae",
+      "chabaudii",
+      "claasii",
+      "compressa",
+      "cooperi",
+      "cryptopoda",
+      "davyiana",
+      "dawei",
+      "deltoideodonta",
+      "descoingsii",
+      "dichotoma",
+      "elegans",
+      "excelsa",
+      "ferox",
+      "flexifoliata",
+      "flexilifolia",
+      "florenceae",
+      "gariepensis",
+      "gilbertii",
+      "globuligemma",
+      "grandidentata",
+      "greatheadii",
+      "hardyi",
+      "harlana",
+      "hereroensis",
+      "humilis",
+      "imalotensis",
+      "immaculata",
+      "kaokoensis",
+      "karasbergensis",
+      "lineata",
+      "litoralis",
+      "longistyla",
+      "maculata",
+      "manandonae",
+      "marlothii",
+      "maroclada",
+      "megalacantha",
+      "microstigma",
+      "mizimbana",
+      "monotropa",
+      "mutans",
+      "nahontsoy",
+      "officinalis",
+      "parvula",
+      "peglerae",
+      "perrieri",
+      "petricola",
+      "plicatilis",
+      "pluridens",
+      "polyphylla",
+      "pretoriensis",
+      "rabaiensis",
+      "rauhii",
+      "rivierei",
+      "rupestris",
+      "secundiflora",
+      "sinkatana",
+      "socotrina",
+      "speciosa",
+      "spectabilis",
+      "spicata",
+      "spinosissima",
+      "striata",
+      "succotrina",
+      "tenuior",
+      "thraskii",
+      "turkanensis",
+      "ukambensis",
+      "vanbalenii",
+      "vaombe",
+      "variegata",
+      "volkensii"
+    ],
+    "Apodanthhera": [
+      "aspera"
+    ],
+    "Asclepias": [
+      "fruticosa"
+    ],
+    "Astroloba": [
+      "congesta"
+    ],
+    "Avonia": [
+      "albissima",
+      "arachnoides",
+      "baeseckei",
+      "dinteri",
+      "filamentosa",
+      "gracilis",
+      "lanceolata",
+      "lancifolia",
+      "lanigera",
+      "meyeri",
+      "miniatura",
+      "namaquensis",
+      "papyracea",
+      "pisina",
+      "retusa",
+      "rufescens",
+      "telephiastrum",
+      "vanthielii"
+    ],
+    "Baijania": [
+      "yunnanensis"
+    ],
+    "Beaucarnea": [
+      "gracilis",
+      "stricta"
+    ],
+    "Bilbergia": [
+      "oaxacana",
+      "rosea"
+    ],
+    "Bombax": [
+      "rodognaphalon"
+    ],
+    "Boscia": [
+      "mossambicensis"
+    ],
+    "Bowiea": [
+      "volubilis"
+    ],
+    "Bulbine": [
+      "alooides",
+      "alveolata",
+      "asphodeloides",
+      "brunsviglaefolia",
+      "diphylla",
+      "fallax",
+      "foleyi",
+      "frutescens",
+      "fruticosa",
+      "hallii",
+      "haworthioides",
+      "inamarxiae",
+      "lamprophylla",
+      "latifolia",
+      "margarethae",
+      "mesembryanthemoides",
+      "natalensis",
+      "praemosa",
+      "rhopalophylla",
+      "spongiosa",
+      "succulenta",
+      "suurbergensis",
+      "triebneri",
+      "wiesei"
+    ],
+    "Bursera": [
+      "fagaroides"
+    ],
+    "Calandrinia": [
+      "ciliata",
+      "compressa",
+      "grandiflora"
+    ],
+    "Calandrinia-Montiopsis": [
+      "umbellata"
+    ],
+    "Caralluma": [
+      "acutangula"
+    ],
+    "Ceiba": [
+      "pentandra"
+    ],
+    "Ceropegia": [
+      "variegata",
+      "woodii"
+    ],
+    "Chiastophyllum": [
+      "oppositifolium"
+    ],
+    "Cissus": [
+      "aphyllantha"
+    ],
+    "Cissus-Cyphostemma": [
+      "juttae"
+    ],
+    "Commiphora": [
+      "africana",
+      "baluensis",
+      "brevicalyx",
+      "bruceae",
+      "campestris",
+      "ciliata",
+      "confusa",
+      "edulis",
+      "franciscana",
+      "holtziana",
+      "humbertii",
+      "incisa",
+      "kua",
+      "lindensis",
+      "longipeduncellata",
+      "mafaidoha",
+      "mildbraedtii",
+      "monstruosa",
+      "oblongifolia",
+      "orbicularis",
+      "pervilleana",
+      "pseudopaoli",
+      "pteleifolia",
+      "rostrata",
+      "schimperi",
+      "unilobata"
+    ],
+    "Cotyledon": [
+      "campanulata",
+      "cuneata",
+      "orbiculata"
+    ],
+    "Crassothonna": [
+      "sparsiflora"
+    ],
+    "Crassula": [
+      "arborescens",
+      "ausensis",
+      "barbata",
+      "columnaris",
+      "cultrata",
+      "dejecta",
+      "falcata",
+      "mesembryanthemopsis",
+      "multicava",
+      "multiflora",
+      "nudicaulis",
+      "obvallata",
+      "perfoliata",
+      "portulacea",
+      "rubricaulis",
+      "southii",
+      "tetragona",
+      "tillaea"
+    ],
+    "Croton": [
+      "socotranum"
+    ],
+    "Cucumis": [
+      "ficifolius"
+    ],
+    "Cussonia": [
+      "arborea",
+      "holstii"
+    ],
+    "Cyclamen": [
+      "alpinum",
+      "balearicum",
+      "coum",
+      "cyprium",
+      "graecum",
+      "hederifolium",
+      "intaminatum",
+      "libanoticum",
+      "purpurascens",
+      "repandum"
+    ],
+    "Cyclantheropsis": [
+      "parviflora"
+    ],
+    "Cyphostemma": [
+      "adenocaule",
+      "elephantopus",
+      "laza",
+      "mappia",
+      "pachypus",
+      "sakalavensis"
+    ],
+    "Cyrtanthus": [
+      "brachysiphon"
+    ],
+    "Dasylirion": [
+      "acrotrichum",
+      "berlandieri",
+      "cedrosanum",
+      "gentryi",
+      "glaucophyllum",
+      "leiophyllum",
+      "longissimum",
+      "lucidum",
+      "quadrangulatum",
+      "sereke",
+      "texanum",
+      "wheeleri"
+    ],
+    "Dermatobotrys": [
+      "saundersii"
+    ],
+    "Deuterocohnia": [
+      "lanata",
+      "longipetala",
+      "schreiteri"
+    ],
+    "Dichrostachys": [
+      "cinerea"
+    ],
+    "Dietes": [
+      "grandiflora"
+    ],
+    "Dioscorea": [
+      "bulbifera",
+      "elephantipes",
+      "mexicana"
+    ],
+    "Dipcadi": [
+      "crispum"
+    ],
+    "Dorstenia": [
+      "barnimiana",
+      "contrajerva",
+      "crispa",
+      "cuspidata",
+      "foetida",
+      "gigas",
+      "hildebrandtii",
+      "horwoodii"
+    ],
+    "Dracaena": [
+      "arborea",
+      "draco",
+      "ellenbeckii",
+      "indivisia"
+    ],
+    "Dracunculus": [
+      "vulgaris"
+    ],
+    "Drimia": [
+      "arenicola",
+      "convallarioides",
+      "cremnophylla",
+      "haworthioides",
+      "karooica",
+      "uniflora"
+    ],
+    "Dudleya": [
+      "acuminata",
+      "brittonii",
+      "candida",
+      "edulis",
+      "lanceolata",
+      "pauciflora",
+      "pulverulenta"
+    ],
+    "Dyckia": [
+      "delicata",
+      "goiana",
+      "marnier-lapostolei",
+      "velascana"
+    ],
+  "Echeveria": [
+    "affinis",
+    "agavoides",
+    "amoena",
+    "amphoralis",
+    "aurantiaca",
+    "bicolor",
+    "bifida",
+    "brachetii",
+    "caamanoi",
+    "calderoniae",
+    "calycosa",
+    "canaliculata",
+    "cante",
+    "carminea",
+    "carnicolor",
+    "cerrograndensis",
+    "chapalensis",
+    "chihuahuaensis",
+    "coccinea",
+    "colorata",
+    "craigiana",
+    "cristallina",
+    "cuspidata",
+    "dactylifera",
+    "derenbergii",
+    "desmetiana",
+    "diffractens",
+    "elegans",
+    "fimbriata",
+    "fulgens",
+    "gibbiflora",
+    "gigantea",
+    "gracilis",
+    "guerrerensis",
+    "halbingeri",
+    "heterosepala",
+    "humilis",
+    "hyalina",
+    "juliana",
+    "kesselringiana",
+    "kristenii",
+    "laui",
+    "lilacina",
+    "longissima",
+    "lutea",
+    "lyonsii",
+    "macdougallii",
+    "magnifica",
+    "marianae",
+    "michihuacana",
+    "minima",
+    "miquelitensis",
+    "montana",
+    "moranii",
+    "mucronata",
+    "multicaulis",
+    "nodulosa",
+    "novogaliciana",
+    "nuda",
+    "nuyooensis",
+    "olivacea"
+  ],
+    "Echium": [
+      "callithyrsum",
+      "candicans",
+      "decaisnei",
+      "nervosum",
+      "simplex",
+      "virescens",
+      "webbii",
+      "wildprettii"
+    ],
+    "Edithcolea": [
+      "grandis"
+    ],
+    "Entada": [
+      "leptostachya"
+    ],
+    "Erodium": [
+      "trifolium"
+    ],
+    "Erythrina": [
+      "melanacantha"
+    ],
+    "Euphorbia": [
+      "antso",
+      "atropurpurea",
+      "balsamifera",
+      "breviarticulata",
+      "caducifolia",
+      "canariensis",
+      "cooperi",
+      "curvirama",
+      "enopla",
+      "ferox",
+      "gorgonis",
+      "grandicornis",
+      "grandidens",
+      "handiensis",
+      "hislopii",
+      "horrida",
+      "inconstantia",
+      "inermis",
+      "longituberculosa",
+      "meloformis",
+      "obesa",
+      "parciramulosa"
+    ],
+  "Fockea": [
+    "edulis",
+    "multiflora"
+  ],
+  "Fouquieria": [
+    "columnaris",
+    "splendens"
+  ],
+  "Gasteria": [
+    "acinacifolia",
+    "armstrongii",
+    "glomerata",
+    "verrucosa",
+    "vlockii"
+  ],
+  "Gentiana": [
+    "asclepiadea",
+    "crassicaulis"
+  ],
+  "Gerrardanthus": [
+    "macrorrhizus"
+  ],
+  "Gonolobus": [
+    "cyclophyllus"
+  ],
+  "Grahamia": [
+    "coahuilense"
+  ],
+  "Graptopetalum": [
+    "amethystinum",
+    "bellum",
+    "fruticosum",
+    "macdougallii",
+    "marginatum",
+    "mendozae"
+  ],
+  "Ipomoea": [
+    "lapidosa",
+    "pubescens",
+    "purpurea",
+    "quamoclit",
+    "tricolor"
+  ],
+  "Jatropha": [
+    "curcas",
+    "dichtar",
+    "fissispina",
+    "gossypifolia",
+    "podagrica",
+    "unicostata"
+  ],
+  "Kalanchoe": [
+    "beharensis",
+    "blossfeldiana",
+    "delagoensis",
+    "faustii",
+    "figuereidoi",
+    "glaucescens",
+    "grandiflora",
+    "humilis",
+    "luciae",
+    "prittwitzii",
+    "pumila",
+    "rotundifolia",
+    "sexangularis",
+    "tomentosa",
+    "tubiflora"
+  ],
+  "Kedrostis": [
+    "africana",
+    "gijef",
+    "hirtella",
+    "mildbraedii"
+  ],
+  "Lannea": [
+    "elata",
+    "greenwayi",
+    "schweinfurthii"
+  ],
+  "Lenophyllum": [
+    "guttatum"
+  ],
+  "Mandragora": [
+    "officinarum"
+  ],
+  "Manfreda": [
+    "maculosa"
+  ],
+  "Massonia": [
+    "bifolia",
+    "bredasdorpensis",
+    "depressa",
+    "echinata",
+    "grandiflora",
+    "hirsuta",
+    "longipes",
+    "obermeyerae",
+    "obovata",
+    "pseudoechinata"
+  ],
+  "Neorautenia": [
+    "mitis"
+  ],
+  "Nolina": [
+    "bigelovii",
+    "breviflora",
+    "caespitifera",
+    "hibernica",
+    "microcarpa",
+    "nelsonii",
+    "recurvata",
+    "texana",
+    "whipplei"
+  ],
+  "Operculicarya": [
+    "decaryi",
+    "hyphaenoides",
+    "multijuga",
+    "pachypus"
+  ],
+  "Orbea": [
+    "variegata"
+  ],
+  "Orostachys": [
+    "japonicus",
+    "fimbriata"
+  ],
+  "Othonna": [
+    "cakilefolia",
+    "clavifolia",
+    "herrei",
+    "lilacina",
+    "quercifolia",
+    "triplinervia"
+  ],
+  "Ozoroa": [
+    "obovata"
+  ],
+  "Pachyphytum": [
+    "brachetii",
+    "bracteosum",
+    "brevifolium",
+    "caesium",
+    "coeruleum",
+    "compactum",
+    "confusum",
+    "contrerasii",
+    "cuicatecanum",
+    "fittkauii",
+    "garciae",
+    "glutinicaule",
+    "hookeri",
+    "huastecanum",
+    "kimnachii",
+    "longifolium",
+    "machucae",
+    "oviferum",
+    "rogeliocardenasii",
+    "rzedowskii",
+    "saltense",
+    "viride",
+    "viscidum",
+    "werdermannii"
+  ],
+  "Pachypodium": [
+    "baronii",
+    "bispinosum",
+    "brevicaule",
+    "cactipes",
+    "densiflorum",
+    "fiherense",
+    "geayi",
+    "horombense",
+    "lamerei",
+    "mikea",
+    "namaquanum",
+    "rosulatum"
+  ],
+  "Rhodiola": [
+    "crassipes",
+    "jemenowii",
+    "kirilowii",
+    "recticaulis",
+    "rosea"
+  ],
+  "Romulea": [
+    "columnae"
+  ],
+  "Rosularia": [
+    "elymaitica",
+    "serrata"
+  ],
+  "Sarcostemma": [
+    "viminale"
+  ],
+  "Sedum": [
+    "adolphii",
+    "aizoon",
+    "album",
+    "alexanderi",
+    "allantoides",
+    "anacampseros",
+    "cepaea",
+    "confusum",
+    "copalense",
+    "corynephyllum",
+    "craigii",
+    "dendroideum",
+    "ebracteatum",
+    "floriferum",
+    "furfuraceum",
+    "goldmanii",
+    "griseum",
+    "gypsophilum",
+    "hemsleyanum",
+    "humifusum",
+    "hybridum",
+    "jurgensenii",
+    "kamtschaticum",
+    "litoreum",
+    "longipes",
+    "lucidum",
+    "maximum",
+    "mellitulum",
+    "mocinianum",
+    "montanum",
+    "moranense",
+    "orbatum",
+    "pachyphyllum"
+  ],
+  "Secamone": [
+    "madagaskar"
+  ],
+  "Sinningia": [
+    "agregata",
+    "allagophylla",
+    "bulbosa",
+    "bullata",
+    "cardinalis",
+    "conspicua",
+    "douglasii",
+    "eumorpha",
+    "gesneriifolia",
+    "iarae",
+    "leucotricha",
+    "lineata",
+    "macrostachya",
+    "magnifica",
+    "piresiana",
+    "reitzii",
+    "rupicola",
+    "sellovii",
+    "speciosa",
+    "tubiflora",
+    "werdermannii"
+  ],
+  "Sinocrassula": [
+    "yunnanensis"
+  ],
+  "Stapelia": [
+    "gigantea"
+  ],
+  "Strophanthus": [
+    "gratus"
+  ],
+  "Talinum": [
+    "caffrum",
+    "calycinum",
+    "cuneifolium",
+    "grandiflorum",
+    "napiforme",
+    "paniculatum",
+    "patens",
+    "portulacifolium",
+    "teretifolium"
+  ],
+  "Terminalia": [
+    "orbicularis"
+  ],
+  "Thompsonella": [
+    "garcia-mendozae",
+    "mixtecorum"
+  ],
+  "Tillandsia": [
+    "belloensis",
+    "cretacea",
+    "gymnobotrya",
+    "ionantha",
+    "makoyama",
+    "takizawae",
+    "zaragoazensis"
+  ],
+  "Tylecodon": [
+    "bruynsii",
+    "grandiflora",
+    "paniculatus",
+    "racemosus",
+    "reticulata",
+    "singularis"
+  ]
+}
+
+}
+
+

@@ -6,6 +6,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
@@ -18,6 +19,8 @@ import com.emanuel.mivivero.data.model.Planta
 import com.emanuel.mivivero.databinding.FragmentCrearPlantaBinding
 import com.emanuel.mivivero.ui.viewmodel.ViveroViewModel
 import java.io.File
+import com.emanuel.mivivero.utils.cargarCatalogo
+
 
 class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
 
@@ -28,6 +31,30 @@ class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
 
     private var plantaId: Long = -1L
     private var fotoUri: Uri? = null
+
+    /*======================
+    Catalogo
+    =======================
+     */
+
+    private lateinit var catalogoFinal:
+            Map<String, Map<String, List<String>>>
+
+
+    /*
+    private lateinit var catalogoCactus:
+            Map<String, Map<String, List<String>>>
+
+    private lateinit var catalogoSuculentas:
+            Map<String, Map<String, List<String>>>
+*/
+
+    /*====================
+        catalogo
+     =======================*/
+
+
+
 
     /* =====================
        PERMISO CÁMARA
@@ -81,6 +108,7 @@ class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
             }
         }
 
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -95,6 +123,98 @@ class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
 
         binding.root.isFocusableInTouchMode = true
         binding.root.requestFocus()
+
+
+        /* ====================
+             CATÁLOGOS
+             ==================== */
+
+        val catalogoCactus =
+            cargarCatalogo(requireContext(), "catalogo_kakteen.json")
+
+        val catalogoSuculentas =
+            cargarCatalogo(requireContext(), "catalogo_suculentas.json")
+
+        val catalogoMesemby =
+            cargarCatalogo(requireContext(), "catalogo_mesembry.json")
+
+        val catalogoVarias =
+            cargarCatalogo(requireContext(), "catalogo_topf.json")
+
+        // 👉 CATÁLOGO FINAL (UNIFICADO)
+        val catalogoFinal = unirCatalogos(
+            catalogoCactus,
+            catalogoSuculentas,
+            catalogoMesemby,
+            catalogoVarias
+        )
+
+        /* ====================
+           AUTOCOMPLETE
+           ==================== */
+
+        // ===== FAMILIAS =====
+        val familias = catalogoFinal.keys.toList()
+
+        binding.actFamilia.setAdapter(
+            ArrayAdapter(
+                requireContext(),
+                android.R.layout.simple_dropdown_item_1line,
+                familias
+            )
+        )
+
+        binding.actFamilia.setOnClickListener {
+            binding.actFamilia.showDropDown()
+        }
+
+        // ===== CUANDO SE ELIGE FAMILIA =====
+        binding.actFamilia.setOnItemClickListener { _, _, _, _ ->
+            val familia = binding.actFamilia.text.toString()
+
+            val generos =
+                catalogoFinal[familia]?.keys?.toList() ?: emptyList()
+
+            binding.etFamilia.setAdapter(
+                ArrayAdapter(
+                    requireContext(),
+                    android.R.layout.simple_dropdown_item_1line,
+                    generos
+                )
+            )
+
+            binding.etFamilia.text.clear()
+            binding.etEspecie.text.clear()
+        }
+
+
+        // ===== CUANDO SE ELIGE GÉNERO =====
+        binding.etFamilia.setOnItemClickListener { _, _, _, _ ->
+            val familia = binding.actFamilia.text.toString()
+            val genero = binding.etFamilia.text.toString()
+
+            val especies =
+                catalogoFinal[familia]?.get(genero) ?: emptyList()
+
+            binding.etEspecie.setAdapter(
+                ArrayAdapter(
+                    requireContext(),
+                    android.R.layout.simple_dropdown_item_1line,
+                    especies
+                )
+            )
+
+            binding.etEspecie.showDropDown()
+        }
+
+
+
+
+
+
+
+
+
 
         /* =====================
            MODO EDICIÓN
@@ -236,6 +356,34 @@ class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
 
         return Uri.fromFile(archivo)
     }
+
+    private fun unirCatalogos(
+        vararg catalogos: Map<String, Map<String, List<String>>>
+    ): Map<String, Map<String, List<String>>> {
+
+        val resultado = mutableMapOf<String, MutableMap<String, MutableSet<String>>>()
+
+        catalogos.forEach { catalogo ->
+            catalogo.forEach { (familia, generos) ->
+                val generosResultado =
+                    resultado.getOrPut(familia) { mutableMapOf() }
+
+                generos.forEach { (genero, especies) ->
+                    val especiesResultado =
+                        generosResultado.getOrPut(genero) { mutableSetOf() }
+
+                    especiesResultado.addAll(especies)
+                }
+            }
+        }
+
+        return resultado.mapValues { (_, generos) ->
+            generos.mapValues { (_, especies) ->
+                especies.sorted()
+            }
+        }
+    }
+
 
     override fun onDestroyView() {
         super.onDestroyView()

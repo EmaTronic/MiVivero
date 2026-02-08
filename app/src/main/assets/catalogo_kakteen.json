@@ -1,0 +1,719 @@
+{
+  "Cactaceae": {
+  "Acanthocalycium": [
+    "australis",
+    "brevispinum",
+    "catamarcense",
+    "erythranthum",
+    "ferrarii",
+    "glaucum",
+    "klimpelianum",
+    "minutum",
+    "peitscherianum",
+    "rhodotrichum",
+    "spiniflorum",
+    "thionanthum",
+    "variiflorum",
+    "violaceum"
+  ],
+  "Akersia": [
+    "roseiflora"
+  ],
+  "Ancistrocactus": [
+    "megarhizus",
+    "pinkavanus",
+    "scheerii",
+    "tobuschii"
+  ],
+  "Aporocactus": [],
+  "Ariocarpus": [
+    "agavoides",
+    "bravoanus",
+    "confusus",
+    "fissuratus",
+    "furfuraceus",
+    "intermedius",
+    "kotschoubeyanus",
+    "lloydii",
+    "retusus",
+    "scapharostrus",
+    "trigonus"
+  ],
+  "Armatocereus": [
+    "laetus",
+    "mataralensis"
+  ],
+  "Arrojadoa": [
+    "aureispina",
+    "heimenii",
+    "horstiana",
+    "marylanae",
+    "multiflora",
+    "nana",
+    "penicillata",
+    "reflexa",
+    "rhodantha"
+  ],
+  "Arthrocereus": [
+    "rondonianus"
+  ],
+  "Astrophytum": [
+    "asterias",
+    "capricorne",
+    "coahuilense",
+    "crassispinoides",
+    "crassispinum",
+    "myriostigma",
+    "niveum",
+    "ornatum",
+    "sanjuanensis",
+    "senile"
+  ],
+  "Austrocactus": [
+    "bertinii",
+    "ferrarii",
+    "hibernicus",
+    "patagonicus",
+    "philippii"
+  ],
+  "Austrocephalocereus": [
+    "dybowskii",
+    "purpureus"
+  ],
+  "Austrocylindropuntia": [
+    "humahuacana",
+    "weingartiana"
+  ],
+  "Aylostera": [
+    "albiareolata",
+    "albiflora",
+    "albipilosa",
+    "albopectinata",
+    "archibuiningiana",
+    "atrovirens",
+    "azurduyensis",
+    "brunescens",
+    "buiningiana",
+    "cajasensis",
+    "carminatiflora",
+    "cyanensis",
+    "decrescens",
+    "deminuta",
+    "einsteinii",
+    "fabrisii",
+    "fiebrigii",
+    "flavistyla",
+    "fulviseta",
+    "fusca",
+    "graciliflora",
+    "haagei",
+    "heliosa",
+    "hoffmannii",
+    "kieslingii",
+    "kupperiana",
+    "leucanthema",
+    "mamillosa",
+    "mandingaensis",
+    "muscula",
+    "narvaecensis",
+    "nigricans",
+    "nitida",
+    "nogalesensis",
+    "perplexa",
+    "pseudodeminuta",
+    "pseudominuscula",
+    "pulvinosa",
+    "pygmaea",
+    "robustispina",
+    "sanguinea",
+    "simoniana",
+    "spegazziniana",
+    "spinosissima",
+    "steinmannii",
+    "tuberosa",
+    "vulpina",
+    "walteri"
+  ],
+  "Aztekium": [
+    "hintonii",
+    "ritteri"
+  ],
+  "Azureocereus": [
+    "hertlingianus",
+    "viridis"
+  ],
+  "Blossfeldia": [
+    "carrizalensis",
+    "cyathiformis",
+    "fechseri",
+    "grandiflora",
+    "liliputana",
+    "pedicellata",
+    "subterranea",
+    "tarabucoensis"
+  ],
+  "Bolivicereus": [
+    "samaipatanus"
+  ],
+  "Borzicactus": [
+    "hutschinsonii"
+  ],
+  "Brasilicactus": [
+    "graessneri",
+    "haselbergii"
+  ],
+  "Buiningia": [
+    "brevicylindrica"
+  ],
+  "Carnegiea": [
+    "gigantea"
+  ],
+  "Castellanosia": [
+    "caineana"
+  ],
+  "Cephalocereus": [
+    "senilis"
+  ],
+  "Cereus": [
+    "bicolor",
+    "forbesii",
+    "mirabella",
+    "peruvianus"
+  ],
+  "Chamaecereus": [
+    "silvestrii"
+  ],
+  "Chiapasia": [
+    "nelsonii"
+  ],
+  "Cintia": [
+    "knizei"
+  ],
+  "Cleistocactus": [
+    "baumannii",
+    "bruneispinus",
+    "ianthinus",
+    "ipotanus",
+    "jujuyensis",
+    "luribayensis",
+    "margaretanus",
+    "morawetzianus",
+    "smaragdiflorus",
+    "strausii",
+    "tarijensis",
+    "variispinus",
+    "vulpis-cauda"
+  ],
+  "Clistanthocereus": [
+    "hoffmannianus",
+    "tessellatus"
+  ],
+  "Cochemiea": [
+    "halei",
+    "maritima",
+    "pondii",
+    "poselgeri",
+    "setispina"
+  ],
+  "Coleocephalocereus": [
+    "goebelianus"
+  ],
+  "Copiapoa": [
+    "alticostata",
+    "atacamensis",
+    "baderi",
+    "bridgesii",
+    "calderana",
+    "carizalensis",
+    "cinerea",
+    "columna-alba",
+    "coquimbana",
+    "corralensis",
+    "cupreata",
+    "dealbata",
+    "echinoides",
+    "echinus",
+    "eremophila",
+    "esmeraldana",
+    "ferox",
+    "fiedleriana",
+    "gigantea",
+    "goldii",
+    "grandiflora",
+    "griseoviolacea",
+    "haseltoniana",
+    "hornilloensis",
+    "humilis",
+    "hypogaea",
+    "krainziana",
+    "laui",
+    "leonensis",
+    "longistaminea",
+    "marginata",
+    "maritima",
+    "megarhiza",
+    "paposoensis",
+    "pendulina",
+    "pepiniana",
+    "sarcoana",
+    "schulziana",
+    "tenuissima",
+    "tocopilana",
+    "vallenarensis"
+  ],
+  "Corryocactus": [
+    "urmiriensis"
+  ],
+  "Coryphantha": [
+    "ancistracantha",
+    "bermalensis",
+    "boehmei",
+    "calipensis",
+    "clavata",
+    "compacta",
+    "cornifera",
+    "delaetiana",
+    "delicata",
+    "difficilis",
+    "durangensis",
+    "echinoidea",
+    "echinus",
+    "elephantidens",
+    "georgii",
+    "glanduligera",
+    "glassii",
+    "greenwoodii",
+    "hintoniorum",
+    "impexicoma",
+    "kraciki",
+    "lauii",
+    "macromeris",
+    "magentae",
+    "maiz-tablensis",
+    "melleospina",
+    "neclecta",
+    "nickelsiae",
+    "ottonis",
+    "pallida",
+    "palmeri",
+    "pannarottoi",
+    "poselgeriana",
+    "potosina",
+    "pseudoechinus",
+    "pseudonickelsae",
+    "pulleineana",
+    "pycnacantha",
+    "radians",
+    "ramillosa",
+    "retusa",
+    "runjonii",
+    "salinensis",
+    "salm-dyckiana",
+    "scheerii",
+    "schwarziana",
+    "sulcata",
+    "sunderlandi",
+    "tripugionacantha",
+    "vaupeliana",
+    "vivipara",
+    "vogtherriana",
+    "werdermanniana",
+    "wohlschlageri"
+  ],
+  "Cremnocereus": [
+    "albipilosus"
+  ],
+  "Cylindropuntia": [
+    "imbricata",
+    "miguelii",
+    "spinosior"
+  ],
+  "Denmoza": [
+    "rhodacantha"
+  ],
+  "Discocactus": [
+    "bahiensis",
+    "catingicola",
+    "flavispinus",
+    "gracilis",
+    "hartmannii",
+    "heptacanthus",
+    "horstii",
+    "horstiorum",
+    "magnimammus",
+    "nigriseatosus",
+    "pachythele",
+    "piauensis",
+    "pugionacanthus",
+    "rapirhizus",
+    "semicampaniflorus",
+    "silicicola",
+    "spinosior",
+    "subviridigriseus",
+    "woutersianus",
+    "zehntneri"
+  ],
+  "Disocactus": [
+    "biformis"
+  ],
+  "Dolichothele": [
+    "albescens",
+    "balsasoides",
+    "baumii",
+    "camptotricha",
+    "decipiens",
+    "longimamma",
+    "longithele",
+    "marnier-lapostollei",
+    "paulii",
+    "sphaerica",
+    "surculosa",
+    "uberiformis",
+    "zephyranthoides"
+  ],
+  "Echinocactus": [
+    "grandis",
+    "grusonii",
+    "horizonthalonius",
+    "ingens",
+    "parryi",
+    "platyacanthus",
+    "visnaga"
+  ],
+  "Echinocereus": [
+    "acifer",
+    "adustus",
+    "aguirrii",
+    "amoenus",
+    "apachensis",
+    "armatus",
+    "baileyi",
+    "blanckii",
+    "bonatzii",
+    "bonkerae",
+    "boyce-thompsonii",
+    "brandegeei",
+    "bristolii",
+    "caespitosus",
+    "carmenensis",
+    "chisoensis",
+    "chloranthus",
+    "cinerascens",
+    "coccineus",
+    "conglomeratus",
+    "ctenoides",
+    "cucumis",
+    "dasyacanthus",
+    "davisii",
+    "delaetii",
+    "dubius",
+    "durangensis",
+    "engelmannii",
+    "enneacanthus",
+    "fendleri"
+  ],
+  "Echinocereus": [
+    "fitchii",
+    "gentryi",
+    "gummosus",
+    "knippelianus",
+    "laui",
+    "lediglichii",
+    "maritimus",
+    "moranensis",
+    "pectinatus",
+    "polyacanthus",
+    "poselgeri",
+    "reichenbachii",
+    "rigidissimus",
+    "rubispinus",
+    "russanthus",
+    "scheeri",
+    "schoedingeri",
+    "stramineus",
+    "subinermis",
+    "triglochidiatus",
+    "viridiflorus"
+  ],
+  "Echinomastus": [
+    "intertextus",
+    "johnsonii",
+    "unguispinus"
+  ],
+  "Epithelantha": [
+    "bokei",
+    "micromeris"
+  ],
+  "Escobaria": [
+    "chaffeyi",
+    "dasacantha",
+    "deserti",
+    "missouriensis",
+    "robbinsorum",
+    "sneedii",
+    "tuberculosa",
+    "vivipara"
+  ],
+  "Espostoa": [
+    "lanata"
+  ],
+  "Eulychnia": [
+    "acida",
+    "breviflora",
+    "castanea",
+    "saint-pieana"
+  ],
+  "Ferocactus": [
+    "acanthodes",
+    "chrysacanthus",
+    "cylindraceus",
+    "digetii",
+    "emoryi",
+    "fordii",
+    "glaucescens",
+    "gracilis",
+    "hamatacanthus",
+    "histrix",
+    "horridus",
+    "latispinus",
+    "peninsularis",
+    "piliferus",
+    "pottsii",
+    "rectispinus",
+    "robustus",
+    "schwarzii",
+    "stainesii",
+    "viridescens",
+    "wislizeni"
+  ],
+  "Ficus": [
+    "petiolaris"
+  ],
+  "Frailea": [
+    "castanea",
+    "cataphracta",
+    "grahliana",
+    "magnifica",
+    "pygmaea"
+  ],
+  "Gymnocalycium": [
+    "achirasense",
+    "alboareolatum",
+    "altagraciense",
+    "ambatoense",
+    "amerhauseri",
+    "andreae",
+    "armatrum",
+    "asterium",
+    "baldianum",
+    "bayrianum",
+    "berchtii",
+    "bicolor",
+    "boszingianum",
+    "brachypetalum",
+    "bruchii",
+    "cabreraense",
+    "calochlorum",
+    "capillaense",
+    "cardenasianum",
+    "carminanthum",
+    "castellanosii",
+    "chiquitanum",
+    "chubutense",
+    "comarapense",
+    "curvispinum",
+    "damsii",
+    "denudatum",
+    "erinaceum",
+    "esperanza",
+    "eurypleurum",
+    "eythianum",
+    "ferrari",
+    "fleischerianum",
+    "genseri",
+    "gibbosum",
+    "glaucum",
+    "hamatum",
+    "hammerschmidii",
+    "henisii",
+    "heuschkelianum",
+    "horridispinum",
+    "horstii",
+    "hossei",
+    "hybopleurum",
+    "intermedium",
+    "izozogsii",
+    "joosenianum",
+    "kieslingii",
+    "kozelskyanum",
+    "kroenleinii",
+    "lafaldense",
+    "lagunillasense",
+    "leeanum",
+    "marquezii",
+    "marsoneri",
+    "mazanense",
+    "maznetteri",
+    "megalothelos",
+    "michoga",
+    "mihanovichii",
+    "millaresii",
+    "monvillei",
+    "moserianum",
+    "mostii",
+    "multiflorum",
+    "nataliae",
+    "neuhuberi",
+    "nidulans",
+    "nigriareolatum",
+    "obductum",
+    "occultum",
+    "oenanthemum",
+    "parvulum",
+    "pflanzii",
+    "poeschlii",
+    "ponomarevae",
+    "pugionacanthum",
+    "pungens",
+    "quehlianum",
+    "ragonesii",
+    "riograndensis",
+    "riojense",
+    "ritterianum",
+    "rosanthemum",
+    "saglione",
+    "schatzlianum",
+    "schmidianum",
+    "schroederianum",
+    "schuetzianum",
+    "sigelianum",
+    "sindae",
+    "spegazzinii",
+    "stellatum",
+    "striglianum",
+    "stuckertii",
+    "sutterianum",
+    "taningaense",
+    "tillianum",
+    "tobuschianum",
+    "uebelmannianum",
+    "uruguayense",
+    "valnicekianum",
+    "vatteri",
+    "vieditzianum",
+    "weissianum",
+    "zegarrae"
+  ],
+  "Haageocereus": [
+    "aureispinus",
+    "cantaensis",
+    "chosicensis",
+    "chrysacanthus",
+    "divaricatispinus",
+    "olowinskyanus",
+    "pectinatus",
+    "pseudoacranthus",
+    "pseudomelanostele",
+    "salmonoides",
+    "setosus",
+    "versicolor",
+    "zonatus"
+  ],
+  "Hamatocactus": [
+    "hamatacanthus",
+    "setispinus"
+  ],
+  "Mammillaria": [
+    "elongata",
+    "vagaspina",
+    "vallensis",
+    "verhaertiana",
+    "verticealba",
+    "viereckii",
+    "viescensis",
+    "voburnensis",
+    "vosilaculeata",
+    "wagneriana",
+    "werdermannii",
+    "wilcoxii",
+    "wildii",
+    "winteri",
+    "wohlsschlageri",
+    "wolfii",
+    "woodsii",
+    "wrightii",
+    "xaltianguensis",
+    "xiloensis",
+    "zacatecasensis",
+    "zahniana",
+    "zeilmanniana",
+    "zeyeriana",
+    "zuccariniana"
+  ],
+  "Marenopuntia": [
+    "marenae"
+  ],
+  "Matucana": [
+    "breviflora",
+    "crinifera",
+    "elongata"
+  ],
+  "Neochilenia": [
+    "napina"
+  ],
+  "Neolloydia": [
+    "conoidea"
+  ],
+  "Neoporteria": [
+    "nigrihorrida"
+  ],
+  "Notocactus": [
+    "magnificus"
+  ],
+  "Opuntia": [
+    "ficus-indica"
+  ],
+  "Oreocereus": [
+    "celsianus",
+    "trollii"
+  ],
+  "Parodia": [
+    "magnifica"
+  ],
+  "Pediocactus": [
+    "papyracanthus"
+  ],
+  "Pilosocereus": [
+    "azureus"
+  ],
+  "Rebutia": [
+    "minuscula"
+  ],
+  "Thrixanthocereus": [
+    "cullmannianus",
+    "senilis"
+  ],
+  "Trichocereus": [
+    "boliviensis",
+    "bridgesii",
+    "chilensis",
+    "escayachensis",
+    "macrogonus",
+    "pachanoi",
+    "pasacana",
+    "peruvianus",
+    "schickendanzii",
+    "skottsbergii",
+    "smirzianus",
+    "strigosus",
+    "terscheckii",
+    "thelegonus"
+  ]
+}
+
+}
+
+}
+
+}
+

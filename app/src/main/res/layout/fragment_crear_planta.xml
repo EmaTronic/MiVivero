@@ -10,19 +10,35 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- 🪴 DATOS PRINCIPALES -->
-        <EditText
-            android:id="@+id/etFamilia"
+        <!-- 🌿 FAMILIA (SOLO FILTRO, NO SE GUARDA) -->
+        <AutoCompleteTextView
+            android:id="@+id/actFamilia"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Familia"
+            android:hint="Familia (opcional)"
             android:padding="12dp"
             android:backgroundTint="#7FD1C3"
+            android:inputType="text"
+            android:completionThreshold="1"
             android:textColor="@android:color/black"
             android:textColorHint="#666666" />
 
+        <!-- 🌱 GÉNERO / NOMBRE VULGAR -->
+        <AutoCompleteTextView
+            android:id="@+id/etFamilia"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Género o nombre vulgar"
+            android:padding="12dp"
+            android:layout_marginTop="8dp"
+            android:backgroundTint="#7FD1C3"
+            android:inputType="text"
+            android:completionThreshold="1"
+            android:textColor="@android:color/black"
+            android:textColorHint="#666666" />
 
-        <EditText
+        <!-- 🌸 ESPECIE -->
+        <AutoCompleteTextView
             android:id="@+id/etEspecie"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -30,9 +46,12 @@
             android:padding="12dp"
             android:layout_marginTop="8dp"
             android:backgroundTint="#7FD1C3"
+            android:inputType="text"
+            android:completionThreshold="1"
             android:textColor="@android:color/black"
             android:textColorHint="#666666" />
 
+        <!-- 📍 LUGAR -->
         <EditText
             android:id="@+id/etLugar"
             android:layout_width="match_parent"
@@ -44,6 +63,7 @@
             android:textColor="@android:color/black"
             android:textColorHint="#666666" />
 
+        <!-- 📦 CANTIDAD -->
         <EditText
             android:id="@+id/etCantidad"
             android:layout_width="match_parent"
@@ -56,13 +76,13 @@
             android:textColor="@android:color/black"
             android:textColorHint="#666666" />
 
+        <!-- 💰 A LA VENTA -->
         <CheckBox
             android:id="@+id/cbALaVenta"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Disponible para la venta"
             android:textColor="@android:color/black"
-            android:textColorHint="#666666"
             android:layout_marginTop="12dp" />
 
         <!-- 📝 OBSERVACIONES -->
@@ -70,15 +90,15 @@
             android:id="@+id/etObservaciones"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Observaciones (ej. nombre vulgar)"
-            android:textColor="@android:color/black"
-            android:textColorHint="#666666"
+            android:hint="Observaciones"
             android:minLines="3"
             android:gravity="top"
             android:inputType="textMultiLine"
             android:padding="12dp"
             android:layout_marginTop="12dp"
-            android:backgroundTint="#7FD1C3" />
+            android:backgroundTint="#7FD1C3"
+            android:textColor="@android:color/black"
+            android:textColorHint="#666666" />
 
         <!-- 📸 FOTO -->
         <ImageView
@@ -117,7 +137,7 @@
             android:layout_marginTop="8dp"
             android:backgroundTint="#7FD1C3" />
 
-        <!-- 💾 ACCIÓN PRINCIPAL -->
+        <!-- 💾 GUARDAR -->
         <Button
             android:id="@+id/btnGuardar"
             android:layout_width="match_parent"
