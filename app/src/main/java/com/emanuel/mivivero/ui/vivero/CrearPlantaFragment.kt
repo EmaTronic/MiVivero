@@ -4,13 +4,13 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -18,9 +18,8 @@ import com.emanuel.mivivero.R
 import com.emanuel.mivivero.data.model.Planta
 import com.emanuel.mivivero.databinding.FragmentCrearPlantaBinding
 import com.emanuel.mivivero.ui.viewmodel.ViveroViewModel
-import java.io.File
 import com.emanuel.mivivero.utils.cargarCatalogo
-
+import java.io.File
 
 class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
 
@@ -32,32 +31,11 @@ class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
     private var plantaId: Long = -1L
     private var fotoUri: Uri? = null
 
-    /*======================
-    Catalogo
-    =======================
-     */
-
     private lateinit var catalogoFinal:
             Map<String, Map<String, List<String>>>
 
-
-    /*
-    private lateinit var catalogoCactus:
-            Map<String, Map<String, List<String>>>
-
-    private lateinit var catalogoSuculentas:
-            Map<String, Map<String, List<String>>>
-*/
-
-    /*====================
-        catalogo
-     =======================*/
-
-
-
-
     /* =====================
-       PERMISO CÁMARA
+       PERMISOS / FOTO
        ===================== */
 
     private val permisoCamaraLauncher =
@@ -70,90 +48,59 @@ class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
             ).show()
         }
 
-    /* =====================
-       CÁMARA
-       ===================== */
-
     private val camaraLauncher =
         registerForActivityResult(ActivityResultContracts.TakePicture()) { ok ->
             if (ok && fotoUri != null) {
                 binding.imgFoto.setImageURI(fotoUri)
-                binding.btnGuardar.isEnabled = true
                 ocultarTeclado()
-                binding.root.requestFocus()
+                actualizarEstadoGuardar()
             }
         }
-
-    /* =====================
-       GALERÍA
-       ===================== */
 
     private val galeriaLauncher =
         registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
             uri?.let {
-                try {
-                    val uriLocal = copiarImagenAGaleriaInterna(it)
-                    fotoUri = uriLocal
-                    binding.imgFoto.setImageURI(uriLocal)
-                    binding.btnGuardar.isEnabled = true
-                    ocultarTeclado()
-                    binding.root.requestFocus()
-                } catch (e: Exception) {
-                    Toast.makeText(
-                        requireContext(),
-                        "Error al procesar la imagen",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
+                fotoUri = copiarImagenAGaleriaInterna(it)
+                binding.imgFoto.setImageURI(fotoUri)
+                ocultarTeclado()
+                actualizarEstadoGuardar()
             }
         }
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         _binding = FragmentCrearPlantaBinding.bind(view)
 
-        // 🔹 Placeholder por defecto
+        // Placeholder solo visual
         binding.imgFoto.setImageResource(R.drawable.ic_planta_placeholder)
+        fotoUri = null
 
+        // Cantidad por defecto = 1
+        binding.etCantidad.setText("1")
+
+        // Botón deshabilitado al inicio
         binding.btnGuardar.isEnabled = false
+        binding.btnGuardar.setBackgroundColor(
+            ContextCompat.getColor(requireContext(), R.color.btn_disabled)
+        )
 
         plantaId = arguments?.getLong("plantaId") ?: -1L
 
-        binding.root.isFocusableInTouchMode = true
-        binding.root.requestFocus()
+        /* =====================
+           CATÁLOGOS (NO SE TOCA)
+           ===================== */
 
+        val c1 = cargarCatalogo(requireContext(), "catalogo_kakteen.json")
+        val c2 = cargarCatalogo(requireContext(), "catalogo_suculentas.json")
+        val c3 = cargarCatalogo(requireContext(), "catalogo_mesembry.json")
+        val c4 = cargarCatalogo(requireContext(), "catalogo_topf.json")
 
-        /* ====================
-             CATÁLOGOS
-             ==================== */
+        catalogoFinal = unirCatalogos(c1, c2, c3, c4)
 
-        val catalogoCactus =
-            cargarCatalogo(requireContext(), "catalogo_kakteen.json")
-
-        val catalogoSuculentas =
-            cargarCatalogo(requireContext(), "catalogo_suculentas.json")
-
-        val catalogoMesemby =
-            cargarCatalogo(requireContext(), "catalogo_mesembry.json")
-
-        val catalogoVarias =
-            cargarCatalogo(requireContext(), "catalogo_topf.json")
-
-        // 👉 CATÁLOGO FINAL (UNIFICADO)
-        val catalogoFinal = unirCatalogos(
-            catalogoCactus,
-            catalogoSuculentas,
-            catalogoMesemby,
-            catalogoVarias
-        )
-
-        /* ====================
+        /* =====================
            AUTOCOMPLETE
-           ==================== */
+           ===================== */
 
-        // ===== FAMILIAS =====
         val familias = catalogoFinal.keys.toList()
 
         binding.actFamilia.setAdapter(
@@ -164,16 +111,9 @@ class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
             )
         )
 
-        binding.actFamilia.setOnClickListener {
-            binding.actFamilia.showDropDown()
-        }
-
-        // ===== CUANDO SE ELIGE FAMILIA =====
         binding.actFamilia.setOnItemClickListener { _, _, _, _ ->
             val familia = binding.actFamilia.text.toString()
-
-            val generos =
-                catalogoFinal[familia]?.keys?.toList() ?: emptyList()
+            val generos = catalogoFinal[familia]?.keys?.toList() ?: emptyList()
 
             binding.etFamilia.setAdapter(
                 ArrayAdapter(
@@ -185,10 +125,9 @@ class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
 
             binding.etFamilia.text.clear()
             binding.etEspecie.text.clear()
+            actualizarEstadoGuardar()
         }
 
-
-        // ===== CUANDO SE ELIGE GÉNERO =====
         binding.etFamilia.setOnItemClickListener { _, _, _, _ ->
             val familia = binding.actFamilia.text.toString()
             val genero = binding.etFamilia.text.toString()
@@ -205,48 +144,22 @@ class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
             )
 
             binding.etEspecie.showDropDown()
+            actualizarEstadoGuardar()
         }
 
-
-
-
-
-
-
-
-
-
         /* =====================
-           MODO EDICIÓN
+           VALIDACIÓN EN VIVO
            ===================== */
 
-        if (plantaId != -1L) {
-            val planta = viewModel.obtenerPlantaPorId(plantaId)
-
-            planta?.let {
-                binding.etFamilia.setText(it.familia)
-                binding.etEspecie.setText(it.especie)
-                binding.etLugar.setText(it.lugar)
-                binding.etCantidad.setText(it.cantidad.toString())
-                binding.cbALaVenta.isChecked = it.aLaVenta
-                binding.etObservaciones.setText(it.observaciones)
-
-                it.fotoRuta?.let { ruta ->
-                    fotoUri = Uri.parse(ruta)
-                    binding.imgFoto.setImageURI(fotoUri)
-                    binding.btnGuardar.isEnabled = true
-                }
-            }
+        binding.etFamilia.addTextChangedListener {
+            actualizarEstadoGuardar()
         }
 
         /* =====================
            BOTONES FOTO
            ===================== */
 
-        binding.btnFoto.setOnClickListener {
-            verificarPermisoCamara()
-        }
-
+        binding.btnFoto.setOnClickListener { verificarPermisoCamara() }
         binding.btnGaleria.setOnClickListener {
             galeriaLauncher.launch("image/*")
         }
@@ -257,9 +170,18 @@ class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
 
         binding.btnGuardar.setOnClickListener {
 
-            // ❌ FOTO OBLIGATORIA
+            val genero = binding.etFamilia.text.toString().trim()
+
+            if (genero.isEmpty()) {
+                Toast.makeText(
+                    requireContext(),
+                    "Debés completar el género o nombre vulgar",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@setOnClickListener
+            }
+
             if (fotoUri == null) {
-                Log.e("CREAR_PLANTA", "Guardar bloqueado: sin foto")
                 Toast.makeText(
                     requireContext(),
                     "Debés agregar una foto de la planta",
@@ -268,53 +190,61 @@ class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
                 return@setOnClickListener
             }
 
-            Log.d("CREAR_PLANTA", "Guardar planta con foto OK")
-
             val ahora = System.currentTimeMillis()
 
-            val plantaExistente =
-                if (plantaId != -1L) viewModel.obtenerPlantaPorId(plantaId)
-                else null
-
-            val fechaIngresoFinal =
-                plantaExistente?.fechaIngreso ?: ahora
-
             val planta = Planta(
-                id = if (plantaId == -1L) ahora else plantaId,
-                numeroPlanta = plantaExistente?.numeroPlanta ?: -1,
-                familia = binding.etFamilia.text.toString(),
+                id = ahora,
+                numeroPlanta = -1,
+                familia = genero,
                 especie = binding.etEspecie.text.toString().ifBlank { null },
                 lugar = binding.etLugar.text.toString(),
-                fechaIngreso = fechaIngresoFinal,
-                cantidad = binding.etCantidad.text.toString().toIntOrNull() ?: 0,
+                fechaIngreso = ahora,
+                cantidad = binding.etCantidad.text.toString().toInt(),
                 aLaVenta = binding.cbALaVenta.isChecked,
                 observaciones = binding.etObservaciones.text.toString().ifBlank { null },
                 fotoRuta = fotoUri!!.toString(),
                 fechaFoto = ahora
             )
 
-            if (plantaId == -1L) {
-                viewModel.agregarPlanta(planta)
-            } else {
-                viewModel.actualizarPlanta(planta)
-            }
-
+            viewModel.agregarPlanta(planta)
             findNavController().popBackStack()
         }
+
+        actualizarEstadoGuardar()
     }
 
     /* =====================
-       FUNCIONES AUX
+       VALIDACIÓN CENTRAL
+       ===================== */
+
+    private fun actualizarEstadoGuardar() {
+        val generoOk = binding.etFamilia.text.toString().trim().isNotEmpty()
+        val fotoOk = fotoUri != null
+
+        val habilitar = generoOk && fotoOk
+
+        binding.btnGuardar.isEnabled = habilitar
+        binding.btnGuardar.setBackgroundColor(
+            ContextCompat.getColor(
+                requireContext(),
+                if (habilitar) R.color.btn_enabled else R.color.btn_disabled
+            )
+        )
+    }
+
+    /* =====================
+       AUX
        ===================== */
 
     private fun verificarPermisoCamara() {
-        when {
-            ContextCompat.checkSelfPermission(
+        if (ContextCompat.checkSelfPermission(
                 requireContext(),
                 Manifest.permission.CAMERA
-            ) == PackageManager.PERMISSION_GRANTED -> abrirCamara()
-
-            else -> permisoCamaraLauncher.launch(Manifest.permission.CAMERA)
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            abrirCamara()
+        } else {
+            permisoCamaraLauncher.launch(Manifest.permission.CAMERA)
         }
     }
 
@@ -342,18 +272,15 @@ class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
     }
 
     private fun copiarImagenAGaleriaInterna(uri: Uri): Uri {
-        val inputStream = requireContext().contentResolver.openInputStream(uri)
-            ?: throw IllegalArgumentException("No se pudo abrir la imagen")
+        val inputStream =
+            requireContext().contentResolver.openInputStream(uri)!!
 
         val archivo = File(
             requireContext().filesDir,
             "planta_${System.currentTimeMillis()}.jpg"
         )
 
-        archivo.outputStream().use { output ->
-            inputStream.copyTo(output)
-        }
-
+        archivo.outputStream().use { inputStream.copyTo(it) }
         return Uri.fromFile(archivo)
     }
 
@@ -365,25 +292,15 @@ class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
 
         catalogos.forEach { catalogo ->
             catalogo.forEach { (familia, generos) ->
-                val generosResultado =
-                    resultado.getOrPut(familia) { mutableMapOf() }
-
-                generos.forEach { (genero, especies) ->
-                    val especiesResultado =
-                        generosResultado.getOrPut(genero) { mutableSetOf() }
-
-                    especiesResultado.addAll(especies)
+                val g = resultado.getOrPut(familia) { mutableMapOf() }
+                generos.forEach { (gen, esp) ->
+                    g.getOrPut(gen) { mutableSetOf() }.addAll(esp)
                 }
             }
         }
 
-        return resultado.mapValues { (_, generos) ->
-            generos.mapValues { (_, especies) ->
-                especies.sorted()
-            }
-        }
+        return resultado.mapValues { it.value.mapValues { e -> e.value.sorted() } }
     }
-
 
     override fun onDestroyView() {
         super.onDestroyView()

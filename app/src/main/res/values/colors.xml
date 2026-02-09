@@ -6,5 +6,8 @@
     <color name="teal_200">#03DAC5</color>
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
+    <color name="btn_disabled">#BDBDBD</color> <!-- gris -->
+    <color name="btn_enabled">#4CAF50</color>  <!-- verde -->
+
 
 </resources>
