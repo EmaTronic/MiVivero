@@ -28,7 +28,6 @@ class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
 
     private val viewModel: ViveroViewModel by activityViewModels()
 
-    private var plantaId: Long = -1L
     private var fotoUri: Uri? = null
 
     private lateinit var catalogoFinal:
@@ -71,23 +70,24 @@ class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentCrearPlantaBinding.bind(view)
 
-        // Placeholder solo visual
+        /* =====================
+           ESTADO INICIAL
+           ===================== */
+
         binding.imgFoto.setImageResource(R.drawable.ic_planta_placeholder)
         fotoUri = null
 
-        // Cantidad por defecto = 1
-        binding.etCantidad.setText("1")
+        binding.etCantidad.setText("1") // default
 
-        // Botón deshabilitado al inicio
+        binding.etEspecie.isEnabled = false
+
         binding.btnGuardar.isEnabled = false
         binding.btnGuardar.setBackgroundColor(
             ContextCompat.getColor(requireContext(), R.color.btn_disabled)
         )
 
-        plantaId = arguments?.getLong("plantaId") ?: -1L
-
         /* =====================
-           CATÁLOGOS (NO SE TOCA)
+           CATÁLOGOS (NO TOCAR)
            ===================== */
 
         val c1 = cargarCatalogo(requireContext(), "catalogo_kakteen.json")
@@ -125,6 +125,7 @@ class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
 
             binding.etFamilia.text.clear()
             binding.etEspecie.text.clear()
+            binding.etEspecie.isEnabled = false
             actualizarEstadoGuardar()
         }
 
@@ -135,6 +136,7 @@ class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
             val especies =
                 catalogoFinal[familia]?.get(genero) ?: emptyList()
 
+            binding.etEspecie.isEnabled = true
             binding.etEspecie.setAdapter(
                 ArrayAdapter(
                     requireContext(),
@@ -152,6 +154,16 @@ class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
            ===================== */
 
         binding.etFamilia.addTextChangedListener {
+            if (it.isNullOrBlank()) {
+                binding.etFamilia.error = "Campo obligatorio"
+                binding.etEspecie.isEnabled = false
+            } else {
+                binding.etFamilia.error = null
+            }
+            actualizarEstadoGuardar()
+        }
+
+        binding.etCantidad.addTextChangedListener {
             actualizarEstadoGuardar()
         }
 
@@ -160,6 +172,7 @@ class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
            ===================== */
 
         binding.btnFoto.setOnClickListener { verificarPermisoCamara() }
+
         binding.btnGaleria.setOnClickListener {
             galeriaLauncher.launch("image/*")
         }
@@ -173,11 +186,8 @@ class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
             val genero = binding.etFamilia.text.toString().trim()
 
             if (genero.isEmpty()) {
-                Toast.makeText(
-                    requireContext(),
-                    "Debés completar el género o nombre vulgar",
-                    Toast.LENGTH_SHORT
-                ).show()
+                binding.etFamilia.error = "Campo obligatorio"
+                binding.etFamilia.requestFocus()
                 return@setOnClickListener
             }
 
@@ -190,6 +200,11 @@ class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
                 return@setOnClickListener
             }
 
+            val cantidad =
+                binding.etCantidad.text.toString()
+                    .toIntOrNull()
+                    ?.coerceAtLeast(1) ?: 1
+
             val ahora = System.currentTimeMillis()
 
             val planta = Planta(
@@ -199,7 +214,7 @@ class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
                 especie = binding.etEspecie.text.toString().ifBlank { null },
                 lugar = binding.etLugar.text.toString(),
                 fechaIngreso = ahora,
-                cantidad = binding.etCantidad.text.toString().toInt(),
+                cantidad = cantidad,
                 aLaVenta = binding.cbALaVenta.isChecked,
                 observaciones = binding.etObservaciones.text.toString().ifBlank { null },
                 fotoRuta = fotoUri!!.toString(),
@@ -264,12 +279,16 @@ class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
     }
 
     private fun ocultarTeclado() {
+        // quitar foco de cualquier EditText
+        binding.root.requestFocus()
+
         val imm = requireContext()
             .getSystemService(android.content.Context.INPUT_METHOD_SERVICE)
                 as android.view.inputmethod.InputMethodManager
 
-        imm.hideSoftInputFromWindow(requireView().windowToken, 0)
+        imm.hideSoftInputFromWindow(binding.root.windowToken, 0)
     }
+
 
     private fun copiarImagenAGaleriaInterna(uri: Uri): Uri {
         val inputStream =
@@ -284,23 +303,29 @@ class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
         return Uri.fromFile(archivo)
     }
 
+
+
+
+
     private fun unirCatalogos(
         vararg catalogos: Map<String, Map<String, List<String>>>
     ): Map<String, Map<String, List<String>>> {
 
-        val resultado = mutableMapOf<String, MutableMap<String, MutableSet<String>>>()
+        val res = mutableMapOf<String, MutableMap<String, MutableSet<String>>>()
 
-        catalogos.forEach { catalogo ->
-            catalogo.forEach { (familia, generos) ->
-                val g = resultado.getOrPut(familia) { mutableMapOf() }
+        catalogos.forEach { cat ->
+            cat.forEach { (familia, generos) ->
+                val g = res.getOrPut(familia) { mutableMapOf() }
                 generos.forEach { (gen, esp) ->
                     g.getOrPut(gen) { mutableSetOf() }.addAll(esp)
                 }
             }
         }
 
-        return resultado.mapValues { it.value.mapValues { e -> e.value.sorted() } }
+        return res.mapValues { it.value.mapValues { e -> e.value.sorted() } }
     }
+
+
 
     override fun onDestroyView() {
         super.onDestroyView()
