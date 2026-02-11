@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.emanuel.mivivero.data.local.AppDatabase
 import com.emanuel.mivivero.data.local.entity.AlbumEntity
 import com.emanuel.mivivero.data.local.entity.AlbumPlantaEntity
+import com.emanuel.mivivero.data.model.AlbumBackup
 import com.emanuel.mivivero.data.model.EstadoAlbum
 import com.emanuel.mivivero.data.model.Planta
 import kotlinx.coroutines.launch
@@ -87,6 +88,42 @@ class AlbumesViewModel(application: Application)
             albumDao.deleteById(albumId)
         }
     }
+
+    private var ultimoAlbumEliminado: AlbumConCantidad? = null
+
+    private var ultimoBackup: AlbumBackup? = null
+
+    fun eliminarAlbumConUndo(albumId: Long) {
+
+        viewModelScope.launch {
+
+            val album = albumDao.obtenerAlbumRaw(albumId) ?: return@launch
+            val plantas = albumPlantaDao.obtenerPlantasDelAlbumRaw(albumId)
+
+            ultimoBackup = AlbumBackup(album, plantas)
+
+            albumDao.deleteById(albumId)
+        }
+    }
+
+
+    fun restaurarUltimoAlbum() {
+
+        val backup = ultimoBackup ?: return
+
+        viewModelScope.launch {
+
+            albumDao.insert(backup.album)
+
+            backup.plantas.forEach {
+                albumPlantaDao.insert(it)
+            }
+
+            ultimoBackup = null
+        }
+    }
+
+
 
 
 

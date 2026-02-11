@@ -1,5 +1,6 @@
 package com.emanuel.mivivero.ui.albumes
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -10,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.emanuel.mivivero.R
 import com.emanuel.mivivero.data.model.AlbumConCantidad
 import com.emanuel.mivivero.databinding.FragmentAlbumesBinding
+import com.google.android.material.snackbar.Snackbar
 
 class AlbumesFragment : Fragment(R.layout.fragment_albumes) {
 
@@ -58,17 +60,38 @@ class AlbumesFragment : Fragment(R.layout.fragment_albumes) {
 
     }
 
+
+    private fun mostrarSnackbarUndo() {
+
+        com.google.android.material.snackbar.Snackbar
+            .make(binding.root, "Álbum eliminado", com.google.android.material.snackbar.Snackbar.LENGTH_LONG)
+            .setAction("DESHACER") {
+                viewModel.restaurarUltimoAlbum()
+            }
+            .show()
+    }
+
     private fun mostrarConfirmacionEliminar(album: AlbumConCantidad) {
 
-        androidx.appcompat.app.AlertDialog.Builder(requireContext())
+        AlertDialog.Builder(requireContext())
             .setTitle("Eliminar álbum")
             .setMessage("¿Eliminar '${album.nombre}'?")
             .setPositiveButton("Eliminar") { _, _ ->
-                viewModel.eliminarAlbum(album.id)
+
+                viewModel.eliminarAlbumConUndo(album.id)
+
+                Snackbar
+                    .make(binding.root, "Álbum eliminado", Snackbar.LENGTH_LONG)
+                    .setAction("DESHACER") {
+                        viewModel.restaurarUltimoAlbum()
+                    }
+                    .show()
             }
             .setNegativeButton("Cancelar", null)
             .show()
     }
+
+
 
 
     private fun configurarBotones() {

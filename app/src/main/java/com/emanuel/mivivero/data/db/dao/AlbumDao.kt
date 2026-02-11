@@ -51,6 +51,10 @@ interface AlbumDao {
     @Query("DELETE FROM albumes WHERE id = :albumId")
     suspend fun deleteById(albumId: Long)
 
+    @Query("SELECT * FROM albumes WHERE id = :albumId")
+    suspend fun obtenerAlbumRaw(albumId: Long): AlbumEntity?
+
+
 
 
 }

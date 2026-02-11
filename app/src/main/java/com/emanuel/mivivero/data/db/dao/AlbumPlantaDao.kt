@@ -98,4 +98,9 @@ interface AlbumPlantaDao {
 """)
     suspend fun obtenerPlantasDelAlbumSuspend(albumId: Long): List<PlantaAlbum>
 
+    @Query("SELECT * FROM album_planta WHERE albumId = :albumId")
+    suspend fun obtenerPlantasDelAlbumRaw(albumId: Long): List<AlbumPlantaEntity>
+
+
+
 }
