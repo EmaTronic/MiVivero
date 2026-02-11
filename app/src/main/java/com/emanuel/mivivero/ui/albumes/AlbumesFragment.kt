@@ -52,7 +52,7 @@ class AlbumesFragment : Fragment(R.layout.fragment_albumes) {
     }
 
     private fun configurarBotones() {
-        binding.btnCrearAlbum.setOnClickListener {
+        binding.fabCrearAlbum.setOnClickListener {
             findNavController().navigate(
                 R.id.action_albumesFragment_to_crearAlbumesFragment
             )

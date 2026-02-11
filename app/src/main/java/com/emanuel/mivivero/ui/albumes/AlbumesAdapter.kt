@@ -3,15 +3,16 @@ package com.emanuel.mivivero.ui.albumes
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.emanuel.mivivero.data.local.entity.AlbumEntity
+import com.emanuel.mivivero.data.model.AlbumConCantidad
 import com.emanuel.mivivero.databinding.ItemAlbumBinding
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
 class AlbumesAdapter(
-    private val items: List<AlbumEntity>,
-    private val onClick: (AlbumEntity) -> Unit
+    private val items: List<AlbumConCantidad>,
+    private val onClick: (AlbumConCantidad) -> Unit
+
 ) : RecyclerView.Adapter<AlbumesAdapter.VH>() {
 
     inner class VH(val b: ItemAlbumBinding) :
@@ -30,12 +31,17 @@ class AlbumesAdapter(
         val album = items[position]
 
         holder.b.txtNombreAlbum.text = album.nombre
-        holder.b.txtFecha.text = album.fechaCreacion.toString()
+        holder.b.txtObservaciones.text =
+            album.observaciones ?: "Sin observaciones"
+
+        holder.b.txtCantidadPlantas.text =
+            "Plantas: ${album.cantidadPlantas}"
 
         holder.itemView.setOnClickListener {
             onClick(album)
         }
     }
+
 
     override fun getItemCount(): Int = items.size
 }

@@ -11,6 +11,8 @@ import com.emanuel.mivivero.data.local.entity.AlbumPlantaEntity
 import com.emanuel.mivivero.data.model.EstadoAlbum
 import com.emanuel.mivivero.data.model.Planta
 import kotlinx.coroutines.launch
+import com.emanuel.mivivero.data.model.AlbumConCantidad
+
 
 class AlbumesViewModel(application: Application)
     : AndroidViewModel(application) {
@@ -19,8 +21,9 @@ class AlbumesViewModel(application: Application)
     private val albumDao = db.albumDao()
     private val albumPlantaDao = db.albumPlantaDao()
 
-    val albumes: LiveData<List<AlbumEntity>> =
-        albumDao.getAlbumes()
+    val albumes: LiveData<List<AlbumConCantidad>> =
+        albumDao.getAlbumesConCantidad()
+
 
     // 🔥 ESTE ES EL ESTADO QUE FALTABA SETEAR
     var albumActualId: Long? = null

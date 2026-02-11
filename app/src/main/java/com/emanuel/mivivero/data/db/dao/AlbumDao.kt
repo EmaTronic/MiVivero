@@ -5,6 +5,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import com.emanuel.mivivero.data.local.entity.AlbumEntity
+import com.emanuel.mivivero.data.model.AlbumConCantidad
 
 @Dao
 interface AlbumDao {
@@ -30,6 +31,22 @@ interface AlbumDao {
         albumId: Long,
         plantaId: Long
     ): Int
+
+
+    @Query("""
+    SELECT a.id,
+           a.nombre,
+           a.observaciones,
+           a.estado,
+           a.fechaCreacion,
+           COUNT(ap.plantaid) as cantidadPlantas
+    FROM albumes a
+    LEFT JOIN album_planta ap ON a.id = ap.albumId
+    GROUP BY a.id
+    ORDER BY a.fechaCreacion DESC
+""")
+    fun getAlbumesConCantidad(): LiveData<List<AlbumConCantidad>>
+
 
 }
 
