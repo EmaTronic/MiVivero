@@ -61,23 +61,35 @@ class EditarAlbumFragment : Fragment(R.layout.fragment_editar_album) {
                 }
             )
         }
-
         binding.btnFinalizarAlbum.setOnClickListener {
-            editarAlbumViewModel.finalizarAlbum(albumId)
-            Toast.makeText(
-                requireContext(),
-                "Álbum finalizado",
-                Toast.LENGTH_SHORT
-            ).show()
 
-            findNavController().navigate(
-                R.id.albumesFragment,
-                null,
-                androidx.navigation.NavOptions.Builder()
-                    .setPopUpTo(R.id.viveroFragment, false)
-                    .build()
-            )
+            editarAlbumViewModel.finalizarAlbum(albumId) { resultado ->
+
+                if (!resultado.esValido) {
+                    Toast.makeText(
+                        requireContext(),
+                        resultado.mensaje,
+                        Toast.LENGTH_LONG
+                    ).show()
+                    return@finalizarAlbum
+                }
+
+                Toast.makeText(
+                    requireContext(),
+                    "Álbum finalizado",
+                    Toast.LENGTH_SHORT
+                ).show()
+
+                findNavController().navigate(
+                    R.id.albumesFragment,
+                    null,
+                    androidx.navigation.NavOptions.Builder()
+                        .setPopUpTo(R.id.viveroFragment, false)
+                        .build()
+                )
+            }
         }
+
     }
 
     // ======================
@@ -168,7 +180,17 @@ class EditarAlbumFragment : Fragment(R.layout.fragment_editar_album) {
                     plantaId = planta.plantaId,
                     cantidad = cantidad,
                     precio = precio
-                )
+                ) { error ->
+
+                    if (error != null) {
+                        Toast.makeText(
+                            requireContext(),
+                            error,
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                }
+
             }
             .setNegativeButton("Cancelar", null)
             .show()

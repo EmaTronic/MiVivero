@@ -23,14 +23,28 @@ class EditarAlbumViewModel(application: Application)
     fun obtenerPlantasDelAlbum(albumId: Long): LiveData<List<PlantaAlbum>> =
         albumPlantaDao.obtenerPlantasDelAlbum(albumId)
 
-    fun finalizarAlbum(albumId: Long) {
+    fun finalizarAlbum(
+        albumId: Long,
+        onResultado: (ResultadoValidacion) -> Unit
+    ) {
         viewModelScope.launch {
+
+            val resultado = validarAlbumParaFinalizar(albumId)
+
+            if (!resultado.esValido) {
+                onResultado(resultado)
+                return@launch
+            }
+
             albumDao.actualizarEstado(
                 albumId,
                 EstadoAlbum.FINALIZADO.name
             )
+
+            onResultado(ResultadoValidacion(true))
         }
     }
+
 
     fun eliminarPlantaDelAlbum(
         albumId: Long,
@@ -48,8 +62,19 @@ class EditarAlbumViewModel(application: Application)
         albumId: Long,
         plantaId: Long,
         cantidad: Int,
-        precio: Double
+        precio: Double,
+        onResultado: (String?) -> Unit
     ) {
+        if (cantidad <= 0) {
+            onResultado("La cantidad debe ser mayor a 0")
+            return
+        }
+
+        if (precio <= 0.0) {
+            onResultado("El precio debe ser mayor a 0")
+            return
+        }
+
         viewModelScope.launch {
             albumPlantaDao.actualizarPlantaAlbum(
                 albumId = albumId,
@@ -57,8 +82,54 @@ class EditarAlbumViewModel(application: Application)
                 cantidad = cantidad,
                 precio = precio
             )
+            onResultado(null)
         }
     }
+
+
+    data class ResultadoValidacion(
+        val esValido: Boolean,
+        val mensaje: String? = null
+    )
+
+
+    suspend fun validarAlbumParaFinalizar(albumId: Long): ResultadoValidacion {
+
+        val plantas = albumPlantaDao.obtenerPlantasDelAlbumSuspend(albumId)
+
+        if (plantas.isEmpty()) {
+            return ResultadoValidacion(false, "El álbum no tiene plantas")
+        }
+
+        if (plantas.size > 40) {
+            return ResultadoValidacion(false, "Máximo 40 plantas por álbum")
+        }
+
+        val plantaInvalida = plantas.firstOrNull {
+            it.cantidad <= 0 || it.precio <= 0.0
+        }
+
+        if (plantaInvalida != null) {
+            return ResultadoValidacion(
+                false,
+                "Hay plantas con cantidad o precio inválido"
+            )
+        }
+
+        return ResultadoValidacion(true)
+    }
+
+    fun reabrirAlbum(albumId: Long) {
+        viewModelScope.launch {
+            albumDao.actualizarEstado(
+                albumId,
+                EstadoAlbum.BORRADOR.name
+            )
+        }
+    }
+
+
+
 
 
 }

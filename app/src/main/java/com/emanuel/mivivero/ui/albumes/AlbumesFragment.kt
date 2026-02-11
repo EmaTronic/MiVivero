@@ -24,6 +24,9 @@ class AlbumesFragment : Fragment(R.layout.fragment_albumes) {
         configurarRecycler()
         observarAlbumes()
         configurarBotones()
+
+
+
     }
 
     private fun configurarRecycler() {

@@ -16,16 +16,24 @@ class AgregarPlantaAlbumDialog(
     private val viewModel: AlbumesViewModel by activityViewModels()
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+
         val binding = DialogAgregarAlbumBinding.inflate(
             LayoutInflater.from(requireContext())
         )
 
-        return AlertDialog.Builder(requireContext())
-            .setTitle(
-                "${planta.familia} ${planta.especie ?: ""}"
-            )
+        val dialog = AlertDialog.Builder(requireContext())
+            .setTitle("${planta.familia} ${planta.especie ?: ""}")
             .setView(binding.root)
-            .setPositiveButton("Agregar") { _, _ ->
+            .setPositiveButton("Agregar", null) // 🔥 IMPORTANTE
+            .setNegativeButton("Cancelar", null)
+            .create()
+
+        dialog.setOnShowListener {
+
+            val btnAgregar = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+
+            btnAgregar.setOnClickListener {
+
                 val cantidad =
                     binding.etCantidad.text.toString().toIntOrNull() ?: 0
                 val precio =
@@ -35,9 +43,46 @@ class AgregarPlantaAlbumDialog(
                     planta = planta,
                     cantidad = cantidad,
                     precio = precio
-                )
+
+
+
+                ) { error ->
+
+                    if (error != null) {
+
+                        // Error por duplicado
+                        if (error.contains("ya está")) {
+                            android.widget.Toast.makeText(
+                                requireContext(),
+                                error,
+                                android.widget.Toast.LENGTH_SHORT
+                            ).show()
+                            return@agregarPlantaAlAlbum
+                        }
+
+                        // Error por validación
+                        binding.etCantidad.error =
+                            if (cantidad <= 0) "Cantidad debe ser > 0" else null
+
+                        binding.etPrecio.error =
+                            if (precio <= 0.0) "Precio debe ser > 0" else null
+
+                    } else {
+
+                        android.widget.Toast.makeText(
+                            requireContext(),
+                            "Planta agregada al álbum",
+                            android.widget.Toast.LENGTH_SHORT
+                        ).show()
+
+                        dialog.dismiss()
+                    }
+
+                }
             }
-            .setNegativeButton("Cancelar", null)
-            .create()
+        }
+
+        return dialog
     }
+
 }

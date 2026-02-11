@@ -18,46 +18,43 @@ import com.emanuel.mivivero.ui.viewmodel.ViveroViewModel
 class ListaPlantasFragment : Fragment(R.layout.fragment_lista_plantas) {
 
     private var albumId: Long = -1L
-
     private var _binding: FragmentListaPlantasBinding? = null
     private val binding get() = _binding!!
 
     private val viewModel: ViveroViewModel by activityViewModels()
 
-    private lateinit var adapter: PlantaAdapter
     private var listaOriginal: List<Planta> = emptyList()
-
-
+    private lateinit var adapter: PlantaAdapter
+    private var ordenAZActivo = false
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // ✅ 1. Inicializar binding PRIMERO
         _binding = FragmentListaPlantasBinding.bind(view)
 
         albumId = arguments?.getLong("albumId") ?: -1L
 
-
-        // ======================
-        // Recycler
-        // ======================
+        binding.btnVolverAlbum.setOnClickListener {
+            findNavController().popBackStack()
+        }
 
         binding.recyclerPlantas.layoutManager =
             LinearLayoutManager(requireContext())
 
         adapter = PlantaAdapter(
-            plantas = emptyList(),
+            plantas = mutableListOf(),
             modoAgregarAlbum = albumId != -1L,
             onAgregarPlantaAlbum = { planta ->
                 mostrarDialogoCantidadPrecio(planta)
             }
         )
 
+        binding.btnVolverAlbum.visibility =
+            if (albumId != -1L) View.VISIBLE else View.GONE
+
+
         binding.recyclerPlantas.adapter = adapter
 
-        // ======================
-        // Carga de datos
-        // ======================
 
         if (albumId != -1L) {
             viewModel.cargarPlantasParaAlbum()
@@ -67,55 +64,58 @@ class ListaPlantasFragment : Fragment(R.layout.fragment_lista_plantas) {
 
         viewModel.plantas.observe(viewLifecycleOwner) { lista ->
             listaOriginal = lista
-            adapter.actualizarLista(lista)
+            aplicarOrdenYFiltro("")
         }
 
-        // ======================
-        // Buscador
-        // ======================
-
+        // 🔍 BUSCADOR
         binding.searchPlantas.setOnQueryTextListener(
             object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
-
-                override fun onQueryTextSubmit(query: String?): Boolean = true
+                override fun onQueryTextSubmit(query: String?) = true
 
                 override fun onQueryTextChange(texto: String?): Boolean {
-                    filtrarPlantas(texto.orEmpty())
+                    aplicarOrdenYFiltro(texto.orEmpty())
                     return true
                 }
             }
         )
 
-        // ======================
-        // FAB
-        // ======================
+        // 🔠 BOTÓN A-Z
+        binding.btnOrdenarAZ.setOnClickListener {
+            ordenAZActivo = !ordenAZActivo
+            binding.btnOrdenarAZ.text =
+                if (ordenAZActivo) "ORIGINAL" else "A-Z"
+
+            aplicarOrdenYFiltro(binding.searchPlantas.query.toString())
+        }
 
         binding.fabAgregarPlanta.setOnClickListener {
             findNavController().navigate(R.id.crearPlantaFragment)
         }
     }
 
+    private fun aplicarOrdenYFiltro(texto: String) {
 
-    /* ======================
-       FILTRADO
-       ====================== */
-    private fun filtrarPlantas(texto: String) {
         val filtro = texto.trim().lowercase()
 
-        val filtradas =
-            if (filtro.isEmpty()) {
-                listaOriginal
-            } else {
-                listaOriginal.filter { planta ->
-                    planta.familia.lowercase().contains(filtro) ||
-                            (planta.especie?.lowercase()?.contains(filtro) == true)
-                }
+        var lista = if (filtro.isEmpty()) {
+            listaOriginal
+        } else {
+            listaOriginal.filter {
+                it.familia.lowercase().contains(filtro) ||
+                        (it.especie?.lowercase()?.contains(filtro) == true)
             }
+        }
 
-        adapter.actualizarLista(filtradas)
+        if (ordenAZActivo) {
+            lista = lista.sortedWith(
+                compareBy<Planta> { it.familia.lowercase() }
+                    .thenBy { it.especie?.lowercase() ?: "" }
+            )
+        }
+
+        adapter.actualizarLista(lista)
     }
 
-    // 🔥 ESTA FUNCIÓN ES LA QUE FALTABA
     private fun mostrarDialogoCantidadPrecio(planta: Planta) {
         AgregarPlantaAlbumDialog(planta)
             .show(parentFragmentManager, "AgregarPlantaAlbum")

@@ -28,16 +28,27 @@ class AlbumesViewModel(application: Application)
     fun agregarPlantaAlAlbum(
         planta: Planta,
         cantidad: Int,
-        precio: Double
+        precio: Double,
+        onResultado: (String?) -> Unit
     ) {
         val albumId = albumActualId ?: return
+
+        if (cantidad <= 0) {
+            onResultado("La cantidad debe ser mayor a 0")
+            return
+        }
+
+        if (precio <= 0.0) {
+            onResultado("El precio debe ser mayor a 0")
+            return
+        }
 
         viewModelScope.launch {
             val existe =
                 albumPlantaDao.existePlantaEnAlbum(albumId, planta.id) > 0
 
             if (existe) {
-                // no insertamos
+                onResultado("La planta ya está en el álbum")
                 return@launch
             }
 
@@ -49,8 +60,11 @@ class AlbumesViewModel(application: Application)
                     precio = precio
                 )
             )
+
+            onResultado(null) // éxito
         }
     }
+
 
 
     fun crearAlbum(nombre: String, observaciones: String?) {

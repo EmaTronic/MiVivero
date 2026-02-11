@@ -2,9 +2,11 @@ package com.emanuel.mivivero.ui.albumes
 
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.emanuel.mivivero.R
 import com.emanuel.mivivero.data.model.PlantaAlbum
@@ -36,9 +38,46 @@ class AlbumDetalleFragment : Fragment(R.layout.fragment_album_detalle) {
         // Datos del álbum
         viewModel.obtenerAlbum(albumId)
             .observe(viewLifecycleOwner) { album ->
+
                 binding.txtNombreAlbum.text = album?.nombre
                 binding.txtEstadoAlbum.text = album?.estado
+
+                when (album?.estado) {
+
+                    "BORRADOR" -> {
+                        binding.btnEditarAlbum.visibility = View.VISIBLE
+                        binding.btnEditarAlbum.text = "Continuar edición"
+                    }
+
+                    "FINALIZADO" -> {
+                        binding.btnEditarAlbum.visibility = View.VISIBLE
+                        binding.btnEditarAlbum.text = "Reabrir edición"
+                    }
+
+                    "PUBLICADO" -> {
+                        binding.btnEditarAlbum.visibility = View.GONE
+                    }
+
+                    else -> {
+                        binding.btnEditarAlbum.visibility = View.GONE
+                    }
+                }
             }
+
+
+        binding.btnEditarAlbum.setOnClickListener {
+
+            viewModel.reabrirAlbum(albumId)
+
+            findNavController().navigate(
+                R.id.editarAlbumFragment,
+                Bundle().apply {
+                    putLong("albumId", albumId)
+                }
+            )
+        }
+
+
 
         // Plantas del álbum
         viewModel.obtenerPlantasDelAlbum(albumId)
@@ -81,12 +120,24 @@ class AlbumDetalleFragment : Fragment(R.layout.fragment_album_detalle) {
             .setTitle("Editar ${planta.nombre}")
             .setView(dialogBinding.root)
             .setPositiveButton("Guardar") { _, _ ->
+
                 viewModel.actualizarPlanta(
                     albumId = albumId,
                     plantaId = planta.plantaId,
                     cantidad = dialogBinding.etCantidad.text.toString().toInt(),
                     precio = dialogBinding.etPrecio.text.toString().toDouble()
-                )
+                ) { error ->
+
+                    if (error != null) {
+                        Toast.makeText(
+                            requireContext(),
+                            error,
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                }
+
+
             }
             .setNegativeButton("Cancelar", null)
             .show()

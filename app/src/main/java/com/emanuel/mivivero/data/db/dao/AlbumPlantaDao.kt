@@ -84,4 +84,18 @@ interface AlbumPlantaDao {
         cantidad: Int,
         precio: Double
     )
+
+
+    @Query("""
+    SELECT p.id as plantaId,
+           p.familia || ' ' || IFNULL(p.especie, '') as nombre,
+           ap.cantidad,
+           ap.precio,
+           p.fotoRuta
+    FROM album_planta ap
+    INNER JOIN plantas p ON p.id = ap.plantaId
+    WHERE ap.albumId = :albumId
+""")
+    suspend fun obtenerPlantasDelAlbumSuspend(albumId: Long): List<PlantaAlbum>
+
 }
