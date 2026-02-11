@@ -1,8 +1,9 @@
 package com.emanuel.mivivero.ui.vivero
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
+import androidx.appcompat.widget.SearchView
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -23,18 +24,41 @@ class ListaPlantasFragment : Fragment(R.layout.fragment_lista_plantas) {
 
     private val viewModel: ViveroViewModel by activityViewModels()
 
+    private lateinit var adapter: PlantaAdapter
+    private var listaOriginal: List<Planta> = emptyList()
+
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // ✅ 1. Inicializar binding PRIMERO
         _binding = FragmentListaPlantasBinding.bind(view)
+
         albumId = arguments?.getLong("albumId") ?: -1L
+
+
+        // ======================
+        // Recycler
+        // ======================
 
         binding.recyclerPlantas.layoutManager =
             LinearLayoutManager(requireContext())
 
-        // 🔥 CARGA SEGÚN CONTEXTO
+        adapter = PlantaAdapter(
+            plantas = emptyList(),
+            modoAgregarAlbum = albumId != -1L,
+            onAgregarPlantaAlbum = { planta ->
+                mostrarDialogoCantidadPrecio(planta)
+            }
+        )
+
+        binding.recyclerPlantas.adapter = adapter
+
+        // ======================
+        // Carga de datos
+        // ======================
+
         if (albumId != -1L) {
             viewModel.cargarPlantasParaAlbum()
         } else {
@@ -42,15 +66,29 @@ class ListaPlantasFragment : Fragment(R.layout.fragment_lista_plantas) {
         }
 
         viewModel.plantas.observe(viewLifecycleOwner) { lista ->
-            binding.recyclerPlantas.adapter =
-                PlantaAdapter(
-                    plantas = lista,
-                    modoAgregarAlbum = albumId != -1L,
-                    onAgregarPlantaAlbum = { planta ->
-                        mostrarDialogoCantidadPrecio(planta)
-                    }
-                )
+            listaOriginal = lista
+            adapter.actualizarLista(lista)
         }
+
+        // ======================
+        // Buscador
+        // ======================
+
+        binding.searchPlantas.setOnQueryTextListener(
+            object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
+
+                override fun onQueryTextSubmit(query: String?): Boolean = true
+
+                override fun onQueryTextChange(texto: String?): Boolean {
+                    filtrarPlantas(texto.orEmpty())
+                    return true
+                }
+            }
+        )
+
+        // ======================
+        // FAB
+        // ======================
 
         binding.fabAgregarPlanta.setOnClickListener {
             findNavController().navigate(R.id.crearPlantaFragment)
@@ -58,13 +96,30 @@ class ListaPlantasFragment : Fragment(R.layout.fragment_lista_plantas) {
     }
 
 
+    /* ======================
+       FILTRADO
+       ====================== */
+    private fun filtrarPlantas(texto: String) {
+        val filtro = texto.trim().lowercase()
+
+        val filtradas =
+            if (filtro.isEmpty()) {
+                listaOriginal
+            } else {
+                listaOriginal.filter { planta ->
+                    planta.familia.lowercase().contains(filtro) ||
+                            (planta.especie?.lowercase()?.contains(filtro) == true)
+                }
+            }
+
+        adapter.actualizarLista(filtradas)
+    }
 
     // 🔥 ESTA FUNCIÓN ES LA QUE FALTABA
     private fun mostrarDialogoCantidadPrecio(planta: Planta) {
         AgregarPlantaAlbumDialog(planta)
             .show(parentFragmentManager, "AgregarPlantaAlbum")
     }
-
 
     override fun onDestroyView() {
         super.onDestroyView()

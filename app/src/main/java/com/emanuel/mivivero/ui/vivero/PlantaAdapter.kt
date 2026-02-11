@@ -13,11 +13,13 @@ import com.emanuel.mivivero.R
 import com.emanuel.mivivero.data.model.Planta
 
 class PlantaAdapter(
-    private val plantas: List<Planta>,
+    plantas: List<Planta>,
     private val modoAgregarAlbum: Boolean = false,
     private val onAgregarPlantaAlbum: ((Planta) -> Unit)?
-
 ) : RecyclerView.Adapter<PlantaAdapter.PlantaViewHolder>() {
+
+    private val plantas = plantas.toMutableList()
+
 
     inner class PlantaViewHolder(itemView: View) :
         RecyclerView.ViewHolder(itemView) {
@@ -84,6 +86,14 @@ class PlantaAdapter(
         }
 
     }
+
+
+    fun actualizarLista(nuevaLista: List<Planta>) {
+        plantas.clear()
+        plantas.addAll(nuevaLista)
+        notifyDataSetChanged()
+    }
+
 
     override fun getItemCount(): Int = plantas.size
 }

@@ -3,20 +3,58 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#FFFFFF">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerPlantas"
+    <!-- CONTENEDOR -->
+    <LinearLayout
+        android:id="@+id/contenedorPrincipal"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="8dp"/>
+        android:orientation="vertical"
+        android:padding="12dp">
 
+        <!-- TÍTULO -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="LISTA DE PLANTAS"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:textColor="#424242"
+            android:paddingBottom="8dp" />
+
+        <!-- BUSCADOR -->
+        <androidx.appcompat.widget.SearchView
+            android:id="@+id/searchPlantas"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:iconifiedByDefault="false"
+            android:queryHint="Buscar plantas"
+            android:background="@android:color/darker_gray"
+           />
+
+        <!-- LISTA -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerPlantas"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:paddingTop="8dp" />
+
+    </LinearLayout>
+
+    <!-- FAB -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabAgregarPlanta"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@android:drawable/ic_input_add"
         android:layout_margin="16dp"
-        app:layout_anchor="@id/recyclerPlantas"
-        app:layout_anchorGravity="bottom|end"/>
+        android:backgroundTint="#4CAF50"
+        android:tint="@android:color/white"
+        app:layout_anchor="@id/contenedorPrincipal"
+        app:layout_anchorGravity="bottom|end" />
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

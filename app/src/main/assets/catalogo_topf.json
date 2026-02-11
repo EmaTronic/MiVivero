@@ -2,12 +2,477 @@
   "Varios": {
     "Abelmoschus": [
       "manihot"
-
-    ],"Abies": [
-      "tanne amabilis",
-      "tanne concolor v glauca",
-      "tanne lasiocarpa v arizonica",
-      "tanne magnific"
+    ],
+    "Abies": [
+      "amabilis",
+      "concolor",
+      "lasiocarpa",
+      "magnifica"
+    ],
+    "Abroma": [
+      "augusta"
+    ],
+    "Acacia": [
+      "drummondii"
+    ],
+    "Acer": [
+      "shirasawanum"
+    ],
+    "Acis": [
+      "autumnale",
+      "pulchella"
+    ],
+    "Afzelia": [
+      "quanzensis"
+    ],
+    "Albizzia": [
+      "julibrissin"
+    ],
+    "Alpinia": [
+      "malaccensis"
+    ],
+    "Amaranthus": [
+      "globosus"
+    ],
+    "Androcymbium": [
+      "austrocapense",
+      "dregei",
+      "irroratum",
+      "longipes"
+    ],
+    "Anigozanthos": [
+      "flavidus",
+      "humilis"
+    ],
+    "Annona": [
+      "squamosa"
+    ],
+    "Araujia": [
+      "sericifera"
+    ],
+    "Argyreia": [
+      "nervosa"
+    ],
+    "Arisaema": [
+      "flavum"
+    ],
+    "Aristolochia": [
+      "elegans",
+      "gigantea",
+      "grandiflora",
+      "littoralis",
+      "ringens"
+    ],
+    "Arum": [
+      "maculatum",
+      "alpinum",
+      "italicum",
+      "rupicola"
+    ],
+    "Asimina": [
+      "triloba"
+    ],
+    "Asphodelus": [
+      "bentho-rainhae"
+    ],
+    "Baseonema": [
+      "gregorii"
+    ],
+    "Beaufortia": [
+      "sparsa"
+    ],
+    "Begonia": [
+      "carolineifolia",
+      "fichseri",
+      "fuchsioides",
+      "grandis",
+      "heracleifolia",
+      "hirsuta",
+      "hirtella",
+      "leptotricha",
+      "mexicana",
+      "peltata",
+      "radicans",
+      "schmidtiana",
+      "semperflorens",
+      "solananthera",
+      "tomentosa",
+      "valida",
+      "venosa",
+      "wallichiana"
+    ],
+    "Belamcanda": [
+      "chinensis"
+    ],
+    "Bixa": [
+      "orellana"
+    ],
+    "Boswellia": [
+      "discoroides",
+      "neglecta",
+      "sacra"
+    ],
+    "Buddleia": [
+      "davidii"
+    ],
+    "Butea": [
+      "frondosa"
+    ],
+    "Caesalpinia": [
+      "mexicana",
+      "pulcherrima"
+    ],
+    "Callistemon": [
+      "brachyandrus",
+      "citrinus",
+      "linearis",
+      "pallidus",
+      "pinifolius",
+      "rigidus",
+      "rugulosus",
+      "salignus",
+      "shiressii",
+      "speciosus",
+      "teretifolius",
+      "viminalis"
+    ],
+    "Calycanthus": [
+      "floridus"
+    ],
+    "Campanula": [
+      "americana",
+      "glomerata",
+      "incurva",
+      "latifolia",
+      "rapunculus",
+      "takesimana",
+      "trichocalycina"
+    ],
+    "Canarina": [
+      "canariensis"
+    ],
+    "Canna": [
+      "fuerckheimii",
+      "indica",
+      "patens"
+    ],
+    "Carex": [
+      "hystricina"
+    ],
+    "Cassia": [
+      "didymobotrya",
+      "fistula",
+      "spectabilis"
+    ],
+    "Chamaecyparis": [
+      "lawsoniana",
+      "nootkatensis"
+    ],
+    "Chorisia": [
+      "speciosa"
+    ],
+    "Clematis": [
+      "paniculata"
+    ],
+    "Coccinia": [
+      "mildbraedii"
+    ],
+    "Combretum": [
+      "hereoense"
+    ],
+    "Ctenolepis": [
+      "garcinii"
+    ],
+    "Cunninghamia": [
+      "lanceolata"
+    ],
+    "Cyathea": [
+      "australis",
+      "cooperi"
+    ],
+    "Cyclostoma": [
+      "callistegioides"
+    ],
+    "Cynoglossum": [
+      "amabile"
+    ],
+    "Cyperus": [
+      "alternifolius"
+    ],
+    "Darlingtonia": [
+      "californica"
+    ],
+    "Datura": [
+      "arborea",
+      "discolor",
+      "fastuosa",
+      "metel",
+      "meteloides",
+      "stramonium",
+      "suaveolens",
+      "wrightii"
+    ],
+    "Daubenya": [
+      "aurea",
+      "stylosa"
+    ],
+    "Delonix": [
+      "adansonioides",
+      "elata",
+      "floribunda",
+      "pumila",
+      "regia"
+    ],
+    "Dionaea": [
+      "muscipula"
+    ],
+    "Dombeya": [
+      "weiss"
+    ],
+    "Drimiopsis": [
+      "atropurpurea",
+      "burkei",
+      "fani-venteri",
+      "kirkii",
+      "maxima"
+    ],
+    "Drosera": [
+      "binata",
+      "burkeana",
+      "capensis",
+      "filiformis",
+      "intermedia"
+    ],
+    "Echinocystus": [
+      "lobata"
+    ],
+    "Eriospermum": [
+      "cooperi"
+    ],
+    "Eschscholzia": [
+      "californica"
+    ],
+    "Eucalyptus": [
+      "antipolisensis",
+      "botryoides",
+      "brevifolia",
+      "bridgesiana",
+      "camaldulensis",
+      "cladoxalyx",
+      "cloeziana",
+      "cosmophylla",
+      "diversifolia",
+      "fastigata",
+      "globulosus",
+      "grossa",
+      "lehmannii",
+      "macrotheca",
+      "maidenii",
+      "morei",
+      "pauciflora",
+      "pulverulenta",
+      "rubida",
+      "saligna",
+      "sieberii",
+      "socialis",
+      "tereticornis",
+      "torguata",
+      "trabuti"
+    ],
+    "Eucomis": [
+      "autumnalis",
+      "regia"
+    ],
+    "Ficus": [
+      "lutea",
+      "benjamina",
+      "bussei",
+      "cordata",
+      "elastica",
+      "hillii",
+      "religiosa",
+      "sycomorus"
+    ],
+    "Freesia": [
+      "laxa"
+    ],
+    "Fritillaria": [
+      "imperialis",
+      "raddeana",
+      "meleagris"
+    ],
+    "Gardenia": [
+      "volkensii"
+    ],
+    "Gossypium": [
+      "herbaceum"
+    ],
+    "Gygnopetalum": [
+      "chinensis"
+    ],
+    "Hakea": [
+      "laurina",
+      "saligna"
+    ],
+    "Helianthus": [
+      "annuus"
+    ],
+    "Hibiscus": [
+      "syriacus",
+      "tiliaceum"
+    ],
+    "Hyoscyamus": [
+      "niger"
+    ],
+    "Incarvillea": [
+      "grandiflora"
+    ],
+    "Iris": [
+      "graminae",
+      "missouriensis",
+      "pallida"
+    ],
+    "Jacaranda": [
+      "mimosifolia"
+    ],
+    "Kennedia": [
+      "coccinea"
+    ],
+    "Kolkwitzia": [
+      "amabilis"
+    ],
+    "Kunzea": [
+      "ambigua",
+      "baxteri",
+      "parvifolia"
+    ],
+    "Lachenalia": [
+      "alooides",
+      "angelica",
+      "barkeriana",
+      "bulbilifera",
+      "comptonii",
+      "klinghardtiana",
+      "kliprandensis",
+      "latifolia",
+      "marginata",
+      "nardousbergensis",
+      "nervosa",
+      "patula",
+      "pusilla",
+      "reflexa",
+      "stayneri",
+      "trichophylla"
+    ],
+    "Ledebouria": [
+      "concolor",
+      "hypoxidioides",
+      "minima",
+      "revoluta"
+    ],
+    "Leptospermum": [
+      "epacridioideum",
+      "grandiflorum",
+      "scoparium"
+    ],
+    "Lilium": [
+      "martagon",
+      "sulfureum"
+    ],
+    "Littonia": [
+      "modesta"
+    ],
+    "Maurandya": [
+      "antirrhiniflora",
+      "erubescens"
+    ],
+    "Medinilla": [
+      "javanensis"
+    ],
+    "Melaleuca": [
+      "armillaris",
+      "ericifolia",
+      "fulgens",
+      "gibbosa",
+      "huegelii",
+      "lanceolata",
+      "laterita",
+      "linariifolia",
+      "nesophila",
+      "pentagona",
+      "quinquenervia",
+      "uncinata"
+    ],
+    "Nerium": [
+      "oleander"
+    ],
+    "Nicotiana": [
+      "alata",
+      "glauca",
+      "longiflora",
+      "rustica",
+      "sylvestris",
+      "tabacum",
+      "undulata"
+    ],
+    "Ornithogalum": [
+      "anguineum",
+      "caudatum",
+      "compactum",
+      "dubium",
+      "graminiflorum",
+      "hallii",
+      "hispidulum",
+      "juncifolium",
+      "longibracteatum",
+      "maculatum",
+      "multifolium",
+      "pruinosum",
+      "secundum",
+      "tenuifolium",
+      "thyrsoides"
+    ],
+    "Paeonia": [
+      "mascula"
+    ],
+    "Pancratium": [
+      "canariense"
+    ],
+    "Passiflora": [
+      "mixta",
+      "mooreana"
+    ],
+    "Paulownia": [
+      "tomentosa"
+    ],
+    "Phytolacca": [
+      "americana",
+      "dioica"
+    ],
+    "Pinus": [
+      "banksiana"
+    ],
+    "Punica": [
+      "granatum"
+    ],
+    "Rhododendron": [
+      "maximum"
+    ],
+    "Scilla": [
+      "hyacinthoides",
+      "peruviana",
+      "rigidifolia"
+    ],
+    "Solanum": [
+      "sisymbriifolium",
+      "atropurpureum",
+      "pseudocapsicum"
+    ],
+    "Tulbaghia": [
+      "violacea"
+    ],
+    "Zephyranthes": [
+      "drummondii"
     ]
   }
 }
