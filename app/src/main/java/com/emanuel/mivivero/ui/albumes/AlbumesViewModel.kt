@@ -81,4 +81,13 @@ class AlbumesViewModel(application: Application)
             )
         }
     }
+
+    fun eliminarAlbum(albumId: Long) {
+        viewModelScope.launch {
+            albumDao.deleteById(albumId)
+        }
+    }
+
+
+
 }

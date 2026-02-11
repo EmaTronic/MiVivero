@@ -48,5 +48,10 @@ interface AlbumDao {
     fun getAlbumesConCantidad(): LiveData<List<AlbumConCantidad>>
 
 
+    @Query("DELETE FROM albumes WHERE id = :albumId")
+    suspend fun deleteById(albumId: Long)
+
+
+
 }
 

@@ -8,6 +8,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.emanuel.mivivero.R
+import com.emanuel.mivivero.data.model.AlbumConCantidad
 import com.emanuel.mivivero.databinding.FragmentAlbumesBinding
 
 class AlbumesFragment : Fragment(R.layout.fragment_albumes) {
@@ -37,19 +38,38 @@ class AlbumesFragment : Fragment(R.layout.fragment_albumes) {
     private fun observarAlbumes() {
         viewModel.albumes.observe(viewLifecycleOwner) { lista ->
             binding.recyclerAlbumes.adapter =
-
-                AlbumesAdapter(lista) { album ->
-                    findNavController().navigate(
-                        R.id.albumDetalleFragment,
-                        Bundle().apply {
-                            putLong("albumId", album.id)
-                        }
-                    )
-                }
-
+                AlbumesAdapter(
+                    lista,
+                    onClick = { album ->
+                        findNavController().navigate(
+                            R.id.albumDetalleFragment,
+                            Bundle().apply {
+                                putLong("albumId", album.id)
+                            }
+                        )
+                    },
+                    onDeleteClick = { album ->
+                        mostrarConfirmacionEliminar(album)
+                    }
+                )
 
         }
+
+
     }
+
+    private fun mostrarConfirmacionEliminar(album: AlbumConCantidad) {
+
+        androidx.appcompat.app.AlertDialog.Builder(requireContext())
+            .setTitle("Eliminar álbum")
+            .setMessage("¿Eliminar '${album.nombre}'?")
+            .setPositiveButton("Eliminar") { _, _ ->
+                viewModel.eliminarAlbum(album.id)
+            }
+            .setNegativeButton("Cancelar", null)
+            .show()
+    }
+
 
     private fun configurarBotones() {
         binding.fabCrearAlbum.setOnClickListener {

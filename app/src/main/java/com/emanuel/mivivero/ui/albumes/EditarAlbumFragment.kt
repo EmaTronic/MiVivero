@@ -39,20 +39,58 @@ class EditarAlbumFragment : Fragment(R.layout.fragment_editar_album) {
         binding.recyclerPlantasAlbum.layoutManager =
             LinearLayoutManager(requireContext())
 
+        // 🔹 OBSERVAR DATOS DEL ÁLBUM
         editarAlbumViewModel.obtenerAlbum(albumId)
             .observe(viewLifecycleOwner) { album ->
+
                 binding.txtNombreAlbum.text = album?.nombre
                 binding.txtEstadoAlbum.text = album?.estado
+
+                when (album?.estado) {
+
+                    "BORRADOR" -> {
+                        binding.txtEstadoAlbum.setBackgroundResource(
+                            R.drawable.bg_estado_borrador
+                        )
+                        binding.txtEstadoAlbum.setCompoundDrawablesWithIntrinsicBounds(
+                            android.R.drawable.ic_menu_edit,
+                            0, 0, 0
+                        )
+                    }
+
+                    "FINALIZADO" -> {
+                        binding.txtEstadoAlbum.setBackgroundResource(
+                            R.drawable.bg_estado_finalizado
+                        )
+                        binding.txtEstadoAlbum.setCompoundDrawablesWithIntrinsicBounds(
+                            android.R.drawable.ic_menu_agenda,
+                            0, 0, 0
+                        )
+                    }
+
+                    "PUBLICADO" -> {
+                        binding.txtEstadoAlbum.setBackgroundResource(
+                            R.drawable.bg_estado_publicado
+                        )
+                        binding.txtEstadoAlbum.setCompoundDrawablesWithIntrinsicBounds(
+                            android.R.drawable.ic_menu_share,
+                            0, 0, 0
+                        )
+                    }
+                }
             }
 
+        // 🔹 OBSERVAR PLANTAS DEL ÁLBUM (SEPARADO)
         editarAlbumViewModel.obtenerPlantasDelAlbum(albumId)
             .observe(viewLifecycleOwner) { lista ->
+
                 binding.recyclerPlantasAlbum.adapter =
                     PlantasAlbumAdapter(lista) { planta ->
                         mostrarOpcionesPlanta(planta)
                     }
             }
 
+        // 🔹 BOTÓN AGREGAR
         binding.btnAgregarPlantas.setOnClickListener {
             findNavController().navigate(
                 R.id.action_editarAlbumFragment_to_listaPlantasFragment,
@@ -61,6 +99,8 @@ class EditarAlbumFragment : Fragment(R.layout.fragment_editar_album) {
                 }
             )
         }
+
+        // 🔹 BOTÓN FINALIZAR
         binding.btnFinalizarAlbum.setOnClickListener {
 
             editarAlbumViewModel.finalizarAlbum(albumId) { resultado ->
@@ -89,8 +129,8 @@ class EditarAlbumFragment : Fragment(R.layout.fragment_editar_album) {
                 )
             }
         }
-
     }
+
 
     // ======================
     // OPCIONES

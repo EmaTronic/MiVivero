@@ -5,13 +5,16 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.emanuel.mivivero.data.model.AlbumConCantidad
 import com.emanuel.mivivero.databinding.ItemAlbumBinding
+import com.emanuel.mivivero.R
+
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
 class AlbumesAdapter(
     private val items: List<AlbumConCantidad>,
-    private val onClick: (AlbumConCantidad) -> Unit
+    private val onClick: (AlbumConCantidad) -> Unit,
+    private val onDeleteClick: (AlbumConCantidad) -> Unit
 
 ) : RecyclerView.Adapter<AlbumesAdapter.VH>() {
 
@@ -37,9 +40,47 @@ class AlbumesAdapter(
         holder.b.txtCantidadPlantas.text =
             "Plantas: ${album.cantidadPlantas}"
 
+        holder.b.btnEliminarAlbum.setOnClickListener {
+            onDeleteClick(album)
+        }
+
+
         holder.itemView.setOnClickListener {
             onClick(album)
         }
+
+        holder.b.txtEstadoAlbum.text = album.estado
+
+        when (album.estado) {
+
+            "BORRADOR" -> {
+                holder.b.txtEstadoAlbum.setBackgroundResource(
+                    R.drawable.bg_estado_borrador
+                )
+                holder.b.txtEstadoAlbum.setTextColor(
+                    holder.itemView.context.getColor(android.R.color.black)
+                )
+            }
+
+            "FINALIZADO" -> {
+                holder.b.txtEstadoAlbum.setBackgroundResource(
+                    R.drawable.bg_estado_finalizado
+                )
+                holder.b.txtEstadoAlbum.setTextColor(
+                    holder.itemView.context.getColor(android.R.color.black)
+                )
+            }
+
+            "PUBLICADO" -> {
+                holder.b.txtEstadoAlbum.setBackgroundResource(
+                    R.drawable.bg_estado_publicado
+                )
+                holder.b.txtEstadoAlbum.setTextColor(
+                    holder.itemView.context.getColor(android.R.color.black)
+                )
+            }
+        }
+
     }
 
 
