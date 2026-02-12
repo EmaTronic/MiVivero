@@ -1,6 +1,8 @@
 package com.emanuel.mivivero.ui.albumes
 
 import android.app.AlertDialog
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -10,6 +12,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.emanuel.mivivero.R
 import com.emanuel.mivivero.data.model.AlbumConCantidad
+import com.emanuel.mivivero.data.model.PlantaAlbum
 import com.emanuel.mivivero.databinding.FragmentAlbumesBinding
 import com.google.android.material.snackbar.Snackbar
 
@@ -20,6 +23,8 @@ class AlbumesFragment : Fragment(R.layout.fragment_albumes) {
 
     private val viewModel: AlbumesViewModel by viewModels()
 
+    private lateinit var adapter: AlbumesAdapter
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentAlbumesBinding.bind(view)
@@ -28,55 +33,91 @@ class AlbumesFragment : Fragment(R.layout.fragment_albumes) {
         observarAlbumes()
         configurarBotones()
         configurarSwipe()
-        mostrarSnackbarUndo()
-
-        binding.recyclerAlbumes.setOnClickListener {
-            val vibrator = requireContext().getSystemService(android.os.Vibrator::class.java)
-            vibrator?.vibrate(300)
-        }
-
-
-
     }
+
+    // ================================
+    // RECYCLER
+    // ================================
 
     private fun configurarRecycler() {
+
+        adapter = AlbumesAdapter(
+            items = emptyList(),
+            onClick = { album ->
+                findNavController().navigate(
+                    R.id.albumDetalleFragment,
+                    Bundle().apply {
+                        putLong("albumId", album.id)
+                    }
+                )
+            },
+            onDeleteClick = { album ->
+                mostrarConfirmacionEliminar(album)
+            },
+            onPublicarClick = { album ->
+                publicarAlbum(album)
+            }
+        )
+
         binding.recyclerAlbumes.layoutManager =
             LinearLayoutManager(requireContext())
+
+        binding.recyclerAlbumes.adapter = adapter
     }
+
 
     private fun observarAlbumes() {
         viewModel.albumes.observe(viewLifecycleOwner) { lista ->
-            binding.recyclerAlbumes.adapter =
-                AlbumesAdapter(
-                    lista,
-                    onClick = { album ->
-                        findNavController().navigate(
-                            R.id.albumDetalleFragment,
-                            Bundle().apply {
-                                putLong("albumId", album.id)
-                            }
-                        )
-                    },
-                    onDeleteClick = { album ->
-                        mostrarConfirmacionEliminar(album)
-                    }
-                )
-
+            adapter.actualizarLista(lista)
         }
-
-
     }
 
 
-    private fun mostrarSnackbarUndo() {
+    // ================================
+    // PUBLICAR
+    // ================================
 
-        com.google.android.material.snackbar.Snackbar
-            .make(binding.root, "Álbum eliminado", com.google.android.material.snackbar.Snackbar.LENGTH_LONG)
-            .setAction("DESHACER") {
-                viewModel.restaurarUltimoAlbum()
+    private fun publicarAlbum(album: AlbumConCantidad) {
+
+        val liveData = viewModel.obtenerPlantasDelAlbumRaw(album.id)
+
+        liveData.observe(viewLifecycleOwner) { plantas: List<PlantaAlbum> ->
+
+            if (plantas.isEmpty()) {
+                Toast.makeText(
+                    requireContext(),
+                    "El álbum no tiene plantas",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@observe
             }
-            .show()
+
+            // 🔥 remover observer para que no se acumule
+            liveData.removeObservers(viewLifecycleOwner)
+
+            val nombreVivero = "Mi Vivero"
+
+            val uris =
+                com.emanuel.mivivero.ui.utils.AlbumPublisher
+                    .generarImagenesAlbum(
+                        requireContext(),
+                        plantas,
+                        nombreVivero
+                    )
+
+            val intent = Intent(Intent.ACTION_SEND_MULTIPLE).apply {
+                type = "image/*"
+                putParcelableArrayListExtra(Intent.EXTRA_STREAM, ArrayList(uris))
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
+
+            startActivity(Intent.createChooser(intent, "Compartir álbum"))
+        }
     }
+
+    // ================================
+    // ELIMINAR
+    // ================================
 
     private fun mostrarConfirmacionEliminar(album: AlbumConCantidad) {
 
@@ -84,67 +125,22 @@ class AlbumesFragment : Fragment(R.layout.fragment_albumes) {
             .setTitle("Eliminar álbum")
             .setMessage("¿Eliminar '${album.nombre}'?")
             .setPositiveButton("Eliminar") { _, _ ->
-
                 eliminarConEfectos(album)
             }
             .setNegativeButton("Cancelar", null)
             .show()
     }
 
-
-
-
-    private fun configurarBotones() {
-        binding.fabCrearAlbum.setOnClickListener {
-            findNavController().navigate(
-                R.id.action_albumesFragment_to_crearAlbumesFragment
-            )
-        }
-    }
-
-    private fun configurarSwipe() {
-
-        val itemTouchHelperCallback =
-            object : androidx.recyclerview.widget.ItemTouchHelper.SimpleCallback(
-                0,
-                androidx.recyclerview.widget.ItemTouchHelper.LEFT or
-                        androidx.recyclerview.widget.ItemTouchHelper.RIGHT
-            ) {
-
-                override fun onMove(
-                    recyclerView: androidx.recyclerview.widget.RecyclerView,
-                    viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder,
-                    target: androidx.recyclerview.widget.RecyclerView.ViewHolder
-                ): Boolean = false
-
-                override fun onSwiped(
-                    viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder,
-                    direction: Int
-                ) {
-
-                    val position = viewHolder.adapterPosition
-                    val album = viewModel.albumes.value?.get(position)
-                        ?: return
-
-                    eliminarConEfectos(album)
-                }
-            }
-
-        val itemTouchHelper =
-            androidx.recyclerview.widget.ItemTouchHelper(itemTouchHelperCallback)
-
-        itemTouchHelper.attachToRecyclerView(binding.recyclerAlbumes)
-    }
-
     private fun eliminarConEfectos(album: AlbumConCantidad) {
 
-        val vibrator = requireContext().getSystemService(android.os.Vibrator::class.java)
+        val vibrator =
+            requireContext().getSystemService(android.os.Vibrator::class.java)
 
         vibrator?.let {
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
 
                 val effect = android.os.VibrationEffect.createWaveform(
-                    longArrayOf(0, 100, 50, 100), // vibra - pausa - vibra
+                    longArrayOf(0, 100, 50, 100),
                     -1
                 )
 
@@ -161,15 +157,11 @@ class AlbumesFragment : Fragment(R.layout.fragment_albumes) {
         mostrarSnackbarConIcono()
     }
 
-
-
-
-
     private fun mostrarSnackbarConIcono() {
 
         val snackbar = Snackbar.make(
             binding.root,
-            "  Álbum eliminado",
+            "Álbum eliminado",
             Snackbar.LENGTH_LONG
         )
 
@@ -194,12 +186,58 @@ class AlbumesFragment : Fragment(R.layout.fragment_albumes) {
         snackbar.show()
     }
 
+    // ================================
+    // BOTONES
+    // ================================
 
+    private fun configurarBotones() {
+        binding.fabCrearAlbum.setOnClickListener {
+            findNavController().navigate(
+                R.id.action_albumesFragment_to_crearAlbumesFragment
+            )
+        }
+    }
 
+    // ================================
+    // SWIPE
+    // ================================
 
+    private fun configurarSwipe() {
 
+        val itemTouchHelperCallback =
+            object : androidx.recyclerview.widget.ItemTouchHelper.SimpleCallback(
+                0,
+                androidx.recyclerview.widget.ItemTouchHelper.LEFT or
+                        androidx.recyclerview.widget.ItemTouchHelper.RIGHT
+            ) {
 
+                override fun onMove(
+                    recyclerView: androidx.recyclerview.widget.RecyclerView,
+                    viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder,
+                    target: androidx.recyclerview.widget.RecyclerView.ViewHolder
+                ): Boolean = false
 
+                override fun onSwiped(
+                    viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder,
+                    direction: Int
+                ) {
+
+                    val position = viewHolder.adapterPosition
+                    val album = adapter.getItem(position)
+
+                    eliminarConEfectos(album)
+                }
+            }
+
+        val itemTouchHelper =
+            androidx.recyclerview.widget.ItemTouchHelper(itemTouchHelperCallback)
+
+        itemTouchHelper.attachToRecyclerView(binding.recyclerAlbumes)
+    }
+
+    // ================================
+    // CLEANUP
+    // ================================
 
     override fun onDestroyView() {
         super.onDestroyView()

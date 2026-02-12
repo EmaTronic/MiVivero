@@ -22,6 +22,9 @@ class AlbumDetalleFragment : Fragment(R.layout.fragment_album_detalle) {
 
     private var albumId: Long = -1L
 
+    private lateinit var adapter: AlbumesAdapter
+
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentAlbumDetalleBinding.bind(view)
@@ -47,15 +50,18 @@ class AlbumDetalleFragment : Fragment(R.layout.fragment_album_detalle) {
                     "BORRADOR" -> {
                         binding.btnEditarAlbum.visibility = View.VISIBLE
                         binding.btnEditarAlbum.text = "Continuar edición"
+                        binding.btnPublicarAlbum.visibility = View.GONE
                     }
 
                     "FINALIZADO" -> {
                         binding.btnEditarAlbum.visibility = View.VISIBLE
                         binding.btnEditarAlbum.text = "Reabrir edición"
+                        binding.btnPublicarAlbum.visibility = View.VISIBLE
                     }
 
                     "PUBLICADO" -> {
                         binding.btnEditarAlbum.visibility = View.GONE
+                        binding.btnPublicarAlbum.visibility = View.VISIBLE
                     }
 
                     else -> {

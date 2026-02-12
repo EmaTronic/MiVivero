@@ -15,13 +15,12 @@
         android:layout_height="wrap_content"
         android:padding="16dp">
 
-
         <!-- Nombre -->
         <TextView
             android:id="@+id/txtNombreAlbum"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Nombre álbum"
+            android:text="@string/nombre_album"
             android:textSize="18sp"
             android:textStyle="bold"
             android:textColor="@android:color/white"
@@ -34,38 +33,37 @@
             android:id="@+id/txtEstadoAlbum"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="BORRADOR"
+            android:text="@string/estado_borrador"
             android:textSize="12sp"
             android:textStyle="bold"
             android:paddingStart="12dp"
             android:paddingEnd="12dp"
             android:paddingTop="6dp"
             android:paddingBottom="6dp"
-            android:drawablePadding="6dp"
             android:background="@drawable/bg_estado_borrador"
             android:textColor="@android:color/black"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
 
-
+        <!-- Botón eliminar -->
         <ImageButton
             android:id="@+id/btnEliminarAlbum"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@android:drawable/ic_menu_delete"
+            android:contentDescription="@string/eliminar_album"
             app:tint="#EF5350"
             app:layout_constraintTop_toBottomOf="@id/txtEstadoAlbum"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginTop="4dp"/>
-
 
         <!-- Observaciones -->
         <TextView
             android:id="@+id/txtObservaciones"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Observaciones"
+            android:text="@string/observaciones"
             android:textColor="#BDBDBD"
             android:layout_marginTop="6dp"
             app:layout_constraintTop_toBottomOf="@id/txtNombreAlbum"
@@ -77,11 +75,30 @@
             android:id="@+id/txtCantidadPlantas"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Plantas: 0"
+            android:text="@string/plantas_0"
             android:textColor="#4CAF50"
             android:layout_marginTop="6dp"
             app:layout_constraintTop_toBottomOf="@id/txtObservaciones"
             app:layout_constraintStart_toStartOf="parent"/>
+
+        <!-- Botón PUBLICAR -->
+        <Button
+            android:id="@+id/btnPublicar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/publicar"
+            android:textStyle="bold"
+            android:textColor="@android:color/white"
+            android:backgroundTint="@color/btn_enabled"
+            android:drawableStart="@drawable/ic_rocket"
+            android:drawablePadding="8dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/txtCantidadPlantas"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="12dp"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

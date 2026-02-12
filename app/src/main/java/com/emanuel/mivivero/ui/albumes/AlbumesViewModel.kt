@@ -13,6 +13,7 @@ import com.emanuel.mivivero.data.model.EstadoAlbum
 import com.emanuel.mivivero.data.model.Planta
 import kotlinx.coroutines.launch
 import com.emanuel.mivivero.data.model.AlbumConCantidad
+import com.emanuel.mivivero.data.model.PlantaAlbum
 
 
 class AlbumesViewModel(application: Application)
@@ -122,6 +123,11 @@ class AlbumesViewModel(application: Application)
             ultimoBackup = null
         }
     }
+
+    fun obtenerPlantasDelAlbumRaw(albumId: Long): LiveData<List<PlantaAlbum>> {
+        return albumPlantaDao.obtenerPlantasDelAlbum(albumId)
+    }
+
 
 
 

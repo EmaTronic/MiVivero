@@ -7,6 +7,19 @@
     <string name="next">Next</string>
     <string name="previous">Previous</string>
 
+
+
+    <string name="nombre_album">Nombre álbum</string>
+    <string name="estado_borrador">BORRADOR</string>
+    <string name="observaciones">Observaciones</string>
+    <string name="plantas_0">Plantas: 0</string>
+    <string name="publicar">PUBLICAR</string>
+    <string name="eliminar_album">Eliminar álbum</string>
+
+
+
+
+
     <string name="lorem_ipsum">
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam in scelerisque sem. Mauris
         volutpat, dolor id interdum ullamcorper, risus dolor egestas lectus, sit amet mattis purus
