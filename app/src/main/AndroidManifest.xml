@@ -4,6 +4,7 @@
 
     <!-- Permisos -->
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.VIBRATE"/>
 
     <!-- La cámara no es obligatoria -->
     <uses-feature

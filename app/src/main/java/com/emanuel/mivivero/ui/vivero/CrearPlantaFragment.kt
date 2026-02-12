@@ -111,17 +111,25 @@ class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
             )
         )
 
+        binding.actFamilia.threshold = 1
+
+
         binding.actFamilia.setOnItemClickListener { _, _, _, _ ->
             val familia = binding.actFamilia.text.toString()
             val generos = catalogoFinal[familia]?.keys?.toList() ?: emptyList()
 
             binding.etFamilia.setAdapter(
+
                 ArrayAdapter(
                     requireContext(),
                     android.R.layout.simple_dropdown_item_1line,
                     generos
                 )
             )
+
+            binding.etFamilia.threshold = 1
+
+
 
             binding.etFamilia.text.clear()
             binding.etEspecie.text.clear()
@@ -156,7 +164,7 @@ class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
         binding.etFamilia.addTextChangedListener {
             if (it.isNullOrBlank()) {
                 binding.etFamilia.error = "Campo obligatorio"
-                binding.etEspecie.isEnabled = false
+                binding.etEspecie.isEnabled = true
             } else {
                 binding.etFamilia.error = null
             }

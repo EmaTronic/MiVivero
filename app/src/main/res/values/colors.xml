@@ -8,4 +8,5 @@
     <color name="black">#000000</color>
     <color name="btn_disabled">#BDBDBD</color> <!-- gris -->
     <color name="btn_enabled">#4CAF50</color>  <!-- verde -->
+    <color name="yellow">#FFEB3B</color>
 </resources>
