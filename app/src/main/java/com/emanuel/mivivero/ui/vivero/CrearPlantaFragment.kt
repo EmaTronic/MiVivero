@@ -104,8 +104,9 @@ class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
 
         binding.btnGuardar.setOnClickListener {
 
-            val familia = binding.actFamilia.text.toString().trim()
+            val familia = binding.etFamilia.text.toString().trim()  // 🔥 ahora guarda género
             val especie = binding.etEspecie.text.toString().trim()
+
 
             if (familia.isEmpty()) {
                 binding.actFamilia.error = "Campo obligatorio"
@@ -239,6 +240,7 @@ class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
     }
 
     private fun configurarAutocomplete() {
+
         val familias = catalogoFinal.keys.sorted()
 
         binding.actFamilia.setAdapter(
@@ -248,6 +250,76 @@ class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
                 familias
             )
         )
+
+        // 🔥 Mostrar dropdown al tocar aunque esté vacío
+        binding.actFamilia.threshold = 0
+        binding.etFamilia.threshold = 0
+        binding.etEspecie.threshold = 0
+
+        binding.actFamilia.setOnTouchListener { _, event ->
+            if (event.action == android.view.MotionEvent.ACTION_DOWN) {
+                binding.actFamilia.showDropDown()
+            }
+            false
+        }
+
+        binding.etFamilia.setOnTouchListener { _, event ->
+            if (event.action == android.view.MotionEvent.ACTION_DOWN) {
+                binding.etFamilia.showDropDown()
+            }
+            false
+        }
+
+        binding.etEspecie.setOnTouchListener { _, event ->
+            if (event.action == android.view.MotionEvent.ACTION_DOWN) {
+                binding.etEspecie.showDropDown()
+            }
+            false
+        }
+
+        // 🔥 Cuando se elige familia → cargar géneros
+        binding.actFamilia.setOnItemClickListener { _, _, _, _ ->
+
+            val familia = binding.actFamilia.text.toString()
+
+            val generos =
+                catalogoFinal[familia]?.keys?.sorted()
+                    ?: emptyList()
+
+            binding.etFamilia.setAdapter(
+                ArrayAdapter(
+                    requireContext(),
+                    android.R.layout.simple_dropdown_item_1line,
+                    generos
+                )
+            )
+
+            binding.etFamilia.text.clear()
+            binding.etEspecie.text.clear()
+            binding.etEspecie.isEnabled = false
+        }
+
+        // 🔥 Cuando se elige género → cargar especies
+        binding.etFamilia.setOnItemClickListener { _, _, _, _ ->
+
+            val familia = binding.actFamilia.text.toString()
+            val genero = binding.etFamilia.text.toString()
+
+            val especies =
+                catalogoFinal[familia]?.get(genero)?.sorted()
+                    ?: emptyList()
+
+            binding.etEspecie.setAdapter(
+                ArrayAdapter(
+                    requireContext(),
+                    android.R.layout.simple_dropdown_item_1line,
+                    especies
+                )
+            )
+
+            binding.etEspecie.isEnabled = true
+            binding.etEspecie.text.clear()
+        }
     }
 
     private fun unirCatalogos(
