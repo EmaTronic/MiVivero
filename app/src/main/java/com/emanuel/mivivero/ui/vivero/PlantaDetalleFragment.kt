@@ -122,6 +122,23 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
             // 🔥 CLAVE: recién ahora cargar fotos   cargarFotos()
         }
 
+        /*======================
+            ELIMINAR FOTO SOLO CON 1 SELECC
+         ===================*/
+        binding.btnEliminarFoto.setOnClickListener {
+
+            if (fotosSeleccionadas.size != 1) {
+                Toast.makeText(
+                    requireContext(),
+                    "Seleccioná una foto",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@setOnClickListener
+            }
+
+            confirmarEliminarFoto(fotosSeleccionadas[0])
+        }
+
         // 2️⃣ MIGRACIÓN + CARGA (una sola vez)
         viewLifecycleOwner.lifecycleScope.launch {
             val planta = viewModel.obtenerPlantaPorId(plantaId) ?: return@launch
@@ -195,6 +212,7 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
                 .setNegativeButton("Cancelar", null)
                 .show()
         }
+
     }
 
 
