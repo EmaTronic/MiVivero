@@ -23,13 +23,20 @@ class CrearAlbumesFragment : Fragment(R.layout.fragment_crear_albumes) {
         // OBSERVER ÁLBUM CREADO
         // =====================
         viewModel.albumCreadoId.observe(viewLifecycleOwner) { albumId ->
-            findNavController().navigate(
-                R.id.action_crearAlbumesFragment_to_editarAlbumFragment,
-                Bundle().apply {
-                    putLong("albumId", albumId)
-                }
-            )
+
+            if (albumId != null) {
+
+                findNavController().navigate(
+                    R.id.action_crearAlbumesFragment_to_editarAlbumFragment,
+                    Bundle().apply {
+                        putLong("albumId", albumId)
+                    }
+                )
+
+                viewModel.limpiarAlbumCreado()
+            }
         }
+
 
         // =====================
         // BOTÓN CONTINUAR

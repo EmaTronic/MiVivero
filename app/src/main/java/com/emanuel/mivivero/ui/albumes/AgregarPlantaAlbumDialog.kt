@@ -43,44 +43,43 @@ class AgregarPlantaAlbumDialog(
                     planta = planta,
                     cantidad = cantidad,
                     precio = precio
-
-
-
                 ) { error ->
 
                     if (error != null) {
 
-                        // Error por duplicado
-                        if (error.contains("ya está")) {
-                            android.widget.Toast.makeText(
-                                requireContext(),
-                                error,
-                                android.widget.Toast.LENGTH_SHORT
-                            ).show()
-                            return@agregarPlantaAlAlbum
-                        }
-
-                        // Error por validación
-                        binding.etCantidad.error =
-                            if (cantidad <= 0) "Cantidad debe ser > 0" else null
-
-                        binding.etPrecio.error =
-                            if (precio <= 0.0) "Precio debe ser > 0" else null
-
-                    } else {
-
+                        // Mostrar cualquier error directamente
                         android.widget.Toast.makeText(
                             requireContext(),
-                            "Planta agregada al álbum",
+                            error,
                             android.widget.Toast.LENGTH_SHORT
                         ).show()
 
-                        dialog.dismiss()
+                        // Marcar campos si corresponde
+                        if (cantidad <= 0) {
+                            binding.etCantidad.error = "Cantidad debe ser > 0"
+                        }
+
+                        if (precio <= 0.0) {
+                            binding.etPrecio.error = "Precio debe ser > 0"
+                        }
+
+                        return@agregarPlantaAlAlbum
                     }
 
+                    // Éxito
+                    android.widget.Toast.makeText(
+                        requireContext(),
+                        "Planta agregada al álbum",
+                        android.widget.Toast.LENGTH_SHORT
+                    ).show()
+
+                    dialog.dismiss()
                 }
+
+
             }
         }
+
 
         return dialog
     }

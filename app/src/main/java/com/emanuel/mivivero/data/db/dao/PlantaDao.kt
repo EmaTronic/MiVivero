@@ -28,4 +28,20 @@ interface PlantaDao {
 
     @Query("SELECT MAX(numeroPlanta) FROM plantas")
     suspend fun getMaxNumeroPlanta(): Int?
+
+    @Query("""
+    SELECT *
+    FROM plantas
+    WHERE aLaVenta = 1
+      AND id NOT IN (
+          SELECT plantaId
+          FROM album_planta
+          WHERE albumId = :albumId
+      )
+    ORDER BY numeroPlanta ASC
+""")
+    suspend fun obtenerPlantasDisponiblesParaAlbum(
+        albumId: Long
+    ): List<PlantaEntity>
+
 }

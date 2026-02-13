@@ -32,6 +32,17 @@
         android:layout_weight="1" />
 
     <Button
+        android:id="@+id/btnEditarNombre"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Editar nombre"
+        android:textSize="12sp"
+        android:layout_marginBottom="8dp"
+        android:backgroundTint="#607D8B"
+        android:textColor="@android:color/white"/>
+
+
+    <Button
         android:id="@+id/btnEditarAlbum"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

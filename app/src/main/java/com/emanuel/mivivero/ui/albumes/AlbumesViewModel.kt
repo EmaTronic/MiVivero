@@ -36,8 +36,14 @@ class AlbumesViewModel(application: Application)
         precio: Double,
         onResultado: (String?) -> Unit
     ) {
-        val albumId = albumActualId ?: return
 
+        val albumId = albumActualId
+        if (albumId == null) {
+            onResultado("No hay álbum activo")
+            return
+        }
+
+        // Validaciones básicas
         if (cantidad <= 0) {
             onResultado("La cantidad debe ser mayor a 0")
             return
@@ -48,7 +54,15 @@ class AlbumesViewModel(application: Application)
             return
         }
 
+        // 🔥 VALIDACIÓN DE STOCK
+        if (cantidad > planta.cantidad) {
+            onResultado("Stock insuficiente. Disponibles: ${planta.cantidad}")
+            return
+        }
+
         viewModelScope.launch {
+
+            // Verificar que no esté ya en el álbum
             val existe =
                 albumPlantaDao.existePlantaEnAlbum(albumId, planta.id) > 0
 
@@ -57,6 +71,7 @@ class AlbumesViewModel(application: Application)
                 return@launch
             }
 
+            // Insertar en el álbum
             albumPlantaDao.insert(
                 AlbumPlantaEntity(
                     albumId = albumId,
@@ -66,9 +81,10 @@ class AlbumesViewModel(application: Application)
                 )
             )
 
-            onResultado(null) // éxito
+            onResultado(null) // Éxito
         }
     }
+
 
 
 

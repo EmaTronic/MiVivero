@@ -57,10 +57,11 @@ class ListaPlantasFragment : Fragment(R.layout.fragment_lista_plantas) {
 
 
         if (albumId != -1L) {
-            viewModel.cargarPlantasParaAlbum()
+            viewModel.cargarPlantasParaAlbum(albumId)
         } else {
             viewModel.cargarPlantas()
         }
+
 
         viewModel.plantas.observe(viewLifecycleOwner) { lista ->
             listaOriginal = lista

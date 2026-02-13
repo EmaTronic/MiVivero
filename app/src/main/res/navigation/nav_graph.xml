@@ -80,11 +80,17 @@
         android:id="@+id/albumDetalleFragment"
         android:name="com.emanuel.mivivero.ui.albumes.AlbumDetalleFragment"
         android:label="Detalle del álbum">
-    <argument
-        android:name="albumId"
-        app:argType="long" />
+
+        <argument
+            android:name="albumId"
+            app:argType="long" />
+
+        <action
+            android:id="@+id/action_albumDetalleFragment_to_editarAlbumFragment"
+            app:destination="@id/editarAlbumFragment" />
 
     </fragment>
+
 
 
 
@@ -97,6 +103,10 @@
         <action
             android:id="@+id/action_albumesFragment_to_crearAlbumesFragment"
             app:destination="@id/crearAlbumesFragment" />
+
+        <action
+            android:id="@+id/action_albumesFragment_to_albumDetalleFragment"
+            app:destination="@id/albumDetalleFragment" />
 
     </fragment>
 

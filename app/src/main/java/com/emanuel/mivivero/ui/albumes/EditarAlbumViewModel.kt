@@ -128,6 +128,13 @@ class EditarAlbumViewModel(application: Application)
         }
     }
 
+    fun actualizarNombre(albumId: Long, nuevoNombre: String) {
+        viewModelScope.launch {
+            albumDao.actualizarNombre(albumId, nuevoNombre)
+        }
+    }
+
+
 
 
 

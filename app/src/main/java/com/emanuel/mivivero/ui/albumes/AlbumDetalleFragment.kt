@@ -70,16 +70,39 @@ class AlbumDetalleFragment : Fragment(R.layout.fragment_album_detalle) {
                 }
             }
 
+        binding.btnEditarNombre.setOnClickListener {
+
+            val editText = android.widget.EditText(requireContext())
+            editText.setText(binding.txtNombreAlbum.text.toString())
+
+            androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                .setTitle("Editar nombre del álbum")
+                .setView(editText)
+                 .setPositiveButton("Guardar") { _, _ ->
+
+                    val nuevoNombre = editText.text.toString().trim()
+
+                    if (nuevoNombre.isNotEmpty()) {
+                        viewModel.actualizarNombre(albumId, nuevoNombre)
+                    }
+                }
+                .setNegativeButton("Cancelar", null)
+                .show()
+        }
+
+
 
         binding.btnEditarAlbum.setOnClickListener {
 
             viewModel.reabrirAlbum(albumId)
 
-            findNavController().navigate(
-                R.id.editarAlbumFragment,
-                Bundle().apply {
-                    putLong("albumId", albumId)
-                }
+
+                    findNavController().navigate(
+                        R.id.action_albumDetalleFragment_to_editarAlbumFragment,
+                        Bundle().apply {
+                        putLong("albumId", albumId)
+                    }
+
             )
         }
 

@@ -132,16 +132,19 @@ class ViveroViewModel(application: Application) : AndroidViewModel(application) 
     }
 
 
-    fun cargarPlantasParaAlbum() {
+    fun cargarPlantasParaAlbum(albumId: Long) {
         viewModelScope.launch(Dispatchers.IO) {
-            val lista = plantaDao.getAll()
+
+            val lista = plantaDao
+                .obtenerPlantasDisponiblesParaAlbum(albumId)
                 .map { PlantaMapper.toModel(it) }
-                .filter { it.aLaVenta }          // 🔥 ESTE FILTRO ES LA CLAVE
-                .sortedBy { it.numeroPlanta }
 
             _plantas.postValue(lista)
         }
     }
+
+
+
 
 
     fun guardarPlanta(
@@ -185,6 +188,8 @@ class ViveroViewModel(application: Application) : AndroidViewModel(application) 
             Log.d("VIVERO_VM", "Planta guardada correctamente")
         }
     }
+
+
 
 
 

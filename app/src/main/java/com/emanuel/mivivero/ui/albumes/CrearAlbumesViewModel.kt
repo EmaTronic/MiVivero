@@ -23,9 +23,9 @@ class CrearAlbumesViewModel(application: Application)
     // =====================
     // LIVE DATA
     // =====================
+    private val _albumCreadoId = MutableLiveData<Long?>()
+    val albumCreadoId: LiveData<Long?> = _albumCreadoId
 
-    private val _albumCreadoId = MutableLiveData<Long>()
-    val albumCreadoId: LiveData<Long> = _albumCreadoId
 
     // =====================
     // CREAR ÁLBUM
@@ -46,4 +46,9 @@ class CrearAlbumesViewModel(application: Application)
             _albumCreadoId.postValue(id)
         }
     }
+
+    fun limpiarAlbumCreado() {
+        _albumCreadoId.value = null
+    }
+
 }

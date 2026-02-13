@@ -55,6 +55,13 @@ interface AlbumDao {
     suspend fun obtenerAlbumRaw(albumId: Long): AlbumEntity?
 
 
+    @Query("""
+UPDATE albumes 
+SET nombre = :nuevoNombre 
+WHERE id = :albumId
+""")
+    suspend fun actualizarNombre(albumId: Long, nuevoNombre: String)
+
 
 
 }

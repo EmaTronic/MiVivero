@@ -16,6 +16,9 @@ import com.emanuel.mivivero.databinding.FragmentEditarAlbumBinding
 
 class EditarAlbumFragment : Fragment(R.layout.fragment_editar_album) {
 
+
+    private var yaNavego = false
+
     private var _binding: FragmentEditarAlbumBinding? = null
     private val binding get() = _binding!!
 
@@ -40,13 +43,16 @@ class EditarAlbumFragment : Fragment(R.layout.fragment_editar_album) {
             LinearLayoutManager(requireContext())
 
         // 🔹 OBSERVAR DATOS DEL ÁLBUM
+        // 🔹 OBSERVAR DATOS DEL ÁLBUM
         editarAlbumViewModel.obtenerAlbum(albumId)
             .observe(viewLifecycleOwner) { album ->
 
-                binding.txtNombreAlbum.text = album?.nombre
-                binding.txtEstadoAlbum.text = album?.estado
+                if (album == null) return@observe
 
-                when (album?.estado) {
+                binding.txtNombreAlbum.text = album.nombre
+                binding.txtEstadoAlbum.text = album.estado
+
+                when (album.estado) {
 
                     "BORRADOR" -> {
                         binding.txtEstadoAlbum.setBackgroundResource(
@@ -66,6 +72,9 @@ class EditarAlbumFragment : Fragment(R.layout.fragment_editar_album) {
                             android.R.drawable.ic_menu_agenda,
                             0, 0, 0
                         )
+
+
+
                     }
 
                     "PUBLICADO" -> {
@@ -79,6 +88,8 @@ class EditarAlbumFragment : Fragment(R.layout.fragment_editar_album) {
                     }
                 }
             }
+
+
 
         // 🔹 OBSERVAR PLANTAS DEL ÁLBUM (SEPARADO)
         editarAlbumViewModel.obtenerPlantasDelAlbum(albumId)
@@ -111,24 +122,21 @@ class EditarAlbumFragment : Fragment(R.layout.fragment_editar_album) {
                         resultado.mensaje,
                         Toast.LENGTH_LONG
                     ).show()
-                    return@finalizarAlbum
+                } else {
+
+                    findNavController().navigate(
+                        R.id.albumesFragment,
+                        null,
+                        androidx.navigation.NavOptions.Builder()
+                            .setPopUpTo(R.id.viveroFragment, false)
+                            .build()
+                    )
+
                 }
-
-                Toast.makeText(
-                    requireContext(),
-                    "Álbum finalizado",
-                    Toast.LENGTH_SHORT
-                ).show()
-
-                findNavController().navigate(
-                    R.id.albumesFragment,
-                    null,
-                    androidx.navigation.NavOptions.Builder()
-                        .setPopUpTo(R.id.viveroFragment, false)
-                        .build()
-                )
             }
         }
+
+
     }
 
 
@@ -143,21 +151,14 @@ class EditarAlbumFragment : Fragment(R.layout.fragment_editar_album) {
             ) { _, which ->
                 when (which) {
                     0 -> {
-                        Toast.makeText(
-                            requireContext(),
-                            "ENTRÓ A EDITAR",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        mostrarDialogoEditar(planta)
                     }
                     1 -> {
-                        Toast.makeText(
-                            requireContext(),
-                            "ENTRÓ A ELIMINAR",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        confirmarEliminar(planta)
                     }
                 }
             }
+
             .setNegativeButton("Cancelar", null)
             .show()
     }
