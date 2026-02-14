@@ -17,7 +17,11 @@ import com.emanuel.mivivero.databinding.FragmentAlbumesBinding
 import com.emanuel.mivivero.ui.auth.RegistroViewModel
 import com.google.android.material.snackbar.Snackbar
 import androidx.lifecycle.lifecycleScope
+import com.emanuel.mivivero.ui.utils.AlbumPublisher
 import kotlinx.coroutines.launch
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
+
 
 
 
@@ -89,14 +93,14 @@ class AlbumesFragment : Fragment(R.layout.fragment_albumes) {
 
         viewLifecycleOwner.lifecycleScope.launch {
 
-            val registrado = registroViewModel.usuarioRegistrado()
+            val usuario = registroViewModel.obtenerUsuario()
 
-            if (!registrado) {
+            if (usuario == null) {
                 findNavController().navigate(R.id.registroUsuarioFragment)
                 return@launch
             }
 
-            if (registroViewModel.usuarioEstaBloqueado()) {
+            if (usuario.usuarioBloqueado) {
                 Toast.makeText(
                     requireContext(),
                     "Tu cuenta está bloqueada para publicar",
@@ -105,7 +109,8 @@ class AlbumesFragment : Fragment(R.layout.fragment_albumes) {
                 return@launch
             }
 
-            // 👇 TU LÓGICA ORIGINAL
+            val nombreVivero = usuario.nombreVivero
+
             val liveData = viewModel.obtenerPlantasDelAlbumRaw(album.id)
 
             liveData.observe(viewLifecycleOwner) { plantas: List<PlantaAlbum> ->
@@ -121,34 +126,41 @@ class AlbumesFragment : Fragment(R.layout.fragment_albumes) {
 
                 liveData.removeObservers(viewLifecycleOwner)
 
-
-
-
-
-                val nombreVivero = "Mi Vivero"
-
-
-
-
-
                 val uris =
-                    com.emanuel.mivivero.ui.utils.AlbumPublisher
-                        .generarImagenesAlbum(
-                            requireContext(),
-                            plantas,
-                            nombreVivero
-                        )
+                    AlbumPublisher.generarImagenesAlbum(
+                        requireContext(),
+                        plantas,
+                        nombreVivero
+                    )
+                val intent = if (uris.size == 1) {
 
-                val intent = Intent(Intent.ACTION_SEND_MULTIPLE).apply {
-                    type = "image/*"
-                    putParcelableArrayListExtra(Intent.EXTRA_STREAM, ArrayList(uris))
-                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    Intent(Intent.ACTION_SEND).apply {
+                        type = "image/*"
+                        putExtra(Intent.EXTRA_STREAM, uris.first())
+                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    }
+
+                } else {
+
+                    Intent(Intent.ACTION_SEND_MULTIPLE).apply {
+                        type = "image/*"
+                        putParcelableArrayListExtra(Intent.EXTRA_STREAM, ArrayList(uris))
+                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    }
                 }
 
                 startActivity(Intent.createChooser(intent, "Compartir álbum"))
-            }
+
+
+
+                startActivity(Intent.createChooser(intent, "Compartir álbum"))
+
+           }
         }
     }
+
+
+
 
 
     // ================================
