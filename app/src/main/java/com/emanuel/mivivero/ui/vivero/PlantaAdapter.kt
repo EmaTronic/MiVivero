@@ -1,4 +1,4 @@
-package com.emanuel.mivivero.ui.adapter
+package com.emanuel.mivivero.ui.vivero
 
 import android.net.Uri
 import android.os.Bundle

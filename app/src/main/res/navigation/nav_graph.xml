@@ -2,12 +2,12 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/authFragment">
+    app:startDestination="@id/viveroFragment">
 
     <!-- 🌱 MENÚ PRINCIPAL -->
     <fragment
         android:id="@+id/viveroFragment"
-        android:name="com.emanuel.mivivero.ui.fragment.ViveroFragment"
+        android:name="com.emanuel.mivivero.ui.vivero.ViveroFragment"
         android:label="Vivero">
 
         <action
@@ -26,7 +26,7 @@
     <!-- 🌿 PLANTAS -->
     <fragment
         android:id="@+id/crearPlantaFragment"
-        android:name="com.emanuel.mivivero.ui.fragment.CrearPlantaFragment"
+        android:name="com.emanuel.mivivero.ui.vivero.CrearPlantaFragment"
         android:label="Crear / Editar Planta">
 
         <argument
@@ -42,12 +42,12 @@
 
     <fragment
         android:id="@+id/plantaDetalleFragment"
-        android:name="com.emanuel.mivivero.ui.fragment.PlantaDetalleFragment"
+        android:name="com.emanuel.mivivero.ui.viviero.PlantaDetalleFragment"
         android:label="Detalle Planta" />
 
     <fragment
         android:id="@+id/compararFotosFragment"
-        android:name="com.emanuel.mivivero.ui.fragment.CompararFotosFragment"
+        android:name="com.emanuel.mivivero.ui.vivero.CompararFotosFragment"
         android:label="Comparar fotos" />
 
     <!-- 📚 ÁLBUMES -->
@@ -115,6 +115,14 @@
         android:id="@+id/authFragment"
         android:name="com.emanuel.mivivero.ui.auth.AuthFragment"
         android:label="Autenticación" />
+
+
+    <fragment
+        android:id="@+id/registroUsuarioFragment"
+        android:name="com.emanuel.mivivero.ui.auth.RegistroUsuarioFragment"
+        android:label="Registro Usuario" />
+
+
 
 
 

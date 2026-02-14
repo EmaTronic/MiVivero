@@ -14,7 +14,12 @@ import com.emanuel.mivivero.R
 import com.emanuel.mivivero.data.model.AlbumConCantidad
 import com.emanuel.mivivero.data.model.PlantaAlbum
 import com.emanuel.mivivero.databinding.FragmentAlbumesBinding
+import com.emanuel.mivivero.ui.auth.RegistroViewModel
 import com.google.android.material.snackbar.Snackbar
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
+
+
 
 class AlbumesFragment : Fragment(R.layout.fragment_albumes) {
 
@@ -24,6 +29,9 @@ class AlbumesFragment : Fragment(R.layout.fragment_albumes) {
     private val viewModel: AlbumesViewModel by viewModels()
 
     private lateinit var adapter: AlbumesAdapter
+
+
+    private val registroViewModel: RegistroViewModel by viewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -79,41 +87,69 @@ class AlbumesFragment : Fragment(R.layout.fragment_albumes) {
 
     private fun publicarAlbum(album: AlbumConCantidad) {
 
-        val liveData = viewModel.obtenerPlantasDelAlbumRaw(album.id)
+        viewLifecycleOwner.lifecycleScope.launch {
 
-        liveData.observe(viewLifecycleOwner) { plantas: List<PlantaAlbum> ->
+            val registrado = registroViewModel.usuarioRegistrado()
 
-            if (plantas.isEmpty()) {
+            if (!registrado) {
+                findNavController().navigate(R.id.registroUsuarioFragment)
+                return@launch
+            }
+
+            if (registroViewModel.usuarioEstaBloqueado()) {
                 Toast.makeText(
                     requireContext(),
-                    "El álbum no tiene plantas",
-                    Toast.LENGTH_SHORT
+                    "Tu cuenta está bloqueada para publicar",
+                    Toast.LENGTH_LONG
                 ).show()
-                return@observe
+                return@launch
             }
 
-            // 🔥 remover observer para que no se acumule
-            liveData.removeObservers(viewLifecycleOwner)
+            // 👇 TU LÓGICA ORIGINAL
+            val liveData = viewModel.obtenerPlantasDelAlbumRaw(album.id)
 
-            val nombreVivero = "Mi Vivero"
+            liveData.observe(viewLifecycleOwner) { plantas: List<PlantaAlbum> ->
 
-            val uris =
-                com.emanuel.mivivero.ui.utils.AlbumPublisher
-                    .generarImagenesAlbum(
+                if (plantas.isEmpty()) {
+                    Toast.makeText(
                         requireContext(),
-                        plantas,
-                        nombreVivero
-                    )
+                        "El álbum no tiene plantas",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    return@observe
+                }
 
-            val intent = Intent(Intent.ACTION_SEND_MULTIPLE).apply {
-                type = "image/*"
-                putParcelableArrayListExtra(Intent.EXTRA_STREAM, ArrayList(uris))
-                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                liveData.removeObservers(viewLifecycleOwner)
+
+
+
+
+
+                val nombreVivero = "Mi Vivero"
+
+
+
+
+
+                val uris =
+                    com.emanuel.mivivero.ui.utils.AlbumPublisher
+                        .generarImagenesAlbum(
+                            requireContext(),
+                            plantas,
+                            nombreVivero
+                        )
+
+                val intent = Intent(Intent.ACTION_SEND_MULTIPLE).apply {
+                    type = "image/*"
+                    putParcelableArrayListExtra(Intent.EXTRA_STREAM, ArrayList(uris))
+                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                }
+
+                startActivity(Intent.createChooser(intent, "Compartir álbum"))
             }
-
-            startActivity(Intent.createChooser(intent, "Compartir álbum"))
         }
     }
+
 
     // ================================
     // ELIMINAR

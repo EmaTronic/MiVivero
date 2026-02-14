@@ -1,4 +1,4 @@
-package com.emanuel.mivivero.ui.fragment
+package com.emanuel.mivivero.ui.vivero
 
 import android.Manifest
 import android.content.pm.PackageManager
@@ -17,7 +17,6 @@ import androidx.navigation.fragment.findNavController
 import com.emanuel.mivivero.R
 import com.emanuel.mivivero.data.model.Planta
 import com.emanuel.mivivero.databinding.FragmentCrearPlantaBinding
-import com.emanuel.mivivero.ui.viewmodel.ViveroViewModel
 import com.emanuel.mivivero.utils.cargarCatalogo
 import java.io.File
 

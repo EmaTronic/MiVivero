@@ -1,4 +1,4 @@
-package com.emanuel.mivivero.ui.fragment
+package com.emanuel.mivivero.ui.viviero
 
 import android.Manifest
 import android.app.AlertDialog
@@ -20,8 +20,8 @@ import com.emanuel.mivivero.R
 import com.emanuel.mivivero.databinding.FragmentPlantaDetalleBinding
 import com.emanuel.mivivero.data.model.FotoPlanta
 import com.emanuel.mivivero.data.model.Planta
-import com.emanuel.mivivero.ui.adapter.FotoAdapter
-import com.emanuel.mivivero.ui.viewmodel.ViveroViewModel
+import com.emanuel.mivivero.ui.vivero.FotoAdapter
+import com.emanuel.mivivero.ui.vivero.ViveroViewModel
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date

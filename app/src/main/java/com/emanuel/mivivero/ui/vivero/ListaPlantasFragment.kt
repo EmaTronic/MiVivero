@@ -11,9 +11,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.emanuel.mivivero.R
 import com.emanuel.mivivero.data.model.Planta
 import com.emanuel.mivivero.databinding.FragmentListaPlantasBinding
-import com.emanuel.mivivero.ui.adapter.PlantaAdapter
+
 import com.emanuel.mivivero.ui.albumes.AgregarPlantaAlbumDialog
-import com.emanuel.mivivero.ui.viewmodel.ViveroViewModel
+
 
 class ListaPlantasFragment : Fragment(R.layout.fragment_lista_plantas) {
 

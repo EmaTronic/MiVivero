@@ -6,6 +6,15 @@
     android:layout_height="match_parent"
     android:background="#F5F5F5">
 
+
+    <ImageView
+        android:id="@+id/btnUsuario"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_margin="12dp"
+        android:src="@drawable/ic_usuario"
+        android:layout_alignParentEnd="true"/>
+
     <!-- 🔹 GRID CENTRAL DE ACCIONES -->
     <GridLayout
         android:id="@+id/gridAcciones"
@@ -54,6 +63,15 @@
             android:text="Nuevo\nÁlbum"
             android:textSize="15sp"
             android:backgroundTint="#7FD1C3"/>
+
+
+
+        <Button
+            android:id="@+id/btnRegistroUsuario"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Registrar usuario"
+            android:layout_marginTop="12dp"/>
 
     </GridLayout>
 

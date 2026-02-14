@@ -41,9 +41,9 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
 
         val actionCodeSettings =
             com.google.firebase.auth.ActionCodeSettings.newBuilder()
-                .setUrl("https://mivivero-ematronik.firebaseapp.com/login")
+                .setUrl("https://mivivero-ematroniq.web.app")
 
-            .setHandleCodeInApp(true)
+                .setHandleCodeInApp(true)
                 .setAndroidPackageName(
                     requireContext().packageName,
                     true,

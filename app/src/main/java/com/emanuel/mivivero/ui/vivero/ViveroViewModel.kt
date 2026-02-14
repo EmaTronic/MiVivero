@@ -1,4 +1,4 @@
-package com.emanuel.mivivero.ui.viewmodel
+package com.emanuel.mivivero.ui.vivero
 
 import android.app.Application
 import android.util.Log
