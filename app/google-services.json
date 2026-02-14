@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "202556075903",
+    "project_id": "mivivero-ematronik",
+    "storage_bucket": "mivivero-ematronik.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:202556075903:android:68d577bb1538eeafa6f44a",
+        "android_client_info": {
+          "package_name": "com.emanuel.mivivero"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDgyQ6kYERtwAkrbIc-AWtkMSbjKI5jmNA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

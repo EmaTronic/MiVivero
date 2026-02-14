@@ -2,7 +2,7 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/viveroFragment">
+    app:startDestination="@id/authFragment">
 
     <!-- 🌱 MENÚ PRINCIPAL -->
     <fragment
@@ -109,6 +109,13 @@
             app:destination="@id/albumDetalleFragment" />
 
     </fragment>
+
+
+    <fragment
+        android:id="@+id/authFragment"
+        android:name="com.emanuel.mivivero.ui.auth.AuthFragment"
+        android:label="Autenticación" />
+
 
 
 

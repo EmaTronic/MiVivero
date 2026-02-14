@@ -3,6 +3,8 @@ plugins {
     alias(libs.plugins.kotlin.android)
     id("kotlin-kapt")
    // id("androidx.navigation.safeargs.kotlin")
+    id("com.google.gms.google-services")
+
 }
 
 android {
@@ -72,6 +74,10 @@ dependencies {
     implementation("androidx.room:room-runtime:$roomVersion")
     implementation("androidx.room:room-ktx:$roomVersion")
     kapt("androidx.room:room-compiler:$roomVersion")
+
+    //CORREO
+    implementation("com.google.firebase:firebase-auth-ktx:22.3.0")
+
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
