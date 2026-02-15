@@ -54,6 +54,9 @@ dependencies {
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
 
+    implementation("androidx.exifinterface:exifinterface:1.3.6")
+
+
     //TEST
 
     testImplementation("junit:junit:4.13.2")

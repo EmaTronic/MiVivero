@@ -90,8 +90,6 @@ class AlbumesFragment : Fragment(R.layout.fragment_albumes) {
     // PUBLICAR
     // ================================
 
-
-
     private fun publicarAlbum(album: AlbumConCantidad) {
 
         viewLifecycleOwner.lifecycleScope.launch {
@@ -114,10 +112,6 @@ class AlbumesFragment : Fragment(R.layout.fragment_albumes) {
 
             val nombreAlbum = album.nombre
 
-
-
-
-
             val liveData = viewModel.obtenerPlantasDelAlbumRaw(album.id)
 
             liveData.observe(viewLifecycleOwner) { plantas ->
@@ -139,30 +133,19 @@ class AlbumesFragment : Fragment(R.layout.fragment_albumes) {
                     nombreAlbum
                 )
 
-
-
-                // 🔥 Generamos SIEMPRE collage único
-                val collageUri =
-                    com.emanuel.mivivero.utils.InstagramCollageGenerator
-                        .generarCollageVertical(
-                            requireContext(),
-                            uris,
-                            nombreAlbum
-                        )
-
-                val intent = Intent(Intent.ACTION_SEND).apply {
+                // 🔥 Intent base múltiples imágenes
+                val baseIntent = Intent(Intent.ACTION_SEND_MULTIPLE).apply {
                     type = "image/*"
-                    putExtra(Intent.EXTRA_STREAM, collageUri)
+                    putParcelableArrayListExtra(Intent.EXTRA_STREAM, ArrayList(uris))
                     addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                 }
 
-                startActivity(
-                    Intent.createChooser(intent, "Compartir álbum")
-                )
+                val chooser = Intent.createChooser(baseIntent, "Compartir álbum")
+
+                startActivity(chooser)
             }
         }
     }
-
 
     // ================================
     // ELIMINAR

@@ -20,10 +20,10 @@ object AlbumPublisher {
 
         plantas.forEach { planta ->
 
+            val uriFoto = Uri.parse(planta.fotoRuta)
+
             val original = try {
-                val inputStream = context.contentResolver.openInputStream(
-                    Uri.parse(planta.fotoRuta)
-                )
+                val inputStream = context.contentResolver.openInputStream(uriFoto)
                 BitmapFactory.decodeStream(inputStream)
             } catch (e: Exception) {
                 null
@@ -31,80 +31,155 @@ object AlbumPublisher {
 
             if (original == null) return@forEach
 
-            val mutable = original.copy(Bitmap.Config.ARGB_8888, true)
+            // 🔥 ===== CORRECCIÓN ROTACIÓN EXIF =====
+            val rotatedBitmap = try {
+
+                val inputStream = context.contentResolver.openInputStream(uriFoto)
+                val exif = androidx.exifinterface.media.ExifInterface(inputStream!!)
+
+                val orientation = exif.getAttributeInt(
+                    androidx.exifinterface.media.ExifInterface.TAG_ORIENTATION,
+                    androidx.exifinterface.media.ExifInterface.ORIENTATION_NORMAL
+                )
+
+                val matrix = Matrix()
+
+                when (orientation) {
+                    androidx.exifinterface.media.ExifInterface.ORIENTATION_ROTATE_90 ->
+                        matrix.postRotate(90f)
+
+                    androidx.exifinterface.media.ExifInterface.ORIENTATION_ROTATE_180 ->
+                        matrix.postRotate(180f)
+
+                    androidx.exifinterface.media.ExifInterface.ORIENTATION_ROTATE_270 ->
+                        matrix.postRotate(270f)
+                }
+
+                Bitmap.createBitmap(
+                    original,
+                    0,
+                    0,
+                    original.width,
+                    original.height,
+                    matrix,
+                    true
+                )
+
+            } catch (e: Exception) {
+                original
+            }
+
+            val mutable = rotatedBitmap.copy(Bitmap.Config.ARGB_8888, true)
             val canvas = Canvas(mutable)
 
-            val width = mutable.width
-            val height = mutable.height
+            // ===============================
+            // 🔧 ZONA DE AJUSTES VISUALES
+            // ===============================
 
-            val padding = 40f
+            val padding = 90f
+            // 🔧 padding = distancia horizontal del texto al borde izquierdo
+
+            val barHeight = 550f
+            // 🔧 barHeight = altura del zócalo negro (arriba y abajo)
+            //    ↑ subir este valor agranda la barra negra
 
             val paintTitulo = Paint().apply {
                 color = Color.WHITE
-                textSize = 110f
+                textSize = 200f
+                // 🔧 textSize TÍTULO = tamaño del nombre del álbum
                 isFakeBoldText = true
-                setShadowLayer(8f, 0f, 0f, Color.BLACK)
             }
 
             val paintTexto = Paint().apply {
                 color = Color.WHITE
-                textSize = 85f
-                setShadowLayer(6f, 0f, 0f, Color.BLACK)
+                textSize = 120f
+                // 🔧 textSize TEXTO = tamaño planta / cantidad / precio
             }
 
-            val fondo = Paint().apply {
-                color = Color.parseColor("#AA000000")
+            val paintBackground = Paint().apply {
+                color = Color.parseColor("#CC000000")
+                // 🔧 Cambiar transparencia:
+                // "#AA000000" → más claro
+                // "#FF000000" → negro sólido
             }
 
-            // =============================
-            // 🔥 BLOQUE SUPERIOR (ÁLBUM)
-            // =============================
+            // ===============================
+            // 🔳 BARRA SUPERIOR
+            // ===============================
 
             canvas.drawRect(
                 0f,
                 0f,
-                width.toFloat(),
-                180f,
-                fondo
+                mutable.width.toFloat(),
+                barHeight,
+                paintBackground
             )
+
+            // ===============================
+            // 🔳 BARRA INFERIOR
+            // ===============================
+
+            canvas.drawRect(
+                0f,
+                mutable.height - barHeight,
+                mutable.width.toFloat(),
+                mutable.height.toFloat(),
+                paintBackground
+            )
+
+            // ===============================
+            // 📝 TEXTO SUPERIOR (ÁLBUM)
+            // ===============================
 
             canvas.drawText(
                 nombreAlbum,
                 padding,
-                120f,
+                250f,
                 paintTitulo
             )
+            // 🔧 250f = altura vertical del nombre del álbum
+            //    subir número → baja el texto
+            //    bajar número → lo sube
 
-            // =============================
-            // 🔥 BLOQUE INFERIOR (DATOS)
-            // =============================
+            // ===============================
+            // 📝 TEXTO INFERIOR
+            // ===============================
 
-            val bloqueAltura = 350f
-            val topBloque = height - bloqueAltura
+            var y = mutable.height - 380f
+            // 🔧 180f = distancia desde abajo donde arranca el texto inferior
+            //    subir número → texto más arriba
+            //    bajar número → texto más abajo
 
-            canvas.drawRect(
-                0f,
-                topBloque,
-                width.toFloat(),
-                height.toFloat(),
-                fondo
+            canvas.drawText(
+                "Planta: ${planta.nombre}",
+                padding,
+                y,
+                paintTexto
             )
 
-            var y = topBloque + 120f
+            y += 150f
+            // 🔧 separación vertical entre líneas
 
-            canvas.drawText(planta.nombre, padding, y, paintTexto)
+            canvas.drawText(
+                "Disponible: ${planta.cantidad}",
+                padding,
+                y,
+                paintTexto
+            )
 
-            y += 95f
+            y += 150f
+            // 🔧 separación vertical entre cantidad y precio
 
-            canvas.drawText("Disponible: ${planta.cantidad}", padding, y, paintTexto)
+            canvas.drawText(
+                "Precio: $${planta.precio}",
+                padding,
+                y,
+                paintTexto
+            )
 
-            y += 95f
-
-            canvas.drawText("Precio: $${planta.precio}", padding, y, paintTexto)
-
-            // =============================
-            // GUARDAR ARCHIVO
-            // =============================
+            // ===============================
+            // 💾 GUARDAR ARCHIVO
+            // ===============================
 
             val file = File(
                 context.cacheDir,
@@ -126,5 +201,7 @@ object AlbumPublisher {
 
         return uris
     }
+
+
 
 }

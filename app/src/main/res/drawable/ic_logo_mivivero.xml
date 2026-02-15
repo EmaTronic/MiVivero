@@ -1,0 +1,58 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="120dp"
+    android:viewportWidth="120"
+    android:viewportHeight="120">
+
+    <!-- Fondo circular -->
+    <circle
+        android:cx="60"
+        android:cy="60"
+        android:r="58"
+        android:fillColor="#1FA89A"/>
+
+    <!-- Cabeza -->
+    <circle
+        android:cx="60"
+        android:cy="42"
+        android:r="16"
+        android:fillColor="#FFFFFF"/>
+
+    <!-- Gorra -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M44,34 Q60,24 76,34 L76,39 Q60,32 44,39 Z"/>
+
+    <!-- Ojos -->
+    <circle android:cx="54" android:cy="43" android:r="2" android:fillColor="#0E5F5C"/>
+    <circle android:cx="66" android:cy="43" android:r="2" android:fillColor="#0E5F5C"/>
+
+    <!-- Sonrisa -->
+    <path
+        android:strokeColor="#0E5F5C"
+        android:strokeWidth="2"
+        android:fillColor="@android:color/transparent"
+        android:pathData="M54,49 Q60,53 66,49"/>
+
+    <!-- Brazos -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M36,72 Q48,62 55,72 Q48,76 36,72 Z"/>
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M84,72 Q72,62 65,72 Q72,76 84,72 Z"/>
+
+    <!-- Maceta -->
+    <path
+        android:fillColor="#0E5F5C"
+        android:pathData="M48,72 L72,72 L68,84 L52,84 Z"/>
+
+    <!-- Planta -->
+    <path
+        android:fillColor="#1FA89A"
+        android:pathData="M60,63
+                          Q53,55 49,63
+                          Q54,61 60,63
+                          Q67,55 71,63
+                          Q66,61 60,63 Z"/>
+</vector>
