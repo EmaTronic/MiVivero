@@ -19,6 +19,7 @@ import com.google.android.material.snackbar.Snackbar
 import androidx.lifecycle.lifecycleScope
 import com.emanuel.mivivero.ui.utils.AlbumPublisher
 import kotlinx.coroutines.launch
+import com.emanuel.mivivero.utils.InstagramCollageGenerator
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 
@@ -89,6 +90,8 @@ class AlbumesFragment : Fragment(R.layout.fragment_albumes) {
     // PUBLICAR
     // ================================
 
+
+
     private fun publicarAlbum(album: AlbumConCantidad) {
 
         viewLifecycleOwner.lifecycleScope.launch {
@@ -109,11 +112,15 @@ class AlbumesFragment : Fragment(R.layout.fragment_albumes) {
                 return@launch
             }
 
-            val nombreVivero = usuario.nombreVivero
+            val nombreAlbum = album.nombre
+
+
+
+
 
             val liveData = viewModel.obtenerPlantasDelAlbumRaw(album.id)
 
-            liveData.observe(viewLifecycleOwner) { plantas: List<PlantaAlbum> ->
+            liveData.observe(viewLifecycleOwner) { plantas ->
 
                 if (plantas.isEmpty()) {
                     Toast.makeText(
@@ -126,41 +133,35 @@ class AlbumesFragment : Fragment(R.layout.fragment_albumes) {
 
                 liveData.removeObservers(viewLifecycleOwner)
 
-                val uris =
-                    AlbumPublisher.generarImagenesAlbum(
-                        requireContext(),
-                        plantas,
-                        nombreVivero
-                    )
-                val intent = if (uris.size == 1) {
+                val uris = AlbumPublisher.generarImagenesAlbum(
+                    requireContext(),
+                    plantas,
+                    nombreAlbum
+                )
 
-                    Intent(Intent.ACTION_SEND).apply {
-                        type = "image/*"
-                        putExtra(Intent.EXTRA_STREAM, uris.first())
-                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                    }
 
-                } else {
 
-                    Intent(Intent.ACTION_SEND_MULTIPLE).apply {
-                        type = "image/*"
-                        putParcelableArrayListExtra(Intent.EXTRA_STREAM, ArrayList(uris))
-                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                    }
+                // 🔥 Generamos SIEMPRE collage único
+                val collageUri =
+                    com.emanuel.mivivero.utils.InstagramCollageGenerator
+                        .generarCollageVertical(
+                            requireContext(),
+                            uris,
+                            nombreAlbum
+                        )
+
+                val intent = Intent(Intent.ACTION_SEND).apply {
+                    type = "image/*"
+                    putExtra(Intent.EXTRA_STREAM, collageUri)
+                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                 }
 
-                startActivity(Intent.createChooser(intent, "Compartir álbum"))
-
-
-
-                startActivity(Intent.createChooser(intent, "Compartir álbum"))
-
-           }
+                startActivity(
+                    Intent.createChooser(intent, "Compartir álbum")
+                )
+            }
         }
     }
-
-
-
 
 
     // ================================
