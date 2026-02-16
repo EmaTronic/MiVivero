@@ -128,7 +128,7 @@ class EditarAlbumFragment : Fragment(R.layout.fragment_editar_album) {
                         R.id.albumesFragment,
                         null,
                         androidx.navigation.NavOptions.Builder()
-                            .setPopUpTo(R.id.viveroFragment, false)
+                            .setPopUpTo(R.id.listaPlantasFragment, false)
                             .build()
                     )
 

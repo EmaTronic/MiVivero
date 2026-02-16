@@ -1,0 +1,18 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/listaPlantasFragment"
+        android:icon="@drawable/ic_local_florist"
+        android:title="Plantas"/>
+
+    <item
+        android:id="@+id/albumesFragment"
+        android:icon="@drawable/ic_photo_library"
+        android:title="Álbumes"/>
+
+    <item
+        android:id="@+id/identificarFragment"
+        android:icon="@drawable/ic_search"
+        android:title="Identificar"/>
+
+</menu>

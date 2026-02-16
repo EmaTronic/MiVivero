@@ -34,9 +34,7 @@ class ListaPlantasFragment : Fragment(R.layout.fragment_lista_plantas) {
 
         albumId = arguments?.getLong("albumId") ?: -1L
 
-        binding.btnVolverAlbum.setOnClickListener {
-            findNavController().popBackStack()
-        }
+
 
         binding.recyclerPlantas.layoutManager =
             LinearLayoutManager(requireContext())
@@ -49,8 +47,6 @@ class ListaPlantasFragment : Fragment(R.layout.fragment_lista_plantas) {
             }
         )
 
-        binding.btnVolverAlbum.visibility =
-            if (albumId != -1L) View.VISIBLE else View.GONE
 
 
         binding.recyclerPlantas.adapter = adapter

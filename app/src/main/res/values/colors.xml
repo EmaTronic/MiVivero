@@ -9,4 +9,17 @@
     <color name="btn_disabled">#BDBDBD</color> <!-- gris -->
     <color name="btn_enabled">#4CAF50</color>  <!-- verde -->
     <color name="yellow">#FFEB3B</color>
+
+    <!-- COLORES DE NUEVO FRAGMENT-->
+    <color name="teal_primary">#1FA89A</color>
+    <color name="teal_dark">#0E5F5C</color>
+    <color name="teal_light">#A7E3DB</color>
+    <color name="background_soft">#F4FBFA</color>
+    <color name="text_primary">#222222</color>
+    <color name="text_secondary">#666666</color>
+
+
+
+
+
 </resources>
