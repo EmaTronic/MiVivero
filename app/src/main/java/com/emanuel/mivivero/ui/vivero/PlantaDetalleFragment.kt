@@ -6,6 +6,9 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
+import android.widget.FrameLayout
+import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
@@ -55,9 +58,18 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
     private val camaraLauncher =
         registerForActivityResult(ActivityResultContracts.TakePicture()) { ok ->
             if (ok && fotoUri != null) {
+
+                if (fotosActuales.size >= 4) {
+                    Toast.makeText(
+                        requireContext(),
+                        "Máximo 4 fotos por planta",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    return@registerForActivityResult
+                }
+
                 val rutaFinal = fotoUri.toString() + "?t=" + System.currentTimeMillis()
                 viewLifecycleOwner.lifecycleScope.launch {
-
                     if (fotoYaExiste(rutaFinal)) {
                         Toast.makeText(
                             requireContext(),
@@ -71,28 +83,59 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
                 }
             }
         }
+
 
     // ===== GALERÍA =====
     private val galeriaLauncher =
         registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+
             uri?.let {
-                val rutaFinal = it.toString() + "?t=" + System.currentTimeMillis()
+
+                if (fotosActuales.size >= 4) {
+                    Toast.makeText(
+                        requireContext(),
+                        "Máximo 4 fotos por planta",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    return@registerForActivityResult
+                }
+
                 viewLifecycleOwner.lifecycleScope.launch {
 
-                    if (fotoYaExiste(rutaFinal)) {
+                    try {
+
+                        val inputStream =
+                            requireContext().contentResolver.openInputStream(it)
+
+                        val archivoDestino = File(
+                            requireContext().filesDir,
+                            "planta_${System.currentTimeMillis()}.jpg"
+                        )
+
+                        inputStream?.use { input ->
+                            archivoDestino.outputStream().use { output ->
+                                input.copyTo(output)
+                            }
+                        }
+
+                        val rutaFinal =
+                            Uri.fromFile(archivoDestino).toString()
+
+                        viewModel.agregarFotoExtra(plantaId, rutaFinal)
+
+                        cargarFotos()
+
+                    } catch (e: Exception) {
                         Toast.makeText(
                             requireContext(),
-                            "Esta foto ya fue agregada",
+                            "Error al copiar imagen",
                             Toast.LENGTH_SHORT
                         ).show()
-                        return@launch
                     }
-
-                    viewModel.agregarFotoExtra(plantaId, rutaFinal)
-                    cargarFotos()
                 }
             }
         }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -122,22 +165,8 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
             // 🔥 CLAVE: recién ahora cargar fotos   cargarFotos()
         }
 
-        /*======================
-            ELIMINAR FOTO SOLO CON 1 SELECC
-         ===================*/
-        binding.btnEliminarFoto.setOnClickListener {
 
-            if (fotosSeleccionadas.size != 1) {
-                Toast.makeText(
-                    requireContext(),
-                    "Seleccioná una foto",
-                    Toast.LENGTH_SHORT
-                ).show()
-                return@setOnClickListener
-            }
 
-            confirmarEliminarFoto(fotosSeleccionadas[0])
-        }
 
         // 2️⃣ MIGRACIÓN + CARGA (una sola vez)
         viewLifecycleOwner.lifecycleScope.launch {
@@ -179,7 +208,7 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
 
             // 🔥 limpiar selección ANTES de navegar
             fotosSeleccionadas.clear()
-            binding.btnEliminarFoto.isEnabled = false
+
 
             findNavController().navigate(
                 R.id.compararFotosFragment,
@@ -279,40 +308,17 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
             // 4️⃣ Limpiar selección y estado UI
             fotosSeleccionadas.clear()
             binding.btnCompararFotos.isEnabled = false
-            binding.btnEliminarFoto.isEnabled = false
+
 
             // 5️⃣ Adapter
-            binding.recyclerFotos.adapter =
-                FotoAdapter(
-                    fotos = fotos,
-                    rutaFotoPrincipal = planta?.fotoRuta,
 
-                    // 👉 solo lógica, sin Toast
-                    esSeleccionable = { fotos.size > 1 },
+            mostrarFotosEnSlots(fotos)
 
-                    estaSeleccionada = { fotosSeleccionadas.contains(it) },
 
-                    onClickFoto = { foto ->
-                        if (fotosSeleccionadas.contains(foto)) {
-                            fotosSeleccionadas.remove(foto)
-                        } else if (fotosSeleccionadas.size < 2) {
-                            fotosSeleccionadas.add(foto)
-                        }
 
-                        // 🔁 actualizar botones
-                        binding.btnCompararFotos.isEnabled =
-                            fotosSeleccionadas.size == 2
 
-                        binding.btnEliminarFoto.isEnabled =
-                            fotosSeleccionadas.size == 1
-                    },
+            binding.btnAgregarFotoExtra.isEnabled = fotos.size < 4
 
-                    onLongClickFoto = { foto ->
-                        confirmarCambioFotoPrincipal(foto)
-                    }
-                )
-
-            binding.recyclerFotos.scrollToPosition(0)
         }
     }
 
@@ -355,6 +361,126 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
             .show()
     }
 
+
+    private fun mostrarFotosEnSlots(fotos: List<FotoPlanta>) {
+
+        val slots = listOf(
+            binding.slot1,
+            binding.slot2,
+            binding.slot3,
+            binding.slot4
+        )
+
+        slots.forEach { it.removeAllViews() }
+
+        for (i in 0 until 4) {
+
+            val slot = slots[i]
+
+            if (i < fotos.size) {
+
+                val foto = fotos[i]
+
+                val imageView = ImageView(requireContext()).apply {
+                    layoutParams = FrameLayout.LayoutParams(
+                        FrameLayout.LayoutParams.MATCH_PARENT,
+                        FrameLayout.LayoutParams.MATCH_PARENT
+                    )
+                    scaleType = ImageView.ScaleType.CENTER_CROP
+                    clipToOutline = true
+                    setImageURI(Uri.parse(foto.ruta))
+                }
+
+                slot.addView(imageView)
+
+                // 🔥 Overlay selección
+                val overlay = View(requireContext()).apply {
+                    layoutParams = FrameLayout.LayoutParams(
+                        FrameLayout.LayoutParams.MATCH_PARENT,
+                        FrameLayout.LayoutParams.MATCH_PARENT
+                    )
+                    setBackgroundColor(0x5500BCD4) // celeste translúcido
+                    visibility = View.GONE
+                }
+
+                slot.addView(overlay)
+
+                // 🔥 Botón eliminar flotante
+                val btnEliminar = ImageView(requireContext()).apply {
+                    layoutParams = FrameLayout.LayoutParams(
+                        72,
+                        72,
+                        android.view.Gravity.TOP or android.view.Gravity.END
+                    ).apply {
+                        marginEnd = 16
+                        topMargin = 16
+                    }
+
+                    setImageResource(android.R.drawable.ic_menu_close_clear_cancel)
+                    setBackgroundColor(0xAA000000.toInt())
+                    setPadding(16, 16, 16, 16)
+                    visibility = View.GONE
+                }
+
+                slot.addView(btnEliminar)
+
+                // 🔹 CLICK SELECCIÓN
+                slot.setOnClickListener {
+
+                    if (fotosSeleccionadas.contains(foto)) {
+                        fotosSeleccionadas.remove(foto)
+                    } else if (fotosSeleccionadas.size < 2) {
+                        fotosSeleccionadas.add(foto)
+                    }
+
+                    val seleccionada = fotosSeleccionadas.contains(foto)
+
+                    overlay.visibility =
+                        if (seleccionada) View.VISIBLE else View.GONE
+
+                    btnEliminar.visibility =
+                        if (seleccionada && !esFotoPrincipal(foto))
+                            View.VISIBLE
+                        else
+                            View.GONE
+
+                    binding.btnCompararFotos.isEnabled =
+                        fotosSeleccionadas.size == 2
+                }
+
+                // 🔹 LONG CLICK → cambiar principal
+                slot.setOnLongClickListener {
+                    confirmarCambioFotoPrincipal(foto)
+                    true
+                }
+
+                // 🔹 ELIMINAR
+                btnEliminar.setOnClickListener {
+                    confirmarEliminarFoto(foto)
+                }
+
+            } else {
+
+                // SLOT VACÍO
+                val textView = TextView(requireContext()).apply {
+                    layoutParams = FrameLayout.LayoutParams(
+                        FrameLayout.LayoutParams.MATCH_PARENT,
+                        FrameLayout.LayoutParams.MATCH_PARENT
+                    )
+                    text = "Agregar foto"
+                    gravity = android.view.Gravity.CENTER
+                    setTextColor(android.graphics.Color.DKGRAY)
+                }
+
+                slot.addView(textView)
+
+                slot.setOnClickListener {
+                    binding.btnAgregarFotoExtra.performClick()
+                }
+            }
+        }
+    }
+
     private fun cambiarFotoPrincipal(foto: FotoPlanta) {
         viewLifecycleOwner.lifecycleScope.launch {
 
@@ -376,7 +502,7 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
 
             // 🔥 limpiar selección
             fotosSeleccionadas.clear()
-            binding.btnEliminarFoto.isEnabled = false
+
 
             Toast.makeText(
                 requireContext(),
@@ -417,14 +543,6 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
     */
 
 
-    private fun borrarFoto(foto: FotoPlanta) {
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.borrarFoto(foto.id)
-            fotosSeleccionadas.clear()
-            binding.btnEliminarFoto.isEnabled = false
-            cargarFotos()
-        }
-    }
 
     private fun verificarPermisoCamara() {
         when {
