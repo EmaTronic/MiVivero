@@ -4,7 +4,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.LinearLayout
-import android.widget.SeekBar
 import androidx.fragment.app.Fragment
 import com.emanuel.mivivero.R
 import com.emanuel.mivivero.databinding.FragmentCompararFotosBinding
@@ -32,46 +31,36 @@ class CompararFotosFragment : Fragment(R.layout.fragment_comparar_fotos) {
         // 📷 Cargar imágenes
         rutaArriba?.let { binding.imgArriba.setImageURI(Uri.parse(it)) }
         rutaAbajo?.let { binding.imgAbajo.setImageURI(Uri.parse(it)) }
-        binding.slider.post {
-            binding.slider.progress = 50
-        }
 
+        // Inicializar slider en el medio
+        binding.slider.value = 50f
+
+        actualizarPesos(50f)
 
         // 🗓️ Fechas
         fechaArriba?.let { binding.txtFechaArriba.text = sdf.format(Date(it)) }
         fechaAbajo?.let { binding.txtFechaAbajo.text = sdf.format(Date(it)) }
 
-        // 🎚️ Slider controla visibilidad de la foto nueva
-        binding.slider.setOnSeekBarChangeListener(object :
-            SeekBar.OnSeekBarChangeListener {
+        // 🎚️ Listener Material Slider
+        binding.slider.addOnChangeListener { _, value, _ ->
+            actualizarPesos(value)
+        }
+    }
 
-            override fun onProgressChanged(
-                seekBar: SeekBar?,
-                progress: Int,
-                fromUser: Boolean
-            ) {
-                // progress: 0..100
-                val pesoArriba = progress / 100f
-                val pesoAbajo = 1f - pesoArriba
+    private fun actualizarPesos(valor: Float) {
+        val pesoArriba = valor / 100f
+        val pesoAbajo = 1f - pesoArriba
 
-                val paramsArriba =
-                    binding.contenedorArriba.layoutParams as LinearLayout.LayoutParams
-                val paramsAbajo =
-                    binding.contenedorAbajo.layoutParams as LinearLayout.LayoutParams
+        val paramsArriba =
+            binding.contenedorArriba.layoutParams as LinearLayout.LayoutParams
+        val paramsAbajo =
+            binding.contenedorAbajo.layoutParams as LinearLayout.LayoutParams
 
-                paramsArriba.weight = pesoArriba
-                paramsAbajo.weight = pesoAbajo
+        paramsArriba.weight = pesoArriba
+        paramsAbajo.weight = pesoAbajo
 
-                binding.contenedorArriba.layoutParams = paramsArriba
-                binding.contenedorAbajo.layoutParams = paramsAbajo
-            }
-
-            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
-            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
-        })
-
-
-
+        binding.contenedorArriba.layoutParams = paramsArriba
+        binding.contenedorAbajo.layoutParams = paramsAbajo
     }
 
     override fun onDestroyView() {
