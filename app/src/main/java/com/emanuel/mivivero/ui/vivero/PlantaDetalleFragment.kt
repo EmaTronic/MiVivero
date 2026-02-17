@@ -32,6 +32,8 @@ import java.util.Date
 import java.util.Locale
 import kotlinx.coroutines.launch
 
+
+
 class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
 
     private var _binding: FragmentPlantaDetalleBinding? = null
@@ -177,23 +179,6 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
         }
 
 
-        // ===== GRILLA =====
-        binding.recyclerFotos.layoutManager = GridLayoutManager(requireContext(), 2)
-
-        // ===== AGREGAR FOTO =====
-        binding.btnAgregarFotoExtra.setOnClickListener {
-            AlertDialog.Builder(requireContext())
-                .setTitle("Agregar foto")
-                .setItems(arrayOf("Sacar foto", "Elegir de la galería")) { _, which ->
-                    when (which) {
-                        0 -> verificarPermisoCamara()
-                        1 -> galeriaLauncher.launch("image/*")
-                    }
-                }
-                .show()
-        }
-
-
 
 
         // ===== COMPARAR =====
@@ -316,10 +301,6 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
             mostrarFotosEnSlots(fotos)
 
 
-
-
-            binding.btnAgregarFotoExtra.isEnabled = fotos.size < 4
-
         }
     }
 
@@ -398,7 +379,7 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
 
                 slot.addView(imageView)
 
-                // 🔹 Overlay selección
+                // Overlay selección
                 val overlay = View(requireContext()).apply {
                     layoutParams = FrameLayout.LayoutParams(
                         FrameLayout.LayoutParams.MATCH_PARENT,
@@ -414,11 +395,12 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
 
                 slot.addView(overlay)
 
-                // 🔹 Botón eliminar (SIEMPRE se crea, pero puede estar oculto)
+                // Botón eliminar
+                // Botón eliminar
                 val btnEliminar = ImageView(requireContext()).apply {
                     layoutParams = FrameLayout.LayoutParams(
-                        72,
-                        72,
+                        110,
+                        110,
                         Gravity.TOP or Gravity.END
                     ).apply {
                         topMargin = 8
@@ -426,20 +408,24 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
                     }
 
                     setImageResource(R.drawable.ic_delete)
+
+                    setColorFilter(
+                        ContextCompat.getColor(context, android.R.color.holo_red_dark),
+                        android.graphics.PorterDuff.Mode.SRC_IN
+                    )
+
                     setBackgroundResource(R.drawable.bg_boton_eliminar)
-                    setPadding(16,16,16,16)
+                    setPadding(16, 16, 16, 16)
                     elevation = 12f
 
-                    visibility =
-                        if (fotosSeleccionadas.contains(foto) && !esPrincipal)
-                            View.VISIBLE
-                        else
-                            View.GONE
+                    visibility = View.GONE
                 }
+
+
 
                 slot.addView(btnEliminar)
 
-                // 🔹 CLICK SELECCIÓN
+                // 🔹 CLICK → seleccionar foto
                 slot.setOnClickListener {
 
                     if (fotosSeleccionadas.contains(foto)) {
@@ -448,7 +434,21 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
                         fotosSeleccionadas.add(foto)
                     }
 
-                    mostrarFotosEnSlots(fotos)
+                    val seleccionada = fotosSeleccionadas.contains(foto)
+
+                    overlay.visibility =
+                        if (seleccionada) View.VISIBLE else View.GONE
+
+                    btnEliminar.visibility =
+                        if (
+                            fotosSeleccionadas.size == 1 &&
+                            seleccionada &&
+                            !esPrincipal
+                        )
+                            View.VISIBLE
+                        else
+                            View.GONE
+
 
                     binding.btnCompararFotos.isEnabled =
                         fotosSeleccionadas.size == 2
@@ -460,14 +460,13 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
                     true
                 }
 
-                // 🔹 ELIMINAR
                 btnEliminar.setOnClickListener {
                     confirmarEliminarFoto(foto)
                 }
 
             } else {
 
-                // SLOT VACÍO
+                // SLOT VACÍO → agregar foto
                 val textView = TextView(requireContext()).apply {
                     layoutParams = FrameLayout.LayoutParams(
                         FrameLayout.LayoutParams.MATCH_PARENT,
@@ -481,11 +480,30 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
                 slot.addView(textView)
 
                 slot.setOnClickListener {
-                    binding.btnAgregarFotoExtra.performClick()
+
+                    if (fotosActuales.size >= 4) {
+                        Toast.makeText(
+                            requireContext(),
+                            "Máximo 4 fotos por planta",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        return@setOnClickListener
+                    }
+
+                    AlertDialog.Builder(requireContext())
+                        .setTitle("Agregar foto")
+                        .setItems(arrayOf("Sacar foto", "Elegir de la galería")) { _, which ->
+                            when (which) {
+                                0 -> verificarPermisoCamara()
+                                1 -> galeriaLauncher.launch("image/*")
+                            }
+                        }
+                        .show()
                 }
             }
         }
     }
+
 
 
     private fun cambiarFotoPrincipal(foto: FotoPlanta) {
@@ -498,18 +516,19 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
                 fechaFoto = foto.fecha
             )
 
-            // ✅ actualizar DB
+            // Actualizar DB
             viewModel.actualizarPlanta(plantaActualizada)
 
-            // 🔁 sincronizar estado local del fragment
+            // Sincronizar estado local
             plantaActual = plantaActualizada
 
-            // 🔄 refrescar UI del detalle
+            // 🔥 ACTUALIZAR FECHA EN PANTALLA
+            val formato = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
+            binding.txtFechaFoto.text =
+                "Foto tomada el ${formato.format(Date(foto.fecha))}"
+
+            // Refrescar grilla
             cargarFotos()
-
-            // 🔥 limpiar selección
-            fotosSeleccionadas.clear()|
-
 
             Toast.makeText(
                 requireContext(),
@@ -518,6 +537,7 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
             ).show()
         }
     }
+
 
 
 

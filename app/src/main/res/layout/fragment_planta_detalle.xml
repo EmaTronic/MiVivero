@@ -30,9 +30,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
-                android:padding="12dp">
+                android:padding="12dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:elevation="4dp">
 
-                <!-- FILA 1 -->
+
+            <!-- FILA 1 -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
@@ -83,14 +87,7 @@
 
         </FrameLayout>
 
-        <!-- GALERÍA HORIZONTAL -->
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerFotos"
-            android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:layout_marginTop="16dp"
-            android:overScrollMode="never"
-            android:nestedScrollingEnabled="false"/>
+
 
         <!-- DATOS -->
         <TextView
@@ -143,17 +140,6 @@
             android:layout_height="wrap_content"
             android:text="Editar planta"
             android:layout_marginTop="20dp"
-            android:backgroundTint="@color/teal_light"
-            android:textColor="@color/teal_primary"/>
-
-
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnAgregarFotoExtra"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Agregar otra foto"
-            android:layout_marginTop="12dp"
             android:backgroundTint="@color/teal_light"
             android:textColor="@color/teal_primary"/>
 
