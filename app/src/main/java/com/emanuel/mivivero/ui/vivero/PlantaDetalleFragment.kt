@@ -5,6 +5,7 @@ import android.app.AlertDialog
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
+import android.view.Gravity
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -381,6 +382,10 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
 
                 val foto = fotos[i]
 
+                val esPrincipal =
+                    plantaActual?.fotoRuta != null &&
+                            foto.ruta.startsWith(plantaActual!!.fotoRuta!!)
+
                 val imageView = ImageView(requireContext()).apply {
                     layoutParams = FrameLayout.LayoutParams(
                         FrameLayout.LayoutParams.MATCH_PARENT,
@@ -393,33 +398,43 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
 
                 slot.addView(imageView)
 
-                // 🔥 Overlay selección
+                // 🔹 Overlay selección
                 val overlay = View(requireContext()).apply {
                     layoutParams = FrameLayout.LayoutParams(
                         FrameLayout.LayoutParams.MATCH_PARENT,
                         FrameLayout.LayoutParams.MATCH_PARENT
                     )
-                    setBackgroundColor(0x5500BCD4) // celeste translúcido
-                    visibility = View.GONE
+                    setBackgroundColor(0x5500BCD4)
+                    visibility =
+                        if (fotosSeleccionadas.contains(foto))
+                            View.VISIBLE
+                        else
+                            View.GONE
                 }
 
                 slot.addView(overlay)
 
-                // 🔥 Botón eliminar flotante
+                // 🔹 Botón eliminar (SIEMPRE se crea, pero puede estar oculto)
                 val btnEliminar = ImageView(requireContext()).apply {
                     layoutParams = FrameLayout.LayoutParams(
                         72,
                         72,
-                        android.view.Gravity.TOP or android.view.Gravity.END
+                        Gravity.TOP or Gravity.END
                     ).apply {
-                        marginEnd = 16
-                        topMargin = 16
+                        topMargin = 8
+                        rightMargin = 8
                     }
 
-                    setImageResource(android.R.drawable.ic_menu_close_clear_cancel)
-                    setBackgroundColor(0xAA000000.toInt())
-                    setPadding(16, 16, 16, 16)
-                    visibility = View.GONE
+                    setImageResource(R.drawable.ic_delete)
+                    setBackgroundResource(R.drawable.bg_boton_eliminar)
+                    setPadding(16,16,16,16)
+                    elevation = 12f
+
+                    visibility =
+                        if (fotosSeleccionadas.contains(foto) && !esPrincipal)
+                            View.VISIBLE
+                        else
+                            View.GONE
                 }
 
                 slot.addView(btnEliminar)
@@ -433,16 +448,7 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
                         fotosSeleccionadas.add(foto)
                     }
 
-                    val seleccionada = fotosSeleccionadas.contains(foto)
-
-                    overlay.visibility =
-                        if (seleccionada) View.VISIBLE else View.GONE
-
-                    btnEliminar.visibility =
-                        if (seleccionada && !esFotoPrincipal(foto))
-                            View.VISIBLE
-                        else
-                            View.GONE
+                    mostrarFotosEnSlots(fotos)
 
                     binding.btnCompararFotos.isEnabled =
                         fotosSeleccionadas.size == 2
@@ -468,7 +474,7 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
                         FrameLayout.LayoutParams.MATCH_PARENT
                     )
                     text = "Agregar foto"
-                    gravity = android.view.Gravity.CENTER
+                    gravity = Gravity.CENTER
                     setTextColor(android.graphics.Color.DKGRAY)
                 }
 
@@ -480,6 +486,7 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
             }
         }
     }
+
 
     private fun cambiarFotoPrincipal(foto: FotoPlanta) {
         viewLifecycleOwner.lifecycleScope.launch {
@@ -501,7 +508,7 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
             cargarFotos()
 
             // 🔥 limpiar selección
-            fotosSeleccionadas.clear()
+            fotosSeleccionadas.clear()|
 
 
             Toast.makeText(
