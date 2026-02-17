@@ -4,190 +4,111 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5F5F5"
-    android:padding="8dp">
+    android:background="#F8FAF9">
 
-    <!-- 🪴 TÍTULO -->
-    <TextView
-        android:id="@+id/txtTitulo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="CREAR PLANTA"
-        android:textSize="22sp"
-        android:textStyle="bold"
-        android:textColor="@android:color/black"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginBottom="6dp"/>
-
-    <!-- 🌿 FAMILIA -->
-    <AutoCompleteTextView
-        android:id="@+id/actFamilia"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:hint="Familia (opcional)"
-        android:padding="8dp"
-        android:backgroundTint="#7FD1C3"
-        app:layout_constraintTop_toBottomOf="@id/txtTitulo"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="12dp"
-        android:textColor="@android:color/black"
-        android:textColorHint="#666666"/>
-
-    <!-- 🌱 GÉNERO -->
-    <AutoCompleteTextView
-        android:id="@+id/etFamilia"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:hint="Género o nombre vulgar"
-        android:padding="8dp"
-        android:backgroundTint="#7FD1C3"
-        app:layout_constraintTop_toBottomOf="@id/actFamilia"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="4dp"
-        android:textColor="@android:color/black"
-        android:textColorHint="#666666"
-        />
-
-    <!-- 🌸 ESPECIE -->
-    <AutoCompleteTextView
-        android:id="@+id/etEspecie"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:hint="Especie (opcional)"
-        android:padding="8dp"
-        android:backgroundTint="#7FD1C3"
-        app:layout_constraintTop_toBottomOf="@id/etFamilia"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="4dp"
-        android:textColor="@android:color/black"
-        android:textColorHint="#666666"/>
-
-    <!-- 📍 LUGAR -->
-    <EditText
-        android:id="@+id/etLugar"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:hint="Lugar"
-        android:padding="8dp"
-        android:backgroundTint="#7FD1C3"
-        app:layout_constraintTop_toBottomOf="@id/etEspecie"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="4dp"
-        android:textColor="@android:color/black"
-        android:textColorHint="#666666"/>
-
-    <!-- 📦 CANTIDAD -->
-    <EditText
-        android:id="@+id/etCantidad"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:hint="Cantidad"
-        android:inputType="number"
-        android:padding="8dp"
-        android:backgroundTint="#7FD1C3"
-        app:layout_constraintTop_toBottomOf="@id/etLugar"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="4dp"
-        android:textColor="@android:color/black"
-        android:textColorHint="#666666"/>
-
-    <!-- 💰 A LA VENTA -->
-    <CheckBox
-        android:id="@+id/cbALaVenta"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Disponible para la venta"
-        android:textColor="@android:color/black"
-        app:layout_constraintTop_toBottomOf="@id/etCantidad"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginTop="4dp"
-        android:textColorHint="#666666"/>
-
-    <!-- 📝 OBSERVACIONES -->
-    <EditText
-        android:id="@+id/etObservaciones"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:hint="Observaciones"
-        android:minLines="2"
-        android:gravity="top"
-        android:inputType="textMultiLine"
-        android:padding="8dp"
-        android:backgroundTint="#7FD1C3"
-        app:layout_constraintTop_toBottomOf="@id/cbALaVenta"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="4dp"
-        android:textColor="@android:color/black"
-        android:textColorHint="#666666"/>
-
-    <!-- 📸 FOTO -->
-    <ImageView
-        android:id="@+id/imgFoto"
-        android:layout_width="120dp"
-        android:layout_height="120dp"
-
-        android:background="#DDDDDD"
-        app:layout_constraintTop_toBottomOf="@id/etObservaciones"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="6dp"/>
-
-    <!-- 📂 GALERÍA -->
-    <Button
-        android:id="@+id/btnGaleria"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Elegir de la galería"
-        android:backgroundTint="#7FD1C3"
-        app:layout_constraintTop_toBottomOf="@id/imgFoto"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="6dp"/>
-
-    <!-- 📷 CÁMARA -->
-    <Button
-        android:id="@+id/btnFoto"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Sacar foto"
-        android:backgroundTint="#7FD1C3"
-        app:layout_constraintTop_toBottomOf="@id/btnGaleria"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="4dp"/>
-
-    <View
-        android:id="@+id/espacioFlexible"
+    <ScrollView
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/btnFoto"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintEnd_toEndOf="parent">
 
-    <!-- 💾 GUARDAR (CENTRADO Y MÁS GRANDE) -->
-    <Button
-        android:id="@+id/btnGuardar"
-        android:layout_width="0dp"
-        android:layout_height="56dp"
-        android:text="Guardar planta"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:textColor="@android:color/white"
-        android:backgroundTint="@color/btn_disabled"
-        android:enabled="false"
-        app:layout_constraintTop_toTopOf="@id/espacioFlexible"
-        app:layout_constraintBottom_toBottomOf="@id/espacioFlexible"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginHorizontal="16dp"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <TextView
+                android:id="@+id/txtTitulo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Crear planta"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:textColor="#212121"
+                android:layout_marginBottom="20dp"/>
+
+            <AutoCompleteTextView
+                android:id="@+id/actFamilia"
+                style="@style/FormInput"
+                android:hint="Familia (opcional)"/>
+
+            <AutoCompleteTextView
+                android:id="@+id/etFamilia"
+                style="@style/FormInput"
+                android:hint="Género o nombre vulgar"/>
+
+            <AutoCompleteTextView
+                android:id="@+id/etEspecie"
+                style="@style/FormInput"
+                android:hint="Especie (opcional)"/>
+
+            <EditText
+                android:id="@+id/etLugar"
+                style="@style/FormInput"
+                android:hint="Lugar"/>
+
+            <EditText
+                android:id="@+id/etCantidad"
+                style="@style/FormInput"
+                android:hint="Cantidad"
+                android:inputType="number"/>
+
+            <CheckBox
+                android:id="@+id/cbALaVenta"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Disponible para la venta"
+                android:layout_marginBottom="16dp"/>
+
+            <EditText
+                android:id="@+id/etObservaciones"
+                style="@style/FormInput"
+                android:hint="Observaciones"
+                android:minLines="3"
+                android:gravity="top"
+                android:inputType="textMultiLine"/>
+
+            <ImageView
+                android:id="@+id/imgFoto"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="12dp"
+                android:background="#E0E0E0"/>
+
+            <Button
+                android:id="@+id/btnGaleria"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Elegir de galería"
+                android:layout_marginTop="12dp"
+                android:backgroundTint="#00796B"
+                android:textColor="@android:color/white"/>
+
+            <Button
+                android:id="@+id/btnFoto"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Sacar foto"
+                android:layout_marginTop="8dp"
+                android:backgroundTint="#009688"
+                android:textColor="@android:color/white"/>
+
+            <Button
+                android:id="@+id/btnGuardar"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="Guardar planta"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/white"
+                android:backgroundTint="#004D40"
+                android:layout_marginTop="24dp"/>
+
+        </LinearLayout>
+    </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

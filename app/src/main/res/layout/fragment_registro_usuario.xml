@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:fillViewport="true"
+    android:background="@android:color/white">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -16,81 +17,61 @@
             android:id="@+id/txtTituloRegistro"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Registro obligatorio"
-            android:textSize="20sp"
+            android:text="Registro"
+            android:textSize="24sp"
             android:textStyle="bold"
-            android:layout_marginBottom="16dp" />
+            android:textColor="#222222"
+            android:layout_marginBottom="24dp" />
 
-        <!-- NOMBRE REAL -->
+        <!-- CAMPOS -->
+
         <EditText
             android:id="@+id/etNombreReal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Nombre real"
-            android:inputType="textPersonName"
-            android:layout_marginBottom="12dp"/>
+            style="@style/FormInput"
+            android:hint="Nombre real" />
 
-        <!-- NICK -->
         <EditText
             android:id="@+id/etNick"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Nick público"
-            android:inputType="text"
-            android:layout_marginBottom="12dp"/>
+            style="@style/FormInput"
+            android:hint="Nick público" />
 
-        <!-- NOMBRE VIVERO -->
         <EditText
             android:id="@+id/etNombreVivero"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Nombre del vivero"
-            android:inputType="text"
-            android:layout_marginBottom="12dp"/>
+            style="@style/FormInput"
+            android:hint="Nombre del vivero" />
 
-        <!-- PAÍS -->
         <EditText
             android:id="@+id/etPais"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="País"
-            android:inputType="text"
-            android:layout_marginBottom="12dp"/>
+            style="@style/FormInput"
+            android:hint="País" />
 
-        <!-- PROVINCIA -->
         <EditText
             android:id="@+id/etProvincia"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Provincia"
-            android:inputType="text"
-            android:layout_marginBottom="12dp"/>
+            style="@style/FormInput"
+            android:hint="Provincia" />
 
-        <!-- CIUDAD -->
         <EditText
             android:id="@+id/etCiudad"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Ciudad"
-            android:inputType="text"
-            android:layout_marginBottom="12dp"/>
+            style="@style/FormInput"
+            android:hint="Ciudad" />
 
-        <!-- EMAIL -->
         <EditText
             android:id="@+id/etEmail"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            style="@style/FormInput"
             android:hint="Correo electrónico"
-            android:inputType="textEmailAddress"
-            android:layout_marginBottom="20dp"/>
+            android:inputType="textEmailAddress" />
 
         <!-- BOTÓN -->
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnRegistrar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="56dp"
             android:text="Registrar"
-            android:enabled="true"/>
+            android:textStyle="bold"
+            android:textColor="@android:color/white"
+            android:layout_marginTop="24dp"
+            app:cornerRadius="16dp"
+            app:backgroundTint="@color/teal_primary"/>
 
     </LinearLayout>
 

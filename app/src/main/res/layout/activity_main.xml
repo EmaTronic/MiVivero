@@ -1,32 +1,86 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@android:color/white">
+
+    <!-- ========================= -->
+    <!-- TOOLBAR SUPERIOR -->
+    <!-- ========================= -->
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/topAppBar"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:background="@android:color/white"
+        app:title=""
+        app:contentInsetStart="16dp"
+        app:contentInsetEnd="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <!-- Logo pequeño -->
+            <ImageView
+                android:id="@+id/imgLogoToolbar"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:src="@drawable/logo_mi_vivero_96"
+                android:layout_marginEnd="12dp"/>
+
+            <!-- Nombre app -->
+            <TextView
+                android:id="@+id/txtTituloApp"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Mi Vivero"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="#222222"/>
+
+            <!-- Icono usuario -->
+            <ImageView
+                android:id="@+id/btnUsuario"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:src="@drawable/ic_usuario"
+                app:tint="#444444" />
+        </LinearLayout>
+
+    </com.google.android.material.appbar.MaterialToolbar>
+
+    <!-- ========================= -->
+    <!-- NAV HOST -->
+    <!-- ========================= -->
 
     <fragment
         android:id="@+id/navHost"
         android:name="androidx.navigation.fragment.NavHostFragment"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="64dp"
+        android:layout_marginBottom="64dp"
         app:defaultNavHost="true"
-        app:navGraph="@navigation/nav_graph"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/bottomNav"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:navGraph="@navigation/nav_graph"/>
+
+    <!-- ========================= -->
+    <!-- BOTTOM NAVIGATION -->
+    <!-- ========================= -->
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNav"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:layout_gravity="bottom"
         android:background="@android:color/white"
-        app:itemIconTint="@color/teal_primary"
-        app:itemTextColor="@color/teal_primary"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:menu="@menu/menu_bottom" />
+        app:itemIconTint="@color/bottom_nav_selector"
+        app:itemTextColor="@color/bottom_nav_selector"
+        app:menu="@menu/menu_bottom"/>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
