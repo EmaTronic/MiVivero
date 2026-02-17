@@ -77,17 +77,20 @@ class ViveroViewModel(application: Application) : AndroidViewModel(application) 
     fun agregarFoto(plantaId: Long, ruta: String) {
         viewModelScope.launch(Dispatchers.IO) {
 
+            val fechaReal = obtenerFechaReal(ruta)
+
             val foto = FotoPlanta(
                 id = System.currentTimeMillis(),
                 plantaId = plantaId,
                 ruta = ruta,
-                fecha = System.currentTimeMillis(),
+                fecha = fechaReal,
                 observaciones = null
             )
 
             fotoDao.insert(FotoMapper.toEntity(foto))
         }
     }
+
 
     suspend fun obtenerFotos(plantaId: Long): List<FotoPlanta> {
         return fotoDao.getFotosPorPlanta(plantaId)
@@ -102,15 +105,21 @@ class ViveroViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     suspend fun agregarFotoExtra(plantaId: Long, ruta: String) {
+
+        val fechaReal = obtenerFechaReal(ruta)
+
         val foto = FotoPlanta(
             id = System.currentTimeMillis(),
             plantaId = plantaId,
             ruta = ruta,
-            fecha = System.currentTimeMillis(),
+            fecha = fechaReal,
             observaciones = null
         )
+
         fotoDao.insert(FotoMapper.toEntity(foto))
     }
+
+
 
     fun actualizarPlanta(planta: Planta) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -142,6 +151,33 @@ class ViveroViewModel(application: Application) : AndroidViewModel(application) 
             _plantas.postValue(lista)
         }
     }
+    private fun obtenerFechaReal(ruta: String): Long {
+        return try {
+            val context = getApplication<Application>()
+            val uri = android.net.Uri.parse(ruta)
+
+            val input = context.contentResolver.openInputStream(uri)
+            val exif = androidx.exifinterface.media.ExifInterface(input!!)
+            val fechaStr = exif.getAttribute(
+                androidx.exifinterface.media.ExifInterface.TAG_DATETIME_ORIGINAL
+            )
+
+            if (fechaStr != null) {
+                val formato = java.text.SimpleDateFormat(
+                    "yyyy:MM:dd HH:mm:ss",
+                    java.util.Locale.getDefault()
+                )
+                formato.parse(fechaStr)?.time ?: System.currentTimeMillis()
+            } else {
+                System.currentTimeMillis()
+            }
+
+        } catch (e: Exception) {
+            System.currentTimeMillis()
+        }
+    }
+
+
 
 
 

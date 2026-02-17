@@ -101,11 +101,12 @@ class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
 
         /* ===================== GUARDAR ===================== */
 
+        /* ===================== GUARDAR ===================== */
+
         binding.btnGuardar.setOnClickListener {
 
-            val familia = binding.etFamilia.text.toString().trim()  // 🔥 ahora guarda género
+            val familia = binding.etFamilia.text.toString().trim()
             val especie = binding.etEspecie.text.toString().trim()
-
 
             if (familia.isEmpty()) {
                 binding.actFamilia.error = "Campo obligatorio"
@@ -126,7 +127,30 @@ class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
                     .toIntOrNull()?.coerceAtLeast(1) ?: 1
 
             val ahora = System.currentTimeMillis()
-            val idFinal = if (plantaId != -1L) plantaId else ahora
+
+            val plantaExistente =
+                if (plantaId != -1L)
+                    viewModel.plantas.value?.find { it.id == plantaId }
+                else null
+
+            val fechaIngresoFinal =
+                plantaExistente?.fechaIngreso ?: ahora
+
+            val fechaFotoFinal =
+                if (plantaExistente != null) {
+                    if (fotoUri.toString() != plantaExistente.fotoRuta)
+                        obtenerFechaRealDeFoto(fotoUri!!)
+                    else
+                        plantaExistente.fechaFoto
+                } else {
+                    obtenerFechaRealDeFoto(fotoUri!!)
+                }
+
+            val idFinal =
+                if (plantaId != -1L)
+                    plantaId
+                else
+                    ahora
 
             val planta = Planta(
                 id = idFinal,
@@ -134,12 +158,12 @@ class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
                 familia = familia,
                 especie = especie.ifBlank { null },
                 lugar = binding.etLugar.text.toString(),
-                fechaIngreso = ahora,
+                fechaIngreso = fechaIngresoFinal,
                 cantidad = cantidad,
                 aLaVenta = binding.cbALaVenta.isChecked,
                 observaciones = binding.etObservaciones.text.toString().ifBlank { null },
                 fotoRuta = fotoUri.toString(),
-                fechaFoto = ahora
+                fechaFoto = fechaFotoFinal
             )
 
             if (plantaId != -1L) {
@@ -152,6 +176,30 @@ class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
         }
 
         actualizarEstadoGuardar()
+
+    }
+
+
+        private fun obtenerFechaRealDeFoto(uri: Uri): Long {
+        return try {
+            val inputStream = requireContext().contentResolver.openInputStream(uri)
+            val exif = androidx.exifinterface.media.ExifInterface(inputStream!!)
+            val fechaStr = exif.getAttribute(
+                androidx.exifinterface.media.ExifInterface.TAG_DATETIME_ORIGINAL
+            )
+
+            if (fechaStr != null) {
+                val formato = java.text.SimpleDateFormat(
+                    "yyyy:MM:dd HH:mm:ss",
+                    java.util.Locale.getDefault()
+                )
+                formato.parse(fechaStr)?.time ?: System.currentTimeMillis()
+            } else {
+                System.currentTimeMillis()
+            }
+        } catch (e: Exception) {
+            System.currentTimeMillis()
+        }
     }
 
     /* ===================== VALIDACIÓN BOTÓN ===================== */
