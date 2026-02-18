@@ -60,6 +60,89 @@
             app:layout_constraintBottom_toBottomOf="@id/cardSearch"
             app:layout_constraintEnd_toEndOf="parent"/>
 
+        <!-- ================= BIENVENIDA ================= -->
+        <!-- ================= BIENVENIDA ================= -->
+        <!-- ================= BIENVENIDA ================= -->
+
+        <ScrollView
+            android:id="@+id/layoutBienvenida"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/tvTitulo"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp">
+
+                <!-- LOGO -->
+                <ImageView
+                    android:layout_width="120dp"
+                    android:layout_height="120dp"
+                    android:src="@drawable/logo_mi_vivero_256"
+                    android:scaleType="centerInside"
+                    android:layout_marginBottom="16dp"/>
+
+                <!-- TÍTULO -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="¡Bienvenid@!"
+                    android:textSize="32sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_primary"
+                    android:layout_marginBottom="4dp"/>
+
+                <!-- SUBTÍTULO -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Agrega tu primera planta 🌱"
+                    android:textSize="22sp"
+                    android:textColor="@color/text_primary"
+                    android:layout_marginBottom="8dp"/>
+
+                <!-- DESCRIPCIÓN -->
+                <TextView
+                    android:layout_width="260dp"
+                    android:layout_height="wrap_content"
+                    android:text="Empieza agregando tu primera planta para gestionarlas fácilmente."
+                    android:textAlignment="center"
+                    android:textSize="15sp"
+                    android:textColor="@color/text_secondary"
+                    android:layout_marginBottom="1dp"/>
+
+                <!-- IMAGEN MACETA -->
+                <ImageView
+                    android:layout_width="310dp"
+                    android:layout_height="310dp"
+                    android:src="@drawable/ic_img_bienvenida"
+                    android:scaleType="centerInside"
+                    android:layout_marginBottom="1dp"/>
+
+                <!-- BOTÓN -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnAgregarDesdeBienvenida"
+                    android:layout_width="240dp"
+                    android:layout_height="70dp"
+                    android:text="Agregar planta"
+                    android:textSize="16sp"
+                    android:textColor="@android:color/white"
+                    app:backgroundTint="@color/teal_primary"
+                    app:cornerRadius="14dp"/>
+
+            </LinearLayout>
+
+        </ScrollView>
+
+
         <!-- Lista -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerPlantas"

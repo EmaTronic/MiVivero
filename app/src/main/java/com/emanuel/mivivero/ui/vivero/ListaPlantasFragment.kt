@@ -1,5 +1,6 @@
 package com.emanuel.mivivero.ui.vivero
 
+import android.content.Context
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.widget.SearchView
@@ -32,9 +33,42 @@ class ListaPlantasFragment : Fragment(R.layout.fragment_lista_plantas) {
 
         _binding = FragmentListaPlantasBinding.bind(view)
 
+        // ================= PRIMERA VEZ =================
+
+        val prefs = requireContext()
+            .getSharedPreferences("mi_vivero_prefs", Context.MODE_PRIVATE)
+
+        val primeraVez = prefs.getBoolean("primera_vez", true)
+
+        if (primeraVez) {
+
+            binding.layoutBienvenida.visibility = View.VISIBLE
+
+            binding.tvTitulo.visibility = View.GONE
+            binding.cardSearch.visibility = View.GONE
+            binding.btnOrdenarAZ.visibility = View.GONE
+            binding.recyclerPlantas.visibility = View.GONE
+            binding.fabAgregarPlanta.visibility = View.GONE
+
+        } else {
+
+            binding.layoutBienvenida.visibility = View.GONE
+        }
+
+        // ================= BOTÓN BIENVENIDA =================
+
+        binding.btnAgregarDesdeBienvenida.setOnClickListener {
+
+            prefs.edit().putBoolean("primera_vez", false).apply()
+
+            findNavController().navigate(R.id.crearPlantaFragment)
+        }
+
+        // ================= ARGUMENTOS =================
+
         albumId = arguments?.getLong("albumId") ?: -1L
 
-
+        // ================= RECYCLER =================
 
         binding.recyclerPlantas.layoutManager =
             LinearLayoutManager(requireContext())
@@ -47,10 +81,9 @@ class ListaPlantasFragment : Fragment(R.layout.fragment_lista_plantas) {
             }
         )
 
-
-
         binding.recyclerPlantas.adapter = adapter
 
+        // ================= CARGA DE DATOS =================
 
         if (albumId != -1L) {
             viewModel.cargarPlantasParaAlbum(albumId)
@@ -58,13 +91,13 @@ class ListaPlantasFragment : Fragment(R.layout.fragment_lista_plantas) {
             viewModel.cargarPlantas()
         }
 
-
         viewModel.plantas.observe(viewLifecycleOwner) { lista ->
             listaOriginal = lista
             aplicarOrdenYFiltro("")
         }
 
-        // 🔍 BUSCADOR
+        // ================= BUSCADOR =================
+
         binding.searchPlantas.setOnQueryTextListener(
             object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(query: String?) = true
@@ -76,7 +109,8 @@ class ListaPlantasFragment : Fragment(R.layout.fragment_lista_plantas) {
             }
         )
 
-        // 🔠 BOTÓN A-Z
+        // ================= BOTÓN A-Z =================
+
         binding.btnOrdenarAZ.setOnClickListener {
             ordenAZActivo = !ordenAZActivo
             binding.btnOrdenarAZ.text =
@@ -84,6 +118,8 @@ class ListaPlantasFragment : Fragment(R.layout.fragment_lista_plantas) {
 
             aplicarOrdenYFiltro(binding.searchPlantas.query.toString())
         }
+
+        // ================= FAB =================
 
         binding.fabAgregarPlanta.setOnClickListener {
             findNavController().navigate(R.id.crearPlantaFragment)
