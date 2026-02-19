@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/white"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- TÍTULO -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Datos de publicación"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/black"
+            android:layout_marginBottom="14dp"/>
+
+        <!-- NOMBRE VIVERO -->
+        <CheckBox
+            android:id="@+id/cbNombreVivero"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nombre del vivero"
+            android:textColor="@android:color/black"/>
+
+        <EditText
+            android:id="@+id/etNombreVivero"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Ej: Vivero El Jardín"
+            android:layout_marginBottom="10dp"
+            android:textColor="@android:color/black"
+            android:textColorHint="#666666"
+            />
+
+        <!-- FECHA -->
+        <CheckBox
+            android:id="@+id/cbFechaHasta"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Fecha de vigencia"
+            android:textColor="@android:color/black"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnFecha"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="Seleccionar fecha"
+            android:layout_marginBottom="10dp"
+            android:backgroundTint="@color/teal_light"
+            android:textColor="@color/teal_primary"/>
+
+        <!-- PAGO -->
+        <CheckBox
+            android:id="@+id/cbPago"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Modos de pago"
+            android:textColor="@android:color/black"/>
+
+        <EditText
+            android:id="@+id/etPago"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Transferencia, efectivo..."
+            android:layout_marginBottom="10dp"
+            android:textColor="@android:color/black"
+            android:textColorHint="#666666"
+            />
+
+        <!-- ENVÍO -->
+        <CheckBox
+            android:id="@+id/cbEnvio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Medios de envío"
+            android:textColor="@android:color/black"/>
+
+        <EditText
+            android:id="@+id/etEnvio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Correo, moto..."
+            android:layout_marginBottom="10dp"
+            android:textColor="@android:color/black"
+            android:textColorHint="#666666"
+            />
+
+        <!-- RETIRO -->
+        <CheckBox
+            android:id="@+id/cbRetiro"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Retiro en"
+            android:textColor="@android:color/black"/>
+
+        <EditText
+            android:id="@+id/etRetiro"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Zona o dirección"
+            android:layout_marginBottom="10dp"
+            android:textColor="@android:color/black"
+            android:textColorHint="#666666"
+            />
+
+        <!-- OBS -->
+        <CheckBox
+            android:id="@+id/cbObservaciones"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Observaciones"
+            android:textColor="@android:color/black"/>
+
+        <EditText
+            android:id="@+id/etObservaciones"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minLines="2"
+            android:hint="Información adicional"
+            android:layout_marginBottom="14dp"
+            android:textColor="@android:color/black"
+            android:textColorHint="#666666"
+            />
+
+        <!-- FONDO -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Fondo de portada"
+            android:textStyle="bold"
+            android:textColor="@android:color/black"
+            android:layout_marginBottom="8dp"/>
+
+        <RadioGroup
+            android:id="@+id/rgFondos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp">
+
+            <RadioButton
+                android:id="@+id/rbCactus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Cactus"
+                android:textColor="@android:color/black"/>
+
+            <RadioButton
+                android:id="@+id/rbTropical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tropical"
+                android:textColor="@android:color/black"/>
+
+            <RadioButton
+                android:id="@+id/rbSuculentas"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Suculentas"
+                android:textColor="@android:color/black"
+                android:checked="true"/>
+
+        </RadioGroup>
+
+        <!-- BOTÓN -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnPublicarFinal"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:text="Publicar álbum"
+            android:backgroundTint="@color/teal_primary"
+            android:textColor="@android:color/white"/>
+
+    </LinearLayout>
+</ScrollView>

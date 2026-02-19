@@ -3,6 +3,7 @@ package com.emanuel.mivivero.ui.albumes
 import android.app.AlertDialog
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -90,8 +91,6 @@ class AlbumesFragment : Fragment(R.layout.fragment_albumes) {
     // PUBLICAR
     // ================================
 
-
-
     private fun publicarAlbum(album: AlbumConCantidad) {
 
         viewLifecycleOwner.lifecycleScope.launch {
@@ -114,10 +113,6 @@ class AlbumesFragment : Fragment(R.layout.fragment_albumes) {
 
             val nombreAlbum = album.nombre
 
-
-
-
-
             val liveData = viewModel.obtenerPlantasDelAlbumRaw(album.id)
 
             liveData.observe(viewLifecycleOwner) { plantas ->
@@ -133,35 +128,51 @@ class AlbumesFragment : Fragment(R.layout.fragment_albumes) {
 
                 liveData.removeObservers(viewLifecycleOwner)
 
-                val uris = AlbumPublisher.generarImagenesAlbum(
-                    requireContext(),
-                    plantas,
-                    nombreAlbum
-                )
+                PublicarAlbumDialog { fondo, nombreVivero, fechaHasta, pago, envio, retiro, obs ->
 
+                    val portadaUri = AlbumPublisher.generarPortadaAlbum(
+                        requireContext(),
+                        album.id,
+                        album.nombre,
+                        fondo,
+                        nombreVivero,
+                        fechaHasta,
+                        pago,
+                        envio,
+                        retiro,
+                        obs
+                    )
 
+                    val fotosUri = AlbumPublisher.generarImagenesAlbum(
+                        requireContext(),
+                        plantas,
+                        album.nombre
+                    )
 
-                // 🔥 Generamos SIEMPRE collage único
-                val collageUri =
-                    com.emanuel.mivivero.utils.InstagramCollageGenerator
-                        .generarCollageVertical(
-                            requireContext(),
-                            uris,
-                            nombreAlbum
+                    val listaFinal = mutableListOf<Uri>()
+                    listaFinal.add(portadaUri)
+                    listaFinal.addAll(fotosUri)
+
+                    val intent = Intent(Intent.ACTION_SEND_MULTIPLE).apply {
+                        type = "image/*"
+                        putParcelableArrayListExtra(
+                            Intent.EXTRA_STREAM,
+                            ArrayList(listaFinal)
                         )
+                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    }
 
-                val intent = Intent(Intent.ACTION_SEND).apply {
-                    type = "image/*"
-                    putExtra(Intent.EXTRA_STREAM, collageUri)
-                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                }
+                    startActivity(
+                        Intent.createChooser(intent, "Compartir álbum")
+                    )
 
-                startActivity(
-                    Intent.createChooser(intent, "Compartir álbum")
-                )
-            }
-        }
-    }
+                }.show(parentFragmentManager, "PublicarDialog")
+
+            } // ← CIERRA observe
+
+        } // ← CIERRA launch
+
+    } // ← CIERRA publicarAlbum
 
 
     // ================================
