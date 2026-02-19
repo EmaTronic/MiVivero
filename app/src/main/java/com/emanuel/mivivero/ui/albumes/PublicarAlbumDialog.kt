@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import androidx.fragment.app.DialogFragment
 import com.emanuel.mivivero.databinding.DialogPublicarAlbumBinding
+import com.emanuel.mivivero.ui.utils.AccordionHelper
 import java.util.*
 
 class PublicarAlbumDialog(
@@ -31,6 +32,32 @@ class PublicarAlbumDialog(
         val dialog = androidx.appcompat.app.AlertDialog.Builder(requireContext())
             .setView(binding.root)
             .create()
+
+        // =============================
+        // ACCORDION SETUP
+        // =============================
+
+        AccordionHelper.setupSingleAccordion(
+            parent = binding.containerAccordion,
+            sections = listOf(
+                AccordionHelper.Section(
+                    binding.headerInfo,
+                    binding.contentInfo,
+                    binding.arrowInfo
+                ),
+                AccordionHelper.Section(
+                    binding.headerCondiciones,
+                    binding.contentCondiciones,
+                    binding.arrowCondiciones
+                ),
+                AccordionHelper.Section(
+                    binding.headerDiseno,
+                    binding.contentDiseno,
+                    binding.arrowDiseno
+                )
+            ),
+            initiallyOpenIndex = 0
+        )
 
         // =============================
         // DATE PICKER
