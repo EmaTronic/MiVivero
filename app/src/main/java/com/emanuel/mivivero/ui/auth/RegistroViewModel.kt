@@ -33,4 +33,6 @@ class RegistroViewModel(application: Application) :
             usuarioDao.actualizarUsuario(usuario)
         }
     }
+
+
 }

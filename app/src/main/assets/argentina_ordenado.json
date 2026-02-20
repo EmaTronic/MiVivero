@@ -1200,6 +1200,171 @@
           ]
         }
       ]
+    },
+    {
+      "nombre": "Chile",
+      "provincias": [
+        {
+          "nombre": "Arica y Parinacota",
+          "ciudades": [
+            "Arica"
+          ]
+        },
+        {
+          "nombre": "Tarapacá",
+          "ciudades": [
+            "Iquique"
+          ]
+        },
+        {
+          "nombre": "Antofagasta",
+          "ciudades": [
+            "Antofagasta",
+            "Calama"
+          ]
+        },
+        {
+          "nombre": "Atacama",
+          "ciudades": [
+            "Copiapó"
+          ]
+        },
+        {
+          "nombre": "Coquimbo",
+          "ciudades": [
+            "La Serena",
+            "Coquimbo"
+          ]
+        },
+        {
+          "nombre": "Valparaíso",
+          "ciudades": [
+            "Valparaíso",
+            "Viña del Mar"
+          ]
+        },
+        {
+          "nombre": "Región Metropolitana",
+          "ciudades": [
+            "Santiago",
+            "Puente Alto"
+          ]
+        },
+        {
+          "nombre": "O'Higgins",
+          "ciudades": [
+            "Rancagua"
+          ]
+        },
+        {
+          "nombre": "Maule",
+          "ciudades": [
+            "Talca"
+          ]
+        },
+        {
+          "nombre": "Biobío",
+          "ciudades": [
+            "Concepción"
+          ]
+        },
+        {
+          "nombre": "La Araucanía",
+          "ciudades": [
+            "Temuco"
+          ]
+        },
+        {
+          "nombre": "Los Lagos",
+          "ciudades": [
+            "Puerto Montt"
+          ]
+        },
+        {
+          "nombre": "Aysén",
+          "ciudades": [
+            "Coyhaique"
+          ]
+        },
+        {
+          "nombre": "Magallanes",
+          "ciudades": [
+            "Punta Arenas"
+          ]
+        }
+      ]
+    },
+        {
+          "nombre": "Uruguay",
+          "provincias": [
+            { "nombre": "Montevideo", "ciudades": ["Montevideo"] },
+            { "nombre": "Canelones", "ciudades": ["Ciudad de la Costa", "Las Piedras"] },
+            { "nombre": "Maldonado", "ciudades": ["Maldonado", "Punta del Este"] },
+            { "nombre": "Salto", "ciudades": ["Salto"] },
+            { "nombre": "Paysandú", "ciudades": ["Paysandú"] },
+            { "nombre": "Colonia", "ciudades": ["Colonia del Sacramento"] }
+          ]
+        },
+        {
+          "nombre": "Brasil",
+          "provincias": [
+            { "nombre": "São Paulo", "ciudades": ["São Paulo", "Campinas"] },
+            { "nombre": "Rio de Janeiro", "ciudades": ["Rio de Janeiro", "Niterói"] },
+            { "nombre": "Minas Gerais", "ciudades": ["Belo Horizonte", "Uberlândia"] },
+            { "nombre": "Bahía", "ciudades": ["Salvador", "Feira de Santana"] },
+            { "nombre": "Paraná", "ciudades": ["Curitiba", "Londrina"] },
+            { "nombre": "Rio Grande do Sul", "ciudades": ["Porto Alegre", "Caxias do Sul"] },
+            { "nombre": "Santa Catarina", "ciudades": ["Florianópolis", "Joinville"] }
+          ]
+        },
+        {
+          "nombre": "Paraguay",
+          "provincias": [
+            { "nombre": "Central", "ciudades": ["Asunción", "San Lorenzo"] },
+            { "nombre": "Alto Paraná", "ciudades": ["Ciudad del Este"] },
+            { "nombre": "Itapúa", "ciudades": ["Encarnación"] },
+            { "nombre": "Caaguazú", "ciudades": ["Coronel Oviedo"] }
+          ]
+        },
+        {
+          "nombre": "Bolivia",
+          "provincias": [
+            { "nombre": "La Paz", "ciudades": ["La Paz", "El Alto"] },
+            { "nombre": "Santa Cruz", "ciudades": ["Santa Cruz de la Sierra"] },
+            { "nombre": "Cochabamba", "ciudades": ["Cochabamba"] },
+            { "nombre": "Tarija", "ciudades": ["Tarija"] },
+            { "nombre": "Chuquisaca", "ciudades": ["Sucre"] }
+          ]
+        },
+        {
+          "nombre": "Perú",
+          "provincias": [
+            { "nombre": "Lima", "ciudades": ["Lima"] },
+            { "nombre": "Arequipa", "ciudades": ["Arequipa"] },
+            { "nombre": "Cusco", "ciudades": ["Cusco"] },
+            { "nombre": "La Libertad", "ciudades": ["Trujillo"] },
+            { "nombre": "Piura", "ciudades": ["Piura"] }
+          ]
+        },
+        {
+          "nombre": "Colombia",
+          "provincias": [
+            { "nombre": "Cundinamarca", "ciudades": ["Bogotá"] },
+            { "nombre": "Antioquia", "ciudades": ["Medellín"] },
+            { "nombre": "Valle del Cauca", "ciudades": ["Cali"] },
+            { "nombre": "Atlántico", "ciudades": ["Barranquilla"] },
+            { "nombre": "Santander", "ciudades": ["Bucaramanga"] }
+          ]
+        },
+        {
+          "nombre": "México",
+          "provincias": [
+            { "nombre": "Ciudad de México", "ciudades": ["Ciudad de México"] },
+            { "nombre": "Jalisco", "ciudades": ["Guadalajara"] },
+            { "nombre": "Nuevo León", "ciudades": ["Monterrey"] },
+            { "nombre": "Puebla", "ciudades": ["Puebla"] },
+            { "nombre": "Yucatán", "ciudades": ["Mérida"] }
+          ]
+        }
+      ]
     }
-  ]
-}

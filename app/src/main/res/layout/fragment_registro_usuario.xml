@@ -40,20 +40,18 @@
             style="@style/FormInput"
             android:hint="Nombre del vivero" />
 
-        <EditText
-            android:id="@+id/etPais"
-            style="@style/FormInput"
-            android:hint="País" />
+        <Spinner
+            android:id="@+id/spPais"
+            style="@style/FormInput" />
 
-        <EditText
-            android:id="@+id/etProvincia"
-            style="@style/FormInput"
-            android:hint="Provincia" />
+        <Spinner
+            android:id="@+id/spProvincia"
+            style="@style/FormInput" />
 
-        <EditText
-            android:id="@+id/etCiudad"
-            style="@style/FormInput"
-            android:hint="Ciudad" />
+        <Spinner
+            android:id="@+id/spCiudad"
+            style="@style/FormInput" />
+
 
         <EditText
             android:id="@+id/etEmail"
