@@ -40,17 +40,60 @@
             style="@style/FormInput"
             android:hint="Nombre del vivero" />
 
-        <Spinner
-            android:id="@+id/spPais"
-            style="@style/FormInput" />
+        <!-- PAÍS -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:hint="País"
+            app:boxBackgroundMode="outline">
 
-        <Spinner
-            android:id="@+id/spProvincia"
-            style="@style/FormInput" />
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                android:id="@+id/spPais"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:imeOptions="actionNext"
+                android:textColor="@color/text_primary"
+                android:textColorHint="@color/text_secondary"/>
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <Spinner
-            android:id="@+id/spCiudad"
-            style="@style/FormInput" />
+
+        <!-- PROVINCIA -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:hint="Provincia"
+            app:boxBackgroundMode="outline">
+
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                android:id="@+id/spProvincia"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:imeOptions="actionNext"
+                android:textColor="@color/text_primary"
+                android:textColorHint="@color/text_secondary"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <!-- CIUDAD -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:hint="Ciudad"
+            app:boxBackgroundMode="outline">
+
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                android:id="@+id/spCiudad"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:textColor="@color/text_primary"
+                android:textColorHint="@color/text_secondary"/>
+        </com.google.android.material.textfield.TextInputLayout>
 
 
         <EditText

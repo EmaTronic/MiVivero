@@ -58,9 +58,9 @@ class RegistroUsuarioFragment :
             val nombreReal = binding.etNombreReal.text.toString().trim()
             val nick = binding.etNick.text.toString().trim()
             val vivero = binding.etNombreVivero.text.toString().trim()
-            val pais = binding.spPais.selectedItem?.toString() ?: ""
-            val provincia = binding.spProvincia.selectedItem?.toString() ?: ""
-            val ciudad = binding.spCiudad.selectedItem?.toString() ?: ""
+            val pais = binding.spPais.text.toString().trim()
+            val provincia = binding.spProvincia.text.toString().trim()
+            val ciudad = binding.spCiudad.text.toString().trim()
             val email = binding.etEmail.text.toString().trim()
 
             if (nombreReal.isEmpty() ||
@@ -123,108 +123,98 @@ class RegistroUsuarioFragment :
 
         val adapterPais = ArrayAdapter(
             requireContext(),
-            R.layout.spinner_item,
+            android.R.layout.simple_dropdown_item_1line,
             paises
         )
 
-        adapterPais.setDropDownViewResource(R.layout.spinner_dropdown_item)
+        binding.spPais.setAdapter(adapterPais)
 
-        binding.spPais.adapter = adapterPais
+        binding.spPais.setOnItemClickListener { _, _, position, _ ->
 
-        binding.spPais.onItemSelectedListener =
-            object : AdapterView.OnItemSelectedListener {
+            val paisSeleccionado = rootData.paises[position]
 
-                override fun onItemSelected(
-                    parent: AdapterView<*>?,
-                    view: View?,
-                    position: Int,
-                    id: Long
-                ) {
+            val provincias = paisSeleccionado.provincias.map { it.nombre }
 
-                    val paisSeleccionado = rootData.paises[position]
+            val adapterProvincia = ArrayAdapter(
+                requireContext(),
+                android.R.layout.simple_dropdown_item_1line,
+                provincias
+            )
 
+            binding.spProvincia.setAdapter(adapterProvincia)
+            binding.spProvincia.setText("", false)
 
+            binding.spCiudad.setText("", false)
+            binding.spCiudad.setAdapter(null)
+        }
 
+        binding.spProvincia.setOnItemClickListener { _, _, position, _ ->
 
-                    val provincias = paisSeleccionado.provincias
-                        .map { it.nombre }
+            val paisNombre = binding.spPais.text.toString()
 
-                    val adapterProvincia = ArrayAdapter(
-                        requireContext(),
-                        R.layout.spinner_item,
-                        provincias
-                    )
+            val paisSeleccionado = rootData.paises
+                .firstOrNull { it.nombre == paisNombre }
+                ?: return@setOnItemClickListener
 
-                    adapterProvincia.setDropDownViewResource(
-                        R.layout.spinner_dropdown_item
-                    )
+            val provinciaSeleccionada =
+                paisSeleccionado.provincias[position]
 
-                    binding.spProvincia.adapter = adapterProvincia
-                }
+            val ciudades = provinciaSeleccionada.ciudades
 
-                override fun onNothingSelected(parent: AdapterView<*>?) {}
-            }
+            val adapterCiudad = ArrayAdapter(
+                requireContext(),
+                android.R.layout.simple_dropdown_item_1line,
+                ciudades
+            )
 
-        binding.spProvincia.onItemSelectedListener =
-            object : AdapterView.OnItemSelectedListener {
-
-                override fun onItemSelected(
-                    parent: AdapterView<*>?,
-                    view: View?,
-                    position: Int,
-                    id: Long
-                ) {
-
-                    val paisIndex = binding.spPais.selectedItemPosition
-                    val paisSeleccionado = rootData.paises[paisIndex]
-
-                    val provinciaSeleccionada =
-                        paisSeleccionado.provincias[position]
-
-                    val ciudades = provinciaSeleccionada.ciudades
-
-                    val adapterCiudad = ArrayAdapter(
-                        requireContext(),
-                        R.layout.spinner_item,
-                        ciudades
-                    )
-
-                    adapterCiudad.setDropDownViewResource(
-                        R.layout.spinner_dropdown_item
-                    )
-
-                    binding.spCiudad.adapter = adapterCiudad
-                }
-
-                override fun onNothingSelected(parent: AdapterView<*>?) {}
-            }
+            binding.spCiudad.setAdapter(adapterCiudad)
+            binding.spCiudad.setText("", false)
+        }
     }
 
-    private fun seleccionarUbicacion(
-        pais: String,
-        provincia: String,
-        ciudad: String
+
+        private fun seleccionarUbicacion(
+    pais: String,
+    provincia: String,
+    ciudad: String
     ) {
 
-        val paisIndex = rootData.paises.indexOfFirst { it.nombre == pais }
-        if (paisIndex >= 0) {
-            binding.spPais.setSelection(paisIndex)
+        // 1️⃣ Setear país
+        binding.spPais.setText(pais, false)
 
-            val provincias = rootData.paises[paisIndex].provincias
-            val provinciaIndex =
-                provincias.indexOfFirst { it.nombre == provincia }
+        val paisSeleccionado = rootData.paises
+            .firstOrNull { it.nombre == pais }
+            ?: return
 
-            if (provinciaIndex >= 0) {
-                binding.spProvincia.setSelection(provinciaIndex)
+        val provincias = paisSeleccionado.provincias.map { it.nombre }
 
-                val ciudades = provincias[provinciaIndex].ciudades
-                val ciudadIndex = ciudades.indexOfFirst { it == ciudad }
+        val adapterProvincia = ArrayAdapter(
+            requireContext(),
+            android.R.layout.simple_dropdown_item_1line,
+            provincias
+        )
 
-                if (ciudadIndex >= 0) {
-                    binding.spCiudad.setSelection(ciudadIndex)
-                }
-            }
-        }
+        binding.spProvincia.setAdapter(adapterProvincia)
+
+        // 2️⃣ Setear provincia
+        binding.spProvincia.setText(provincia, false)
+
+        val provinciaSeleccionada = paisSeleccionado.provincias
+            .firstOrNull { it.nombre == provincia }
+            ?: return
+
+        val ciudades = provinciaSeleccionada.ciudades
+
+        val adapterCiudad = ArrayAdapter(
+            requireContext(),
+            android.R.layout.simple_dropdown_item_1line,
+            ciudades
+        )
+
+        binding.spCiudad.setAdapter(adapterCiudad)
+
+        // 3️⃣ Setear ciudad
+        binding.spCiudad.setText(ciudad, false)
     }
 
     override fun onDestroyView() {
