@@ -156,9 +156,15 @@ class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
                 else
                     ahora
 
+            val numeroFinal =
+                if (plantaExistente != null)
+                    plantaExistente.numeroPlanta
+                else
+                    -1   // o el valor que uses para creación
+
             val planta = Planta(
                 id = idFinal,
-                numeroPlanta = -1,
+                numeroPlanta = numeroFinal,
                 familia = familia,
                 especie = especie.ifBlank { null },
                 lugar = binding.etLugar.text.toString(),

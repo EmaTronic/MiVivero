@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.emanuel.mivivero.R
@@ -48,34 +49,53 @@ class PlantaAdapter(
         val planta = plantas[position]
 
         // 🔢 Número
-        holder.txtNumero.text = "Nro ${planta.numeroPlanta}"
+        holder.txtNumero.text = "N° ${planta.numeroPlanta}"
 
-        // 🌿 Familia + especie
+        // 🌿 Nombre (familia + especie)
         holder.txtFamiliaEspecie.text =
-            "${planta.familia} ${planta.especie ?: ""}"
+            "${planta.familia} ${planta.especie ?: ""}".trim()
 
         // 📦 Cantidad
         holder.txtCantidad.text = "Stock: ${planta.cantidad}"
 
-        // 💰 Venta
-        holder.txtVenta.text =
-            if (planta.aLaVenta) "En venta" else "No disponible"
+        // 🟠 Stock bajo → naranja
+        if (planta.cantidad <= 2) {
+            holder.txtCantidad.setTextColor(
+                ContextCompat.getColor(
+                    holder.itemView.context,
+                    R.color.orange_warning
+                )
+            )
+        } else {
+            holder.txtCantidad.setTextColor(
+                ContextCompat.getColor(
+                    holder.itemView.context,
+                    R.color.text_primary
+                )
+            )
+        }
+
+        // 💰 Badge venta (solo visible si está en venta)
+        if (planta.aLaVenta) {
+            holder.txtVenta.visibility = View.VISIBLE
+            holder.txtVenta.text = "En venta"
+        } else {
+            holder.txtVenta.visibility = View.GONE
+        }
 
         // 📷 Foto
-        if (planta.fotoRuta != null) {
+        if (!planta.fotoRuta.isNullOrEmpty()) {
             holder.imgPlanta.setImageURI(Uri.parse(planta.fotoRuta))
         } else {
             holder.imgPlanta.setImageResource(R.drawable.ic_planta_placeholder)
         }
 
-        // 👉 Navegar a detalle
+        // 👉 Navegación / Modo álbum
         holder.itemView.setOnClickListener {
 
             if (modoAgregarAlbum && onAgregarPlantaAlbum != null) {
-                // 👉 ESTÁS AGREGANDO PLANTA AL ÁLBUM
                 onAgregarPlantaAlbum.invoke(planta)
             } else {
-                // 👉 COMPORTAMIENTO NORMAL (NO SE TOCA)
                 val bundle = Bundle().apply {
                     putLong("plantaId", planta.id)
                 }
@@ -84,9 +104,7 @@ class PlantaAdapter(
                     .navigate(R.id.plantaDetalleFragment, bundle)
             }
         }
-
     }
-
 
     fun actualizarLista(nuevaLista: List<Planta>) {
         plantas.clear()
