@@ -1,9 +1,19 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
 
-    <style name="Theme.MiVivero" parent="Base.Theme.MiVivero">
-        <!-- Transparent system bars for edge-to-edge. -->
-        <item name="android:navigationBarColor">@android:color/transparent</item>
-        <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="android:windowLightStatusBar">?attr/isLightTheme</item>
+    <style name="Base.Theme.MiVivero"
+        parent="Theme.MaterialComponents.Light.NoActionBar">
+
+        <!-- Colores principales -->
+        <item name="colorPrimary">@color/teal_primary</item>
+        <item name="colorPrimaryVariant">@color/teal_dark</item>
+        <item name="colorOnPrimary">@android:color/white</item>
+
+        <item name="colorSurface">@android:color/white</item>
+        <item name="colorOnSurface">@color/text_primary</item>
+
     </style>
+
+    <style name="Theme.MiVivero"
+        parent="Base.Theme.MiVivero" />
+
 </resources>

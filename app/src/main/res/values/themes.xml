@@ -2,7 +2,7 @@
 <resources>
 
     <style name="Base.Theme.MiVivero"
-        parent="Theme.MaterialComponents.DayNight.NoActionBar" />
+        parent="Theme.MaterialComponents.Light.NoActionBar" />
 
     <style name="Theme.MiVivero"
         parent="Base.Theme.MiVivero" />
