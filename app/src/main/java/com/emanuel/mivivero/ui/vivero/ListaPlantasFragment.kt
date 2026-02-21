@@ -68,6 +68,12 @@ class ListaPlantasFragment : Fragment(R.layout.fragment_lista_plantas) {
 
         albumId = arguments?.getLong("albumId") ?: -1L
 
+        if (albumId != -1L) {
+            binding.btnVolverEditarAlbum.visibility = View.VISIBLE
+        } else {
+            binding.btnVolverEditarAlbum.visibility = View.GONE
+        }
+
         // ================= RECYCLER =================
 
         binding.recyclerPlantas.layoutManager =
@@ -123,6 +129,10 @@ class ListaPlantasFragment : Fragment(R.layout.fragment_lista_plantas) {
 
         binding.fabAgregarPlanta.setOnClickListener {
             findNavController().navigate(R.id.crearPlantaFragment)
+        }
+
+        binding.btnVolverEditarAlbum.setOnClickListener {
+            findNavController().popBackStack()
         }
     }
 
