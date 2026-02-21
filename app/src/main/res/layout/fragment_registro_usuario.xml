@@ -25,7 +25,10 @@
 
         <!-- CAMPOS -->
 
+
+        <!-- NOMBRE -->
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilNombreReal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
@@ -36,22 +39,53 @@
                 android:id="@+id/etNombreReal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textCapWords"/>
+                android:inputType="textCapWords"
+                android:textSize="16sp"/>
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <EditText
-            android:id="@+id/etNick"
-            style="@style/FormInput"
-            android:hint="Nick público" />
 
-        <EditText
-            android:id="@+id/etNombreVivero"
-            style="@style/FormInput"
-            android:hint="Nombre del vivero" />
+        <!-- NICK -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilNick"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:hint="Nick público"
+            app:boxBackgroundMode="outline">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etNick"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:textSize="16sp"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <!-- NOMBRE VIVERO -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilNombreVivero"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:hint="Nombre del vivero"
+            app:boxBackgroundMode="outline">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etNombreVivero"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textCapWords"
+                android:textSize="16sp"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
 
         <!-- PAÍS -->
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilPais"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
@@ -63,14 +97,18 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="text"
-                android:imeOptions="actionNext"
-                android:textColor="@color/text_primary"
-                android:textColorHint="@color/text_secondary"/>
+                android:completionThreshold="2"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"
+                android:textSize="16sp"/>
         </com.google.android.material.textfield.TextInputLayout>
 
 
         <!-- PROVINCIA -->
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilProvincia"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
@@ -82,14 +120,18 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="text"
-                android:imeOptions="actionNext"
-                android:textColor="@color/text_primary"
-                android:textColorHint="@color/text_secondary"/>
+                android:completionThreshold="2"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"
+                android:textSize="16sp"/>
         </com.google.android.material.textfield.TextInputLayout>
 
 
         <!-- CIUDAD -->
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilCiudad"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
@@ -101,16 +143,32 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="text"
-                android:textColor="@color/text_primary"
-                android:textColorHint="@color/text_secondary"/>
+                android:completionThreshold="2"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"
+                android:textSize="16sp"/>
         </com.google.android.material.textfield.TextInputLayout>
 
 
-        <EditText
-            android:id="@+id/etEmail"
-            style="@style/FormInput"
+        <!-- EMAIL -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
             android:hint="Correo electrónico"
-            android:inputType="textEmailAddress" />
+            app:boxBackgroundMode="outline">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etEmail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textEmailAddress"
+                android:textSize="16sp"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
 
         <!-- BOTÓN -->
         <com.google.android.material.button.MaterialButton
@@ -122,7 +180,8 @@
             android:textColor="@android:color/white"
             android:layout_marginTop="24dp"
             app:cornerRadius="16dp"
-            app:backgroundTint="@color/teal_primary"/>
+            app:backgroundTint="@color/teal_primary"
+            android:textSize="16sp"/>
 
     </LinearLayout>
 
