@@ -21,6 +21,7 @@
 
     <color name="orange_warning">#F57C00</color>
 
+    <color name="accent_orange">#F57C00</color>
 
     <color name="teal_200">#03DAC5</color>
     <color name="teal_500">#009688</color>

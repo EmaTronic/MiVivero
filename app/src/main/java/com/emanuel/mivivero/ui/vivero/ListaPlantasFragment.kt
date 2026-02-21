@@ -12,7 +12,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.emanuel.mivivero.R
 import com.emanuel.mivivero.data.model.Planta
 import com.emanuel.mivivero.databinding.FragmentListaPlantasBinding
-
+import androidx.core.widget.addTextChangedListener
+import android.view.inputmethod.InputMethodManager
 import com.emanuel.mivivero.ui.albumes.AgregarPlantaAlbumDialog
 
 
@@ -33,6 +34,17 @@ class ListaPlantasFragment : Fragment(R.layout.fragment_lista_plantas) {
 
         _binding = FragmentListaPlantasBinding.bind(view)
 
+        binding.root.setOnClickListener {
+            binding.etBuscarPlantas.clearFocus()
+            ocultarTeclado()
+        }
+
+        binding.recyclerPlantas.setOnTouchListener { _, _ ->
+            binding.etBuscarPlantas.clearFocus()
+            ocultarTeclado()
+            false
+        }
+
         // ================= PRIMERA VEZ =================
 
         val prefs = requireContext()
@@ -48,7 +60,9 @@ class ListaPlantasFragment : Fragment(R.layout.fragment_lista_plantas) {
             binding.cardSearch.visibility = View.GONE
             binding.btnOrdenarAZ.visibility = View.GONE
             binding.recyclerPlantas.visibility = View.GONE
-            binding.fabAgregarPlanta.visibility = View.GONE
+            binding.btnAgregarPlanta.visibility = View.GONE
+
+
 
         } else {
 
@@ -104,16 +118,11 @@ class ListaPlantasFragment : Fragment(R.layout.fragment_lista_plantas) {
 
         // ================= BUSCADOR =================
 
-        binding.searchPlantas.setOnQueryTextListener(
-            object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
-                override fun onQueryTextSubmit(query: String?) = true
+        // ================= BUSCADOR =================
 
-                override fun onQueryTextChange(texto: String?): Boolean {
-                    aplicarOrdenYFiltro(texto.orEmpty())
-                    return true
-                }
-            }
-        )
+        binding.etBuscarPlantas.addTextChangedListener { texto ->
+            aplicarOrdenYFiltro(texto?.toString().orEmpty())
+        }
 
         // ================= BOTÓN A-Z =================
 
@@ -122,12 +131,14 @@ class ListaPlantasFragment : Fragment(R.layout.fragment_lista_plantas) {
             binding.btnOrdenarAZ.text =
                 if (ordenAZActivo) "ORIGINAL" else "A-Z"
 
-            aplicarOrdenYFiltro(binding.searchPlantas.query.toString())
+            aplicarOrdenYFiltro(binding.etBuscarPlantas.text.toString())
         }
+
+
 
         // ================= FAB =================
 
-        binding.fabAgregarPlanta.setOnClickListener {
+        binding.btnAgregarPlanta.setOnClickListener {
             findNavController().navigate(R.id.crearPlantaFragment)
         }
 
@@ -136,6 +147,16 @@ class ListaPlantasFragment : Fragment(R.layout.fragment_lista_plantas) {
         }
     }
 
+
+    private fun ocultarTeclado() {
+        val imm = requireContext()
+            .getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+
+        imm.hideSoftInputFromWindow(
+            requireView().windowToken,
+            0
+        )
+    }
     private fun aplicarOrdenYFiltro(texto: String) {
 
         val filtro = texto.trim().lowercase()
