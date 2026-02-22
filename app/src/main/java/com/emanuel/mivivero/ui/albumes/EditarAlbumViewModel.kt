@@ -101,8 +101,8 @@ class EditarAlbumViewModel(application: Application)
             return ResultadoValidacion(false, "El álbum no tiene plantas")
         }
 
-        if (plantas.size > 40) {
-            return ResultadoValidacion(false, "Máximo 40 plantas por álbum")
+        if (plantas.size > 30) {
+            return ResultadoValidacion(false, "Máximo 30 plantas por álbum")
         }
 
         val plantaInvalida = plantas.firstOrNull {

@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.navigation.fragment.findNavController
 import com.emanuel.mivivero.R
 import com.emanuel.mivivero.databinding.FragmentCrearAlbumesBinding
@@ -14,6 +16,8 @@ class CrearAlbumesFragment : Fragment(R.layout.fragment_crear_albumes) {
     private val binding get() = _binding!!
 
     private val viewModel: CrearAlbumesViewModel by viewModels()
+
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -26,14 +30,36 @@ class CrearAlbumesFragment : Fragment(R.layout.fragment_crear_albumes) {
 
             if (albumId != null) {
 
+                val bundle = Bundle().apply {
+                    putLong("albumId", albumId)
+                }
+
                 findNavController().navigate(
                     R.id.action_crearAlbumesFragment_to_editarAlbumFragment,
-                    Bundle().apply {
-                        putLong("albumId", albumId)
-                    }
+                    bundle,
+                    androidx.navigation.NavOptions.Builder()
+                        .setPopUpTo(
+                            R.id.crearAlbumesFragment,
+                            true   // 🔥 elimina Crear del back stack
+                        )
+                        .build()
                 )
 
                 viewModel.limpiarAlbumCreado()
+            }
+        }
+
+
+        viewModel.cargando.observe(viewLifecycleOwner) { cargando ->
+
+            binding.btnContinuar.isEnabled = !cargando
+
+            if (cargando) {
+                binding.btnContinuar.text = "Creando..."
+                binding.btnContinuar.alpha = 0.7f
+            } else {
+                binding.btnContinuar.text = "Continuar"
+                binding.btnContinuar.alpha = 1f
             }
         }
 

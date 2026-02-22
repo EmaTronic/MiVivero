@@ -13,6 +13,10 @@ import kotlinx.coroutines.launch
 class CrearAlbumesViewModel(application: Application)
     : AndroidViewModel(application) {
 
+
+    private val _cargando = MutableLiveData(false)
+    val cargando: LiveData<Boolean> = _cargando
+
     // =====================
     // DATABASE
     // =====================
@@ -35,7 +39,12 @@ class CrearAlbumesViewModel(application: Application)
         nombre: String,
         observaciones: String?
     ) {
+        if (_cargando.value == true) return
+
+        _cargando.value = true
+
         viewModelScope.launch {
+
             val id = albumDao.insert(
                 AlbumEntity(
                     nombre = nombre,
@@ -43,7 +52,9 @@ class CrearAlbumesViewModel(application: Application)
                     estado = EstadoAlbum.BORRADOR.name
                 )
             )
+
             _albumCreadoId.postValue(id)
+            _cargando.postValue(false)
         }
     }
 
