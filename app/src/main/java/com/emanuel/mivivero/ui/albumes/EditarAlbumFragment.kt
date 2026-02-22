@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.emanuel.mivivero.R
 import com.emanuel.mivivero.data.model.PlantaAlbum
@@ -37,10 +38,14 @@ class EditarAlbumFragment : Fragment(R.layout.fragment_editar_album) {
             return
         }
 
-        albumesViewModel.albumActualId = albumId
+        val columnas =
+            if (resources.configuration.smallestScreenWidthDp >= 600) 5 else 3
 
         binding.recyclerPlantasAlbum.layoutManager =
-            LinearLayoutManager(requireContext())
+            GridLayoutManager(requireContext(), columnas)
+
+        albumesViewModel.albumActualId = albumId
+
 
         // 🔹 OBSERVAR DATOS DEL ÁLBUM
         // 🔹 OBSERVAR DATOS DEL ÁLBUM
@@ -96,9 +101,15 @@ class EditarAlbumFragment : Fragment(R.layout.fragment_editar_album) {
             .observe(viewLifecycleOwner) { lista ->
 
                 binding.recyclerPlantasAlbum.adapter =
-                    PlantasAlbumAdapter(lista) { planta ->
-                        mostrarOpcionesPlanta(planta)
-                    }
+                    PlantasAlbumAdapter(
+                        items = lista,
+                        onAgregarClick = {
+                            navegarAListaPlantas()
+                        },
+                        onItemClick = { planta ->
+                            mostrarOpcionesPlanta(planta)
+                        }
+                    )
             }
 
         // 🔹 BOTÓN AGREGAR
@@ -140,6 +151,19 @@ class EditarAlbumFragment : Fragment(R.layout.fragment_editar_album) {
     }
 
 
+
+
+    private fun navegarAListaPlantas() {
+
+        val bundle = Bundle().apply {
+            putLong("albumId", albumId)
+        }
+
+        findNavController().navigate(
+            R.id.action_editarAlbumFragment_to_listaPlantasFragment,
+            bundle
+        )
+    }
     // ======================
     // OPCIONES
     // ======================

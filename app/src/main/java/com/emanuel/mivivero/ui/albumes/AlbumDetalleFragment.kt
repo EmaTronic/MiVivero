@@ -7,6 +7,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.emanuel.mivivero.R
 import com.emanuel.mivivero.data.model.PlantaAlbum
@@ -35,8 +36,11 @@ class AlbumDetalleFragment : Fragment(R.layout.fragment_album_detalle) {
             return
         }
 
+        val columnas =
+            if (resources.configuration.smallestScreenWidthDp >= 600) 5 else 3
+
         binding.recyclerPlantasAlbum.layoutManager =
-            LinearLayoutManager(requireContext())
+            GridLayoutManager(requireContext(), columnas)
 
         // Datos del álbum
         viewModel.obtenerAlbum(albumId)
@@ -113,9 +117,15 @@ class AlbumDetalleFragment : Fragment(R.layout.fragment_album_detalle) {
             .observe(viewLifecycleOwner) { lista ->
 
                 binding.recyclerPlantasAlbum.adapter =
-                    PlantasAlbumAdapter(lista) { planta ->
-                        mostrarOpciones(planta)
-                    }
+                    PlantasAlbumAdapter(
+                        items = lista,
+                        onAgregarClick = {
+                            navegarAListaPlantas()
+                        },
+                        onItemClick = { planta ->
+                            mostrarOpcionesPlanta(planta)
+                        }
+                    )
             }
     }
 
@@ -171,6 +181,33 @@ class AlbumDetalleFragment : Fragment(R.layout.fragment_album_detalle) {
             .setNegativeButton("Cancelar", null)
             .show()
     }
+
+    private fun navegarAListaPlantas() {
+
+        val bundle = Bundle().apply {
+            putLong("albumId", albumId)
+        }
+
+        findNavController().navigate(
+            R.id.listaPlantasFragment,   // ✅ destino directo
+            bundle
+        )
+    }
+    private fun mostrarOpcionesPlanta(planta: PlantaAlbum) {
+
+        // Ejemplo básico
+        Toast.makeText(
+            requireContext(),
+            "Planta: ${planta.nombre}",
+            Toast.LENGTH_SHORT
+        ).show()
+
+        // Acá podés:
+        // - Mostrar dialog
+        // - Editar cantidad
+        // - Eliminar del álbum
+    }
+
 
 
     override fun onDestroyView() {
