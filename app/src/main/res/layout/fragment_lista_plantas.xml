@@ -28,37 +28,35 @@
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardSearch"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="52dp"
             android:layout_marginTop="20dp"
             android:layout_marginEnd="12dp"
             app:cardCornerRadius="18dp"
-            app:cardElevation="3dp"
+            app:cardElevation="2dp"
             app:layout_constraintTop_toBottomOf="@id/tvTitulo"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@id/btnOrdenarAZ">
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:hint="Buscar plantas"
                 app:boxBackgroundMode="none"
                 app:startIconDrawable="@drawable/ic_search"
-                app:startIconTint="@color/teal_primary"
-                android:paddingVertical="6dp">
+                app:startIconTint="@color/teal_primary">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etBuscarPlantas"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
                     android:textSize="15sp"
                     android:textColor="@color/text_primary"
                     android:background="@android:color/transparent"
                     android:imeOptions="actionSearch"/>
-
             </com.google.android.material.textfield.TextInputLayout>
 
         </com.google.android.material.card.MaterialCardView>
-
         <!-- Botón ordenar -->
 
         <com.google.android.material.button.MaterialButton
@@ -89,19 +87,19 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnOrdenarAZ"
             android:layout_width="wrap_content"
-            android:layout_height="60dp"
-            android:minWidth="0dp"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
+            android:layout_height="64dp"
             android:text="A-Z"
+            android:textAllCaps="false"
             android:textStyle="bold"
+            android:textSize="15sp"
             android:textColor="@color/teal_primary"
-            app:backgroundTint="@color/teal_light"
-            app:cornerRadius="16dp"
+            app:cornerRadius="18dp"
+            app:strokeWidth="2dp"
+            app:strokeColor="@color/teal_primary"
+            app:backgroundTint="@android:color/white"
             app:layout_constraintTop_toTopOf="@id/cardSearch"
             app:layout_constraintBottom_toBottomOf="@id/cardSearch"
             app:layout_constraintEnd_toEndOf="parent"/>
-
 
         <!-- ================= BIENVENIDA ================= -->
 
