@@ -10,6 +10,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.emanuel.mivivero.R
+import com.emanuel.mivivero.data.model.EstadoAlbum
 import com.emanuel.mivivero.data.model.PlantaAlbum
 import com.emanuel.mivivero.databinding.DialogAgregarAlbumBinding
 import com.emanuel.mivivero.databinding.FragmentAlbumDetalleBinding
@@ -46,34 +47,13 @@ class AlbumDetalleFragment : Fragment(R.layout.fragment_album_detalle) {
         viewModel.obtenerAlbum(albumId)
             .observe(viewLifecycleOwner) { album ->
 
-                binding.txtNombreAlbum.text = album?.nombre
-                binding.txtEstadoAlbum.text = album?.estado
+                if (album == null) return@observe
 
-                when (album?.estado) {
+                binding.txtNombreAlbum.text = album.nombre
+                binding.txtEstadoAlbum.text = album.estado
 
-                    "BORRADOR" -> {
-                        binding.btnEditarAlbum.visibility = View.VISIBLE
-                        binding.btnEditarAlbum.text = "Continuar edición"
-                        binding.btnPublicarAlbum.visibility = View.GONE
-                    }
-
-                    "FINALIZADO" -> {
-                        binding.btnEditarAlbum.visibility = View.VISIBLE
-                        binding.btnEditarAlbum.text = "Reabrir edición"
-                        binding.btnPublicarAlbum.visibility = View.VISIBLE
-                    }
-
-                    "PUBLICADO" -> {
-                        binding.btnEditarAlbum.visibility = View.GONE
-                        binding.btnPublicarAlbum.visibility = View.VISIBLE
-                    }
-
-                    else -> {
-                        binding.btnEditarAlbum.visibility = View.GONE
-                    }
-                }
+                configurarEstadoUI(EstadoAlbum.valueOf(album.estado))
             }
-
         binding.btnEditarNombre.setOnClickListener {
 
             val editText = android.widget.EditText(requireContext())
@@ -208,6 +188,55 @@ class AlbumDetalleFragment : Fragment(R.layout.fragment_album_detalle) {
         // - Eliminar del álbum
     }
 
+
+
+    private fun configurarEstadoUI(estado: EstadoAlbum) {
+
+        val badge = binding.txtEstadoAlbum
+
+        // Animación suave
+        badge.animate()
+            .alpha(0f)
+            .setDuration(120)
+            .withEndAction {
+
+                when (estado) {
+
+                    EstadoAlbum.BORRADOR -> {
+                        badge.text = "BORRADOR"
+                        badge.setBackgroundResource(R.drawable.bg_estado_borrador)
+                        badge.setTextColor(requireContext().getColor(R.color.orange_700))
+                        badge.setCompoundDrawablesWithIntrinsicBounds(
+                            R.drawable.ic_borrador, 0, 0, 0
+                        )
+                    }
+
+                    EstadoAlbum.FINALIZADO -> {
+                        badge.text = "FINALIZADO"
+                        badge.setBackgroundResource(R.drawable.bg_estado_finalizado)
+                        badge.setTextColor(requireContext().getColor(R.color.blue_700))
+                        badge.setCompoundDrawablesWithIntrinsicBounds(
+                            R.drawable.ic_finalizado, 0, 0, 0
+                        )
+                    }
+
+                    EstadoAlbum.PUBLICADO -> {
+                        badge.text = "PUBLICADO"
+                        badge.setBackgroundResource(R.drawable.bg_estado_publicado)
+                        badge.setTextColor(requireContext().getColor(R.color.green_700))
+                        badge.setCompoundDrawablesWithIntrinsicBounds(
+                            R.drawable.ic_publicado, 0, 0, 0
+                        )
+                    }
+                }
+
+                badge.animate()
+                    .alpha(1f)
+                    .setDuration(150)
+                    .start()
+            }
+            .start()
+    }
 
 
     override fun onDestroyView() {
