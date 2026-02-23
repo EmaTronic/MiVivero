@@ -52,13 +52,11 @@ class EditarAlbumViewModel(application: Application)
     ) {
         viewModelScope.launch {
 
-
             val album = albumDao.obtenerAlbumRaw(albumId)
 
             if (album?.estado != EstadoAlbum.BORRADOR.name) {
                 return@launch
             }
-
 
             albumPlantaDao.eliminarPlantaDelAlbum(
                 albumId = albumId,
@@ -74,6 +72,7 @@ class EditarAlbumViewModel(application: Application)
         precio: Double,
         onResultado: (String?) -> Unit
     ) {
+
         if (cantidad <= 0) {
             onResultado("La cantidad debe ser mayor a 0")
             return
@@ -99,6 +98,7 @@ class EditarAlbumViewModel(application: Application)
                 cantidad = cantidad,
                 precio = precio
             )
+
             onResultado(null)
         }
     }

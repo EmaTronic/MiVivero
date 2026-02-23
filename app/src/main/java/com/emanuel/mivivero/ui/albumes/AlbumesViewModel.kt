@@ -59,8 +59,15 @@ class AlbumesViewModel(application: Application)
             onResultado("Stock insuficiente. Disponibles: ${planta.cantidad}")
             return
         }
-
         viewModelScope.launch {
+
+            // 🔒 VALIDAR QUE EL ÁLBUM ESTÉ EN BORRADOR
+            val album = albumDao.obtenerAlbumRaw(albumId)
+
+            if (album?.estado != EstadoAlbum.BORRADOR.name) {
+                onResultado("No se puede agregar a un álbum finalizado")
+                return@launch
+            }
 
             // Verificar que no esté ya en el álbum
             val existe =
