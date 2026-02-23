@@ -12,7 +12,8 @@ import com.emanuel.mivivero.databinding.ItemPlantaAlbumGridBinding
 class PlantasAlbumAdapter(
     private val items: List<PlantaAlbum>,
     private val onAgregarClick: () -> Unit,
-    private val onItemClick: (PlantaAlbum) -> Unit
+    private val onItemClick: (PlantaAlbum) -> Unit,
+    private val onItemLongClick: (PlantaAlbum) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     companion object {
@@ -92,8 +93,15 @@ class PlantasAlbumAdapter(
                 .centerCrop()
                 .into(holder.b.imgPlanta)
 
+            // CLICK NORMAL
             holder.b.root.setOnClickListener {
                 onItemClick(planta)
+            }
+
+            // LONG CLICK → abre dialog editar/eliminar
+            holder.b.root.setOnLongClickListener {
+                onItemLongClick(planta)
+                true
             }
         }
     }

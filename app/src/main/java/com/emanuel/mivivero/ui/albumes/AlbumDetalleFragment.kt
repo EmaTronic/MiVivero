@@ -29,6 +29,8 @@ class AlbumDetalleFragment : Fragment(R.layout.fragment_album_detalle) {
     private lateinit var adapter: AlbumesAdapter
 
 
+
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentAlbumDetalleBinding.bind(view)
@@ -94,6 +96,8 @@ class AlbumDetalleFragment : Fragment(R.layout.fragment_album_detalle) {
 
 
 
+
+
         // Plantas del álbum
         viewModel.obtenerPlantasDelAlbum(albumId)
             .observe(viewLifecycleOwner) { lista ->
@@ -105,32 +109,38 @@ class AlbumDetalleFragment : Fragment(R.layout.fragment_album_detalle) {
                             navegarAListaPlantas()
                         },
                         onItemClick = { planta ->
-                            mostrarOpcionesPlanta(planta)
+                            // opcional detalle
+                        },
+                        onItemLongClick = { planta ->
+                            mostrarDialogoEditar(planta)
                         }
                     )
             }
     }
 
-    private fun mostrarOpciones(planta: PlantaAlbum) {
+
+
+
+    private fun confirmarEliminarPlanta(planta: PlantaAlbum) {
+
         AlertDialog.Builder(requireContext())
-            .setTitle(planta.nombre)
-            .setItems(
-                arrayOf("Editar cantidad / precio", "Eliminar planta")
-            ) { _, which ->
-                when (which) {
-                    0 -> mostrarDialogoEditar(planta)
-                    1 ->
-                        viewModel.eliminarPlantaDelAlbum(
-                            albumId = albumId,
-                            plantaId = planta.plantaId
-                        )
-                }
+            .setTitle("Eliminar planta")
+            .setMessage("¿Eliminar ${planta.nombre} del álbum?")
+            .setPositiveButton("Eliminar") { _, _ ->
+
+                viewModel.eliminarPlantaDelAlbum(
+                    albumId = albumId,
+                    plantaId = planta.plantaId
+                )
             }
             .setNegativeButton("Cancelar", null)
             .show()
     }
 
+
+
     private fun mostrarDialogoEditar(planta: PlantaAlbum) {
+
         val dialogBinding =
             DialogAgregarAlbumBinding.inflate(layoutInflater)
 
@@ -157,8 +167,12 @@ class AlbumDetalleFragment : Fragment(R.layout.fragment_album_detalle) {
                         ).show()
                     }
                 }
-
-
+            }
+            .setNeutralButton("Eliminar") { _, _ ->
+                viewModel.eliminarPlantaDelAlbum(
+                    albumId = albumId,
+                    plantaId = planta.plantaId
+                )
             }
             .setNegativeButton("Cancelar", null)
             .show()

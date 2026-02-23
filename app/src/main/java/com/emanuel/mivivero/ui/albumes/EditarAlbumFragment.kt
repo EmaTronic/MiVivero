@@ -107,7 +107,10 @@ class EditarAlbumFragment : Fragment(R.layout.fragment_editar_album) {
                             navegarAListaPlantas()
                         },
                         onItemClick = { planta ->
-                            mostrarOpcionesPlanta(planta)
+                            // click normal si querés algo
+                        },
+                        onItemLongClick = { planta ->
+                            mostrarOpcionesPlanta(planta)   // 👈 ACÁ ARRANCA TODO
                         }
                     )
             }
