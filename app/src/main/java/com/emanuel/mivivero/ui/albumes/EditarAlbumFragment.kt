@@ -2,6 +2,7 @@ package com.emanuel.mivivero.ui.albumes
 
 import android.os.Bundle
 import android.view.View
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
@@ -17,6 +18,7 @@ import com.emanuel.mivivero.data.model.EstadoAlbum
 import com.emanuel.mivivero.data.model.PlantaAlbum
 import com.emanuel.mivivero.databinding.DialogAgregarAlbumBinding
 import com.emanuel.mivivero.databinding.FragmentEditarAlbumBinding
+import com.google.android.material.button.MaterialButton
 import kotlinx.coroutines.launch
 
 class EditarAlbumFragment : Fragment(R.layout.fragment_editar_album) {
@@ -199,23 +201,35 @@ class EditarAlbumFragment : Fragment(R.layout.fragment_editar_album) {
     // OPCIONES
     // ======================
     private fun mostrarOpcionesPlanta(planta: PlantaAlbum) {
-        AlertDialog.Builder(requireContext())
-            .setTitle(planta.nombreCompleto)
-            .setItems(
-                arrayOf("Editar cantidad / precio", "Eliminar planta")
-            ) { _, which ->
-                when (which) {
-                    0 -> {
-                        mostrarDialogoEditar(planta)
-                    }
-                    1 -> {
-                        confirmarEliminar(planta)
-                    }
-                }
+
+        val dialogView = layoutInflater
+            .inflate(R.layout.dialog_opciones_planta, null)
+
+        val dialog = AlertDialog.Builder(requireContext())
+            .setView(dialogView)
+            .create()
+
+        dialogView.findViewById<TextView>(R.id.txtTitulo)
+            .text = planta.nombreCompleto
+
+        dialogView.findViewById<MaterialButton>(R.id.btnEditar)
+            .setOnClickListener {
+                dialog.dismiss()
+                mostrarDialogoEditar(planta)
             }
 
-            .setNegativeButton("Cancelar", null)
-            .show()
+        dialogView.findViewById<MaterialButton>(R.id.btnEliminar)
+            .setOnClickListener {
+                dialog.dismiss()
+                confirmarEliminar(planta)
+            }
+
+        dialogView.findViewById<TextView>(R.id.txtCancelar)
+            .setOnClickListener {
+                dialog.dismiss()
+            }
+
+        dialog.show()
     }
 
 
