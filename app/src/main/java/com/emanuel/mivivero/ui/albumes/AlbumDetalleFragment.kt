@@ -1,5 +1,7 @@
 package com.emanuel.mivivero.ui.albumes
 
+import android.animation.ValueAnimator
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -189,53 +191,76 @@ class AlbumDetalleFragment : Fragment(R.layout.fragment_album_detalle) {
     }
 
 
+    data class Quad(
+        val texto: String,
+        val fondo: Int,
+        val textoColor: Int,
+        val icono: Int
+    )
 
     private fun configurarEstadoUI(estado: EstadoAlbum) {
 
-        val badge = binding.txtEstadoAlbum
+        val chip = binding.txtEstadoAlbum
 
-        // Animación suave
-        badge.animate()
-            .alpha(0f)
-            .setDuration(120)
+        val (texto, colorFondo, colorTexto, icono) = when (estado) {
+
+            EstadoAlbum.BORRADOR -> Quad(
+                "BORRADOR",
+                requireContext().getColor(R.color.orange_200),
+                requireContext().getColor(R.color.orange_700),
+                R.drawable.ic_borrador
+            )
+
+            EstadoAlbum.FINALIZADO -> Quad(
+                "FINALIZADO",
+                requireContext().getColor(R.color.blue_200),
+                requireContext().getColor(R.color.blue_700),
+                R.drawable.ic_finalizado
+            )
+
+            EstadoAlbum.PUBLICADO -> Quad(
+                "PUBLICADO",
+                requireContext().getColor(R.color.green_200),
+                requireContext().getColor(R.color.green_700),
+                R.drawable.ic_publicado
+            )
+        }
+
+        chip.text = texto
+        chip.setTextColor(colorTexto)
+        chip.setChipIconResource(icono)
+
+        chip.chipBackgroundColor = ColorStateList.valueOf(colorFondo)
+
+        chip.animate()
+            .scaleX(0.9f)
+            .scaleY(0.9f)
+            .setDuration(100)
             .withEndAction {
-
-                when (estado) {
-
-                    EstadoAlbum.BORRADOR -> {
-                        badge.text = "BORRADOR"
-                        badge.setBackgroundResource(R.drawable.bg_estado_borrador)
-                        badge.setTextColor(requireContext().getColor(R.color.orange_700))
-                        badge.setCompoundDrawablesWithIntrinsicBounds(
-                            R.drawable.ic_borrador, 0, 0, 0
-                        )
-                    }
-
-                    EstadoAlbum.FINALIZADO -> {
-                        badge.text = "FINALIZADO"
-                        badge.setBackgroundResource(R.drawable.bg_estado_finalizado)
-                        badge.setTextColor(requireContext().getColor(R.color.blue_700))
-                        badge.setCompoundDrawablesWithIntrinsicBounds(
-                            R.drawable.ic_finalizado, 0, 0, 0
-                        )
-                    }
-
-                    EstadoAlbum.PUBLICADO -> {
-                        badge.text = "PUBLICADO"
-                        badge.setBackgroundResource(R.drawable.bg_estado_publicado)
-                        badge.setTextColor(requireContext().getColor(R.color.green_700))
-                        badge.setCompoundDrawablesWithIntrinsicBounds(
-                            R.drawable.ic_publicado, 0, 0, 0
-                        )
-                    }
-                }
-
-                badge.animate()
-                    .alpha(1f)
+                chip.animate()
+                    .scaleX(1f)
+                    .scaleY(1f)
                     .setDuration(150)
                     .start()
             }
             .start()
+
+        if (estado == EstadoAlbum.PUBLICADO) {
+            chip.postDelayed({
+                chip.animate()
+                    .scaleX(1.08f)
+                    .scaleY(1.08f)
+                    .setDuration(100)
+                    .withEndAction {
+                        chip.animate()
+                            .scaleX(1f)
+                            .scaleY(1f)
+                            .setDuration(100)
+                            .start()
+                    }
+                    .start()
+            }, 150)
+        }
     }
 
 

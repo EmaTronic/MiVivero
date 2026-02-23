@@ -36,7 +36,7 @@
         app:layout_constraintHorizontal_bias="0"/>
 
     <!-- Botón editar como acción lateral -->
-    <com.google.android.material.button.MaterialButton
+    <com.google.android.material.chip.Chip
         android:id="@+id/btnEditarNombre"
         android:layout_width="wrap_content"
         android:layout_height="36dp"
@@ -52,17 +52,18 @@
         app:layout_constraintEnd_toEndOf="parent"/>
 
     <!-- Estado como badge -->
-    <TextView
+    <com.google.android.material.chip.Chip
         android:id="@+id/txtEstadoAlbum"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:gravity="center"
-        android:paddingHorizontal="12dp"
-        android:paddingVertical="6dp"
-        android:textColor="#004D40"
-        android:textSize="18sp"
         android:textStyle="bold"
+        android:textSize="12sp"
+        android:checkable="false"
+        app:chipCornerRadius="20dp"
+        app:chipMinHeight="36dp"
+        app:chipIconVisible="true"
+        app:chipIconTint="@android:color/white"
+        app:rippleColor="#22000000"
         app:layout_constraintEnd_toEndOf="@+id/view"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/txtNombreAlbum" />
