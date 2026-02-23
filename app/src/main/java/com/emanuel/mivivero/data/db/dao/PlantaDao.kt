@@ -44,4 +44,8 @@ interface PlantaDao {
         albumId: Long
     ): List<PlantaEntity>
 
+
+    @Query("SELECT * FROM plantas WHERE id = :id")
+    suspend fun obtenerPorId(id: Long): Planta?
+
 }

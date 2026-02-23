@@ -30,6 +30,11 @@ class AlbumesViewModel(application: Application)
     // 🔥 ESTE ES EL ESTADO QUE FALTABA SETEAR
     var albumActualId: Long? = null
 
+    private suspend fun esEditable(albumId: Long): Boolean {
+        val album = albumDao.obtenerAlbumRaw(albumId)
+        return album?.estado == EstadoAlbum.BORRADOR.name
+    }
+
     fun agregarPlantaAlAlbum(
         planta: Planta,
         cantidad: Int,
@@ -60,6 +65,13 @@ class AlbumesViewModel(application: Application)
             return
         }
         viewModelScope.launch {
+
+
+            if (!esEditable(albumId)) {
+                onResultado("No se puede agregar a un álbum finalizado")
+                return@launch
+            }
+
 
             // 🔒 VALIDAR QUE EL ÁLBUM ESTÉ EN BORRADOR
             val album = albumDao.obtenerAlbumRaw(albumId)

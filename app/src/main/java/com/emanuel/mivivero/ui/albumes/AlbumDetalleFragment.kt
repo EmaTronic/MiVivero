@@ -53,6 +53,14 @@ class AlbumDetalleFragment : Fragment(R.layout.fragment_album_detalle) {
 
                 if (album == null) return@observe
 
+                val estado = EstadoAlbum.valueOf(album.estado)
+
+                binding.btnPublicarAlbum.visibility =
+                    if (estado == EstadoAlbum.FINALIZADO)
+                        View.VISIBLE
+                    else
+                        View.GONE
+
                 binding.txtNombreAlbum.text = album.nombre
                 binding.txtEstadoAlbum.text = album.estado
 

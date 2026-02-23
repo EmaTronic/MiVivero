@@ -17,6 +17,15 @@ class EditarAlbumViewModel(application: Application)
     private val albumDao = db.albumDao()
     private val albumPlantaDao = db.albumPlantaDao()
 
+    private val plantaDao = db.plantaDao()
+
+
+    private suspend fun esEditable(albumId: Long): Boolean {
+        val album = albumDao.obtenerAlbumRaw(albumId)
+        return album?.estado == EstadoAlbum.BORRADOR.name
+    }
+
+
     fun obtenerAlbum(albumId: Long): LiveData<AlbumEntity?> =
         albumDao.obtenerPorId(albumId)
 
@@ -52,9 +61,7 @@ class EditarAlbumViewModel(application: Application)
     ) {
         viewModelScope.launch {
 
-            val album = albumDao.obtenerAlbumRaw(albumId)
-
-            if (album?.estado != EstadoAlbum.BORRADOR.name) {
+            if (!esEditable(albumId)) {
                 return@launch
             }
 
@@ -85,10 +92,21 @@ class EditarAlbumViewModel(application: Application)
 
         viewModelScope.launch {
 
-            val album = albumDao.obtenerAlbumRaw(albumId)
-
-            if (album?.estado != EstadoAlbum.BORRADOR.name) {
+            if (!esEditable(albumId)) {
                 onResultado("No se puede modificar un álbum finalizado")
+                return@launch
+            }
+
+            // 🔒 VALIDACIÓN DE STOCK
+            val planta = plantaDao.obtenerPorId(plantaId)
+
+            if (planta == null) {
+                onResultado("Planta no encontrada")
+                return@launch
+            }
+
+            if (cantidad > planta.cantidad) {
+                onResultado("Stock insuficiente. Disponibles: ${planta.cantidad}")
                 return@launch
             }
 

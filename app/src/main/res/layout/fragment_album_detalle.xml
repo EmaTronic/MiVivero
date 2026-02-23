@@ -109,7 +109,7 @@
             android:id="@+id/btnEditarAlbum"
             android:layout_width="match_parent"
             android:layout_height="52dp"
-            android:text="Agregar más plantas"
+            android:text="Continuar editando"
             android:textAllCaps="false"
             android:textStyle="bold"
             android:textSize="20sp"

@@ -88,7 +88,16 @@ class PlantasAlbumAdapter(
             holder.b.txtFamilia.text = planta.familia
             holder.b.txtEspecie.text = planta.especie ?: ""
             holder.b.txtCantidad.text = "Cant: ${planta.cantidad}"
-            holder.b.txtPrecio.text = "$${planta.precio}"
+
+
+
+            val precioFormateado =
+                if (planta.precio % 1.0 == 0.0)
+                    planta.precio.toInt().toString()
+                else
+                    "%.2f".format(planta.precio)
+
+            holder.b.txtPrecio.text = "$$precioFormateado"
 
             Glide.with(holder.itemView.context)
                 .load(planta.fotoRuta)
