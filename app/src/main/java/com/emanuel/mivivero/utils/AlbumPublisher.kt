@@ -217,7 +217,7 @@ object AlbumPublisher {
 
             var y = topBloque + 120f
 
-            canvas.drawText(planta.nombre, padding, y, paintTexto)
+            canvas.drawText(planta.nombreCompleto, padding, y, paintTexto)
             y += 95f
 
             canvas.drawText("Disponible: ${planta.cantidad}", padding, y, paintTexto)

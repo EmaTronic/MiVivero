@@ -51,6 +51,15 @@ class EditarAlbumViewModel(application: Application)
         plantaId: Long
     ) {
         viewModelScope.launch {
+
+
+            val album = albumDao.obtenerAlbumRaw(albumId)
+
+            if (album?.estado != EstadoAlbum.BORRADOR.name) {
+                return@launch
+            }
+
+
             albumPlantaDao.eliminarPlantaDelAlbum(
                 albumId = albumId,
                 plantaId = plantaId
@@ -76,6 +85,14 @@ class EditarAlbumViewModel(application: Application)
         }
 
         viewModelScope.launch {
+
+            val album = albumDao.obtenerAlbumRaw(albumId)
+
+            if (album?.estado != EstadoAlbum.BORRADOR.name) {
+                onResultado("No se puede modificar un álbum finalizado")
+                return@launch
+            }
+
             albumPlantaDao.actualizarPlantaAlbum(
                 albumId = albumId,
                 plantaId = plantaId,
@@ -117,6 +134,13 @@ class EditarAlbumViewModel(application: Application)
         }
 
         return ResultadoValidacion(true)
+    }
+
+
+
+    suspend fun esAlbumBorrador(albumId: Long): Boolean {
+        val album = albumDao.obtenerAlbumRaw(albumId)
+        return album?.estado == EstadoAlbum.BORRADOR.name
     }
 
     fun reabrirAlbum(albumId: Long) {

@@ -105,14 +105,18 @@ class AlbumDetalleFragment : Fragment(R.layout.fragment_album_detalle) {
                 binding.recyclerPlantasAlbum.adapter =
                     PlantasAlbumAdapter(
                         items = lista,
+                        esEditable = false,   // 🔒 SIEMPRE NO EDITABLE EN DETALLE
                         onAgregarClick = {
                             navegarAListaPlantas()
                         },
-                        onItemClick = { planta ->
-                            // opcional detalle
-                        },
+                        onItemClick = { planta -> },
                         onItemLongClick = { planta ->
-                            mostrarDialogoEditar(planta)
+                            // opcional: mostrar mensaje si querés
+                            Toast.makeText(
+                                requireContext(),
+                                "No se puede editar desde detalle",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
                     )
             }
@@ -125,7 +129,7 @@ class AlbumDetalleFragment : Fragment(R.layout.fragment_album_detalle) {
 
         AlertDialog.Builder(requireContext())
             .setTitle("Eliminar planta")
-            .setMessage("¿Eliminar ${planta.nombre} del álbum?")
+            .setMessage("¿Eliminar ${planta.nombreCompleto} del álbum?")
             .setPositiveButton("Eliminar") { _, _ ->
 
                 viewModel.eliminarPlantaDelAlbum(
@@ -148,7 +152,7 @@ class AlbumDetalleFragment : Fragment(R.layout.fragment_album_detalle) {
         dialogBinding.etPrecio.setText(planta.precio.toString())
 
         AlertDialog.Builder(requireContext())
-            .setTitle("Editar ${planta.nombre}")
+            .setTitle("Editar ${planta.nombreCompleto}")
             .setView(dialogBinding.root)
             .setPositiveButton("Guardar") { _, _ ->
 
@@ -194,7 +198,7 @@ class AlbumDetalleFragment : Fragment(R.layout.fragment_album_detalle) {
         // Ejemplo básico
         Toast.makeText(
             requireContext(),
-            "Planta: ${planta.nombre}",
+            "Planta: ${planta.nombreCompleto}",
             Toast.LENGTH_SHORT
         ).show()
 

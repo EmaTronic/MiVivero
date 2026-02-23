@@ -13,7 +13,8 @@ class PlantasAlbumAdapter(
     private val items: List<PlantaAlbum>,
     private val onAgregarClick: () -> Unit,
     private val onItemClick: (PlantaAlbum) -> Unit,
-    private val onItemLongClick: (PlantaAlbum) -> Unit
+    private val onItemLongClick: (PlantaAlbum) -> Unit,
+    private val esEditable: Boolean,
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     companion object {
@@ -23,7 +24,7 @@ class PlantasAlbumAdapter(
     }
 
     override fun getItemCount(): Int {
-        return if (items.size < MAX_PLANTAS) {
+        return if (esEditable && items.size < MAX_PLANTAS) {
             items.size + 1 // incluye botón +
         } else {
             items.size
@@ -31,7 +32,7 @@ class PlantasAlbumAdapter(
     }
 
     override fun getItemViewType(position: Int): Int {
-        return if (items.size < MAX_PLANTAS && position == items.size) {
+        return if (esEditable && items.size < MAX_PLANTAS && position == items.size) {
             TYPE_ADD
         } else {
             TYPE_PLANTA
@@ -84,7 +85,10 @@ class PlantasAlbumAdapter(
 
             val planta = items[position]
 
-            holder.b.txtNombre.text = planta.nombre
+            holder.b.txtFamilia.text = planta.familia
+            holder.b.txtEspecie.text = planta.especie ?: ""
+            holder.b.txtCantidad.text = "Cant: ${planta.cantidad}"
+            holder.b.txtPrecio.text = "$${planta.precio}"
 
             Glide.with(holder.itemView.context)
                 .load(planta.fotoRuta)

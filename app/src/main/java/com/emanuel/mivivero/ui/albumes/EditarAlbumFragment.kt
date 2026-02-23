@@ -7,16 +7,22 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.emanuel.mivivero.R
+import com.emanuel.mivivero.data.local.entity.AlbumEntity
+import com.emanuel.mivivero.data.model.EstadoAlbum
 import com.emanuel.mivivero.data.model.PlantaAlbum
 import com.emanuel.mivivero.databinding.DialogAgregarAlbumBinding
 import com.emanuel.mivivero.databinding.FragmentEditarAlbumBinding
+import kotlinx.coroutines.launch
 
 class EditarAlbumFragment : Fragment(R.layout.fragment_editar_album) {
 
+
+    private var estadoActualAlbum: String? = null
 
     private var yaNavego = false
 
@@ -27,6 +33,8 @@ class EditarAlbumFragment : Fragment(R.layout.fragment_editar_album) {
     private val albumesViewModel: AlbumesViewModel by activityViewModels()
 
     private var albumId: Long = -1L
+
+    private var albumActual: AlbumEntity? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -53,6 +61,17 @@ class EditarAlbumFragment : Fragment(R.layout.fragment_editar_album) {
             .observe(viewLifecycleOwner) { album ->
 
                 if (album == null) return@observe
+
+                albumActual = album
+
+                binding.btnAgregarPlantas.isEnabled =
+                    album.estado == EstadoAlbum.BORRADOR.name
+
+                binding.btnAgregarPlantas.alpha =
+                    if (album.estado == EstadoAlbum.BORRADOR.name) 1f else 0.4f
+
+
+                estadoActualAlbum = album.estado
 
                 binding.txtNombreAlbum.text = album.nombre
                 binding.txtEstadoAlbum.text = album.estado
@@ -103,17 +122,26 @@ class EditarAlbumFragment : Fragment(R.layout.fragment_editar_album) {
                 binding.recyclerPlantasAlbum.adapter =
                     PlantasAlbumAdapter(
                         items = lista,
-                        onAgregarClick = {
-                            navegarAListaPlantas()
-                        },
-                        onItemClick = { planta ->
-                            // click normal si querés algo
-                        },
+                        esEditable = albumActual?.estado == EstadoAlbum.BORRADOR.name,
+                        onAgregarClick = { navegarAListaPlantas() },
+                        onItemClick = { planta -> },
                         onItemLongClick = { planta ->
-                            mostrarOpcionesPlanta(planta)   // 👈 ACÁ ARRANCA TODO
+
+                            if (albumActual?.estado != EstadoAlbum.BORRADOR.name) {
+                                Toast.makeText(
+                                    requireContext(),
+                                    "No se puede editar álbumes finalizados",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                return@PlantasAlbumAdapter
+                            }
+
+                            mostrarOpcionesPlanta(planta)
                         }
                     )
             }
+
+
 
         // 🔹 BOTÓN AGREGAR
         binding.btnAgregarPlantas.setOnClickListener {
@@ -172,7 +200,7 @@ class EditarAlbumFragment : Fragment(R.layout.fragment_editar_album) {
     // ======================
     private fun mostrarOpcionesPlanta(planta: PlantaAlbum) {
         AlertDialog.Builder(requireContext())
-            .setTitle(planta.nombre)
+            .setTitle(planta.nombreCompleto)
             .setItems(
                 arrayOf("Editar cantidad / precio", "Eliminar planta")
             ) { _, which ->
@@ -194,7 +222,7 @@ class EditarAlbumFragment : Fragment(R.layout.fragment_editar_album) {
     private fun confirmarEliminar(planta: PlantaAlbum) {
         AlertDialog.Builder(requireContext())
             .setTitle("Eliminar planta")
-            .setMessage("¿Eliminar ${planta.nombre} del álbum?")
+            .setMessage("¿Eliminar ${planta.nombreCompleto} del álbum?")
             .setPositiveButton("Eliminar") { _, _ ->
                 editarAlbumViewModel.eliminarPlantaDelAlbum(
                     albumId = albumId,
@@ -209,7 +237,7 @@ class EditarAlbumFragment : Fragment(R.layout.fragment_editar_album) {
 
         Toast.makeText(
             requireContext(),
-            "ENTRÓ A EDITAR ${planta.nombre}",
+            "ENTRÓ A EDITAR ${planta.nombreCompleto}",
             Toast.LENGTH_SHORT
         ).show()
 
@@ -223,7 +251,7 @@ class EditarAlbumFragment : Fragment(R.layout.fragment_editar_album) {
         dialogBinding.etPrecio.setText(planta.precio.toString())
 
         androidx.appcompat.app.AlertDialog.Builder(requireContext())
-            .setTitle("Editar ${planta.nombre}")
+            .setTitle("Editar ${planta.nombreCompleto}")
             .setView(dialogBinding.root)
             .setPositiveButton("Guardar") { _, _ ->
 
