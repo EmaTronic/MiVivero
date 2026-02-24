@@ -81,6 +81,8 @@
             android:name="albumId"
             app:argType="long" />
 
+
+
         <action
             android:id="@+id/action_editarAlbumFragment_to_listaPlantasFragment"
             app:destination="@id/listaPlantasFragment" />
@@ -94,6 +96,9 @@
         <argument
             android:name="albumId"
             app:argType="long" />
+
+
+
 
         <action
             android:id="@+id/action_albumDetalleFragment_to_editarAlbumFragment"
@@ -131,6 +136,9 @@
         android:id="@+id/registroUsuarioFragment"
         android:name="com.emanuel.mivivero.ui.auth.RegistroUsuarioFragment"
         android:label="Registro Usuario" />
+
+
+
 
 
 

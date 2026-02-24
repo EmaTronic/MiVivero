@@ -5,97 +5,135 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="16dp"
-    android:layout_marginVertical="8dp"
-    app:cardCornerRadius="16dp"
-    app:cardElevation="4dp"
-    app:cardBackgroundColor="@android:color/white"
-    app:strokeColor="#EEEEEE"
-    app:strokeWidth="1dp">
+    android:layout_marginVertical="14dp"
+    app:cardCornerRadius="24dp"
+    app:cardElevation="10dp"
+    app:cardBackgroundColor="@android:color/white">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="16dp">
+        android:layout_height="wrap_content">
 
-        <!-- NOMBRE DEL ÁLBUM -->
-        <TextView
-            android:id="@+id/txtNombreAlbum"
+        <!-- IMAGEN HERO -->
+        <ImageView
+            android:id="@+id/imgAlbum"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:textColor="#212121"
-            app:layout_constraintStart_toStartOf="parent"
+            android:layout_height="180dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/bg_album_placeholder"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/txtEstadoAlbum"/>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
 
-        <!-- BADGE ESTADO -->
+        <!-- OVERLAY OSCURO -->
+        <View
+            android:layout_width="0dp"
+            android:layout_height="180dp"
+            android:background="#40000000"
+            app:layout_constraintTop_toTopOf="@id/imgAlbum"
+            app:layout_constraintStart_toStartOf="@id/imgAlbum"
+            app:layout_constraintEnd_toEndOf="@id/imgAlbum"/>
+
+        <!-- BADGE ESTADO (IZQUIERDA) -->
         <TextView
             android:id="@+id/txtEstadoAlbum"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="12sp"
+            android:textSize="11sp"
             android:textStyle="bold"
-            android:paddingStart="12dp"
-            android:paddingEnd="12dp"
-            android:paddingTop="6dp"
-            android:paddingBottom="6dp"
+            android:textColor="@android:color/white"
+            android:paddingHorizontal="14dp"
+            android:paddingVertical="6dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
             android:background="@drawable/bg_estado_borrador"
-            android:textColor="@android:color/black"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintTop_toTopOf="@id/imgAlbum"
+            app:layout_constraintStart_toStartOf="@id/imgAlbum"/>
 
-        <!-- OBSERVACIONES -->
-        <TextView
-            android:id="@+id/txtObservaciones"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:textColor="#616161"
-            android:layout_marginTop="6dp"
-            app:layout_constraintTop_toBottomOf="@id/txtNombreAlbum"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
-
-        <!-- CANTIDAD DE PLANTAS -->
-        <TextView
-            android:id="@+id/txtCantidadPlantas"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/teal_primary"
-            android:textStyle="bold"
-            android:layout_marginTop="6dp"
-            app:layout_constraintTop_toBottomOf="@id/txtObservaciones"
-            app:layout_constraintStart_toStartOf="parent"/>
-
-        <!-- BOTÓN ELIMINAR -->
-        <ImageButton
+        <!-- BOTÓN ELIMINAR (DERECHA) -->
+        <com.google.android.material.card.MaterialCardView
             android:id="@+id/btnEliminarAlbum"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@android:drawable/ic_menu_delete"
-            android:contentDescription="@string/eliminar_album"
-            app:tint="#E53935"
-            app:layout_constraintTop_toBottomOf="@id/txtEstadoAlbum"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="8dp"/>
+            android:layout_marginEnd="20dp"
+            android:layout_marginTop="20dp"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="4dp"
+            app:cardBackgroundColor="#40FFFFFF"
+            app:layout_constraintTop_toTopOf="@id/imgAlbum"
+            app:layout_constraintEnd_toEndOf="@id/imgAlbum">
 
-        <!-- BOTÓN PUBLICAR -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnPublicar"
-            android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            android:text="@string/publicar"
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_delete"
+                android:tint="@android:color/white"/>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- NOMBRE SOBRE IMAGEN -->
+        <TextView
+            android:id="@+id/txtNombreAlbum"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textSize="22sp"
             android:textStyle="bold"
             android:textColor="@android:color/white"
-            app:backgroundTint="@color/teal_primary"
-            app:cornerRadius="12dp"
-            android:drawableStart="@drawable/ic_rocket"
-            android:drawablePadding="6dp"
-            android:visibility="gone"
-            app:layout_constraintTop_toBottomOf="@id/txtCantidadPlantas"
+            android:layout_marginStart="24dp"
+            android:layout_marginBottom="24dp"
+            app:layout_constraintBottom_toBottomOf="@id/imgAlbum"
+            app:layout_constraintStart_toStartOf="@id/imgAlbum"
+            app:layout_constraintEnd_toEndOf="@id/imgAlbum"/>
+
+        <!-- CONTENIDO INFERIOR -->
+        <LinearLayout
+            android:id="@+id/containerContenido"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="24dp"
+            app:layout_constraintTop_toBottomOf="@id/imgAlbum"
             app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginTop="12dp"/>
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <!-- OBSERVACIONES -->
+            <TextView
+                android:id="@+id/txtObservaciones"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#616161"
+                android:textSize="15sp"
+                android:lineSpacingExtra="3dp"/>
+
+            <!-- CANTIDAD DE PLANTAS -->
+            <TextView
+                android:id="@+id/txtCantidadPlantas"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/teal_primary"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:layout_marginTop="14dp"/>
+
+            <!-- BOTÓN PUBLICAR -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnPublicar"
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:text="@string/publicar"
+                android:textStyle="bold"
+                android:textAllCaps="true"
+                android:textColor="@android:color/white"
+                android:layout_marginTop="18dp"
+                android:visibility="gone"
+                app:backgroundTint="@color/teal_primary"
+                app:cornerRadius="22dp"
+                app:icon="@drawable/ic_rocket"
+                app:iconPadding="8dp"
+                app:iconGravity="textStart"/>
+
+        </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -2,7 +2,6 @@ package com.emanuel.mivivero.data.model
 
 
 
-
     data class Root(
         val paises: List<Pais>
     )

@@ -25,41 +25,150 @@
 
         <!-- CAMPOS -->
 
-        <EditText
-            android:id="@+id/etNombreReal"
-            style="@style/FormInput"
-            android:hint="Nombre real" />
 
-        <EditText
-            android:id="@+id/etNick"
-            style="@style/FormInput"
-            android:hint="Nick público" />
+        <!-- NOMBRE -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilNombreReal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:hint="Nombre real"
+            app:boxBackgroundMode="outline">
 
-        <EditText
-            android:id="@+id/etNombreVivero"
-            style="@style/FormInput"
-            android:hint="Nombre del vivero" />
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etNombreReal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textCapWords"
+                android:textSize="16sp"/>
 
-        <EditText
-            android:id="@+id/etPais"
-            style="@style/FormInput"
-            android:hint="País" />
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <EditText
-            android:id="@+id/etProvincia"
-            style="@style/FormInput"
-            android:hint="Provincia" />
 
-        <EditText
-            android:id="@+id/etCiudad"
-            style="@style/FormInput"
-            android:hint="Ciudad" />
+        <!-- NICK -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilNick"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:hint="Nick público"
+            app:boxBackgroundMode="outline">
 
-        <EditText
-            android:id="@+id/etEmail"
-            style="@style/FormInput"
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etNick"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:textSize="16sp"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <!-- NOMBRE VIVERO -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilNombreVivero"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:hint="Nombre del vivero"
+            app:boxBackgroundMode="outline">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etNombreVivero"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textCapWords"
+                android:textSize="16sp"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <!-- PAÍS -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilPais"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:hint="País"
+            app:boxBackgroundMode="outline">
+
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                android:id="@+id/spPais"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:completionThreshold="2"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"
+                android:textSize="16sp"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <!-- PROVINCIA -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilProvincia"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:hint="Provincia"
+            app:boxBackgroundMode="outline">
+
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                android:id="@+id/spProvincia"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:completionThreshold="2"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"
+                android:textSize="16sp"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <!-- CIUDAD -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilCiudad"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:hint="Ciudad"
+            app:boxBackgroundMode="outline">
+
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                android:id="@+id/spCiudad"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:completionThreshold="2"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"
+                android:textSize="16sp"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <!-- EMAIL -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
             android:hint="Correo electrónico"
-            android:inputType="textEmailAddress" />
+            app:boxBackgroundMode="outline">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etEmail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textEmailAddress"
+                android:textSize="16sp"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
 
         <!-- BOTÓN -->
         <com.google.android.material.button.MaterialButton
@@ -71,7 +180,8 @@
             android:textColor="@android:color/white"
             android:layout_marginTop="24dp"
             app:cornerRadius="16dp"
-            app:backgroundTint="@color/teal_primary"/>
+            app:backgroundTint="@color/teal_primary"
+            android:textSize="16sp"/>
 
     </LinearLayout>
 

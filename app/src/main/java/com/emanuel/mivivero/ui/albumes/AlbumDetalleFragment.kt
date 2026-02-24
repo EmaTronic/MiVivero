@@ -1,14 +1,19 @@
 package com.emanuel.mivivero.ui.albumes
 
+import android.animation.ValueAnimator
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.emanuel.mivivero.R
+import com.emanuel.mivivero.data.model.EstadoAlbum
 import com.emanuel.mivivero.data.model.PlantaAlbum
 import com.emanuel.mivivero.databinding.DialogAgregarAlbumBinding
 import com.emanuel.mivivero.databinding.FragmentAlbumDetalleBinding
@@ -25,50 +30,61 @@ class AlbumDetalleFragment : Fragment(R.layout.fragment_album_detalle) {
     private lateinit var adapter: AlbumesAdapter
 
 
+
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         _binding = FragmentAlbumDetalleBinding.bind(view)
 
-        albumId = arguments?.getLong("albumId") ?: -1L
-        if (albumId == -1L) {
-            requireActivity().onBackPressedDispatcher.onBackPressed()
-            return
+        val albumId = requireArguments().getLong("albumId")
+
+        // 1️⃣ LISTENER (una sola vez)
+        binding.btnFinalizarAlbum.setOnClickListener {
+
+            viewModel.finalizarAlbum(albumId) { resultado ->
+
+                if (!resultado.esValido) {
+                    Toast.makeText(
+                        requireContext(),
+                        resultado.mensaje,
+                        Toast.LENGTH_LONG
+                    ).show()
+                    return@finalizarAlbum
+                }
+
+                findNavController().popBackStack()
+            }
         }
 
+        binding.btnEditarAlbum.setOnClickListener {
+            findNavController().navigate(
+                R.id.action_albumDetalleFragment_to_editarAlbumFragment,
+                bundleOf("albumId" to albumId)
+            )
+        }
+
+        // 🔹 Cargar plantas del álbum en Detalle
         binding.recyclerPlantasAlbum.layoutManager =
-            LinearLayoutManager(requireContext())
+            GridLayoutManager(requireContext(), 3)
 
-        // Datos del álbum
-        viewModel.obtenerAlbum(albumId)
-            .observe(viewLifecycleOwner) { album ->
+        viewModel.obtenerPlantasDelAlbum(albumId)
+            .observe(viewLifecycleOwner) { lista ->
 
-                binding.txtNombreAlbum.text = album?.nombre
-                binding.txtEstadoAlbum.text = album?.estado
+                binding.recyclerPlantasAlbum.adapter =
+                    PlantasAlbumAdapter(
+                        items = lista,
+                        onAgregarClick = { },
+                        onItemClick = { },
+                        onItemLongClick = { planta ->
+                            mostrarOpcionesPlanta(planta)
+                        },
+                        esEditable = false
+                    )
 
-                when (album?.estado) {
-
-                    "BORRADOR" -> {
-                        binding.btnEditarAlbum.visibility = View.VISIBLE
-                        binding.btnEditarAlbum.text = "Continuar edición"
-                        binding.btnPublicarAlbum.visibility = View.GONE
-                    }
-
-                    "FINALIZADO" -> {
-                        binding.btnEditarAlbum.visibility = View.VISIBLE
-                        binding.btnEditarAlbum.text = "Reabrir edición"
-                        binding.btnPublicarAlbum.visibility = View.VISIBLE
-                    }
-
-                    "PUBLICADO" -> {
-                        binding.btnEditarAlbum.visibility = View.GONE
-                        binding.btnPublicarAlbum.visibility = View.VISIBLE
-                    }
-
-                    else -> {
-                        binding.btnEditarAlbum.visibility = View.GONE
-                    }
-                }
             }
+
+
 
         binding.btnEditarNombre.setOnClickListener {
 
@@ -108,37 +124,62 @@ class AlbumDetalleFragment : Fragment(R.layout.fragment_album_detalle) {
 
 
 
-        // Plantas del álbum
-        viewModel.obtenerPlantasDelAlbum(albumId)
-            .observe(viewLifecycleOwner) { lista ->
 
-                binding.recyclerPlantasAlbum.adapter =
-                    PlantasAlbumAdapter(lista) { planta ->
-                        mostrarOpciones(planta)
+
+        // Plantas del álbum
+        viewModel.obtenerAlbum(albumId)
+            .observe(viewLifecycleOwner) { album ->
+
+                if (album == null) return@observe
+
+                val estado = EstadoAlbum.valueOf(album.estado)
+
+                binding.txtNombreAlbum.text = album.nombre
+                configurarEstadoUI(estado)
+
+                when (estado) {
+
+                    EstadoAlbum.BORRADOR -> {
+                        binding.btnFinalizarAlbum.visibility = View.VISIBLE
+                        binding.btnEditarAlbum.visibility = View.VISIBLE
                     }
+
+                    EstadoAlbum.FINALIZADO -> {
+                        binding.btnFinalizarAlbum.visibility = View.GONE
+                        binding.btnEditarAlbum.visibility = View.VISIBLE
+                    }
+
+                    EstadoAlbum.PUBLICADO -> {
+                        binding.btnFinalizarAlbum.visibility = View.GONE
+                        binding.btnEditarAlbum.visibility = View.GONE
+                    }
+                }
             }
     }
 
-    private fun mostrarOpciones(planta: PlantaAlbum) {
+
+
+
+    private fun confirmarEliminarPlanta(planta: PlantaAlbum) {
+
         AlertDialog.Builder(requireContext())
-            .setTitle(planta.nombre)
-            .setItems(
-                arrayOf("Editar cantidad / precio", "Eliminar planta")
-            ) { _, which ->
-                when (which) {
-                    0 -> mostrarDialogoEditar(planta)
-                    1 ->
-                        viewModel.eliminarPlantaDelAlbum(
-                            albumId = albumId,
-                            plantaId = planta.plantaId
-                        )
-                }
+            .setTitle("Eliminar planta")
+            .setMessage("¿Eliminar ${planta.nombreCompleto} del álbum?")
+            .setPositiveButton("Eliminar") { _, _ ->
+
+                viewModel.eliminarPlantaDelAlbum(
+                    albumId = albumId,
+                    plantaId = planta.plantaId
+                )
             }
             .setNegativeButton("Cancelar", null)
             .show()
     }
 
+
+
     private fun mostrarDialogoEditar(planta: PlantaAlbum) {
+
         val dialogBinding =
             DialogAgregarAlbumBinding.inflate(layoutInflater)
 
@@ -146,7 +187,7 @@ class AlbumDetalleFragment : Fragment(R.layout.fragment_album_detalle) {
         dialogBinding.etPrecio.setText(planta.precio.toString())
 
         AlertDialog.Builder(requireContext())
-            .setTitle("Editar ${planta.nombre}")
+            .setTitle("Editar ${planta.nombreCompleto}")
             .setView(dialogBinding.root)
             .setPositiveButton("Guardar") { _, _ ->
 
@@ -165,11 +206,114 @@ class AlbumDetalleFragment : Fragment(R.layout.fragment_album_detalle) {
                         ).show()
                     }
                 }
-
-
+            }
+            .setNeutralButton("Eliminar") { _, _ ->
+                viewModel.eliminarPlantaDelAlbum(
+                    albumId = albumId,
+                    plantaId = planta.plantaId
+                )
             }
             .setNegativeButton("Cancelar", null)
             .show()
+    }
+
+    private fun navegarAListaPlantas() {
+
+        val bundle = Bundle().apply {
+            putLong("albumId", albumId)
+        }
+
+        findNavController().navigate(
+            R.id.listaPlantasFragment,   // ✅ destino directo
+            bundle
+        )
+    }
+    private fun mostrarOpcionesPlanta(planta: PlantaAlbum) {
+
+        // Ejemplo básico
+        Toast.makeText(
+            requireContext(),
+            "Planta: ${planta.nombreCompleto}",
+            Toast.LENGTH_SHORT
+        ).show()
+
+        // Acá podés:
+        // - Mostrar dialog
+        // - Editar cantidad
+        // - Eliminar del álbum
+    }
+
+
+    data class Quad(
+        val texto: String,
+        val fondo: Int,
+        val textoColor: Int,
+        val icono: Int
+    )
+
+    private fun configurarEstadoUI(estado: EstadoAlbum) {
+
+        val chip = binding.txtEstadoAlbum
+
+        val (texto, colorFondo, colorTexto, icono) = when (estado) {
+
+            EstadoAlbum.BORRADOR -> Quad(
+                "BORRADOR",
+                requireContext().getColor(R.color.orange_200),
+                requireContext().getColor(R.color.orange_700),
+                R.drawable.ic_borrador
+            )
+
+            EstadoAlbum.FINALIZADO -> Quad(
+                "FINALIZADO",
+                requireContext().getColor(R.color.blue_200),
+                requireContext().getColor(R.color.blue_700),
+                R.drawable.ic_finalizado
+            )
+
+            EstadoAlbum.PUBLICADO -> Quad(
+                "PUBLICADO",
+                requireContext().getColor(R.color.green_200),
+                requireContext().getColor(R.color.green_700),
+                R.drawable.ic_publicado
+            )
+        }
+
+        chip.text = texto
+        chip.setTextColor(colorTexto)
+        chip.setChipIconResource(icono)
+
+        chip.chipBackgroundColor = ColorStateList.valueOf(colorFondo)
+
+        chip.animate()
+            .scaleX(0.9f)
+            .scaleY(0.9f)
+            .setDuration(100)
+            .withEndAction {
+                chip.animate()
+                    .scaleX(1f)
+                    .scaleY(1f)
+                    .setDuration(150)
+                    .start()
+            }
+            .start()
+
+        if (estado == EstadoAlbum.PUBLICADO) {
+            chip.postDelayed({
+                chip.animate()
+                    .scaleX(1.08f)
+                    .scaleY(1.08f)
+                    .setDuration(100)
+                    .withEndAction {
+                        chip.animate()
+                            .scaleX(1f)
+                            .scaleY(1f)
+                            .setDuration(100)
+                            .start()
+                    }
+                    .start()
+            }, 150)
+        }
     }
 
 

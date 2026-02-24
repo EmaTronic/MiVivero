@@ -2,20 +2,29 @@ package com.emanuel.mivivero.ui.albumes
 
 import android.os.Bundle
 import android.view.View
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.emanuel.mivivero.R
+import com.emanuel.mivivero.data.local.entity.AlbumEntity
+import com.emanuel.mivivero.data.model.EstadoAlbum
 import com.emanuel.mivivero.data.model.PlantaAlbum
 import com.emanuel.mivivero.databinding.DialogAgregarAlbumBinding
 import com.emanuel.mivivero.databinding.FragmentEditarAlbumBinding
+import com.google.android.material.button.MaterialButton
+import kotlinx.coroutines.launch
 
 class EditarAlbumFragment : Fragment(R.layout.fragment_editar_album) {
 
+
+    private var estadoActualAlbum: String? = null
 
     private var yaNavego = false
 
@@ -27,6 +36,8 @@ class EditarAlbumFragment : Fragment(R.layout.fragment_editar_album) {
 
     private var albumId: Long = -1L
 
+    private var albumActual: AlbumEntity? = null
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentEditarAlbumBinding.bind(view)
@@ -37,10 +48,14 @@ class EditarAlbumFragment : Fragment(R.layout.fragment_editar_album) {
             return
         }
 
-        albumesViewModel.albumActualId = albumId
+        val columnas =
+            if (resources.configuration.smallestScreenWidthDp >= 600) 5 else 3
 
         binding.recyclerPlantasAlbum.layoutManager =
-            LinearLayoutManager(requireContext())
+            GridLayoutManager(requireContext(), columnas)
+
+        albumesViewModel.albumActualId = albumId
+
 
         // 🔹 OBSERVAR DATOS DEL ÁLBUM
         // 🔹 OBSERVAR DATOS DEL ÁLBUM
@@ -48,6 +63,17 @@ class EditarAlbumFragment : Fragment(R.layout.fragment_editar_album) {
             .observe(viewLifecycleOwner) { album ->
 
                 if (album == null) return@observe
+
+                albumActual = album
+
+                binding.btnAgregarPlantas.isEnabled =
+                    album.estado == EstadoAlbum.BORRADOR.name
+
+                binding.btnAgregarPlantas.alpha =
+                    if (album.estado == EstadoAlbum.BORRADOR.name) 1f else 0.4f
+
+
+                estadoActualAlbum = album.estado
 
                 binding.txtNombreAlbum.text = album.nombre
                 binding.txtEstadoAlbum.text = album.estado
@@ -96,10 +122,28 @@ class EditarAlbumFragment : Fragment(R.layout.fragment_editar_album) {
             .observe(viewLifecycleOwner) { lista ->
 
                 binding.recyclerPlantasAlbum.adapter =
-                    PlantasAlbumAdapter(lista) { planta ->
-                        mostrarOpcionesPlanta(planta)
-                    }
+                    PlantasAlbumAdapter(
+                        items = lista,
+                        esEditable = albumActual?.estado == EstadoAlbum.BORRADOR.name,
+                        onAgregarClick = { navegarAListaPlantas() },
+                        onItemClick = { planta -> },
+                        onItemLongClick = { planta ->
+
+                            if (albumActual?.estado != EstadoAlbum.BORRADOR.name) {
+                                Toast.makeText(
+                                    requireContext(),
+                                    "No se puede editar álbumes finalizados",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                return@PlantasAlbumAdapter
+                            }
+
+                            mostrarOpcionesPlanta(planta)
+                        }
+                    )
             }
+
+
 
         // 🔹 BOTÓN AGREGAR
         binding.btnAgregarPlantas.setOnClickListener {
@@ -112,62 +156,68 @@ class EditarAlbumFragment : Fragment(R.layout.fragment_editar_album) {
         }
 
         // 🔹 BOTÓN FINALIZAR
-        binding.btnFinalizarAlbum.setOnClickListener {
-
-            editarAlbumViewModel.finalizarAlbum(albumId) { resultado ->
-
-                if (!resultado.esValido) {
-                    Toast.makeText(
-                        requireContext(),
-                        resultado.mensaje,
-                        Toast.LENGTH_LONG
-                    ).show()
-                } else {
-
-                    findNavController().navigate(
-                        R.id.albumesFragment,
-                        null,
-                        androidx.navigation.NavOptions.Builder()
-                            .setPopUpTo(R.id.listaPlantasFragment, false)
-                            .build()
-                    )
-
-                }
-            }
+        // 🔹 BOTÓN VOLVER
+        binding.btnVolverDetalle.setOnClickListener {
+            findNavController().popBackStack()
         }
 
 
     }
 
 
+
+
+    private fun navegarAListaPlantas() {
+
+        val bundle = Bundle().apply {
+            putLong("albumId", albumId)
+        }
+
+        findNavController().navigate(
+            R.id.action_editarAlbumFragment_to_listaPlantasFragment,
+            bundle
+        )
+    }
     // ======================
     // OPCIONES
     // ======================
     private fun mostrarOpcionesPlanta(planta: PlantaAlbum) {
-        AlertDialog.Builder(requireContext())
-            .setTitle(planta.nombre)
-            .setItems(
-                arrayOf("Editar cantidad / precio", "Eliminar planta")
-            ) { _, which ->
-                when (which) {
-                    0 -> {
-                        mostrarDialogoEditar(planta)
-                    }
-                    1 -> {
-                        confirmarEliminar(planta)
-                    }
-                }
+
+        val dialogView = layoutInflater
+            .inflate(R.layout.dialog_opciones_planta, null)
+
+        val dialog = AlertDialog.Builder(requireContext())
+            .setView(dialogView)
+            .create()
+
+        dialogView.findViewById<TextView>(R.id.txtTitulo)
+            .text = planta.nombreCompleto
+
+        dialogView.findViewById<MaterialButton>(R.id.btnEditar)
+            .setOnClickListener {
+                dialog.dismiss()
+                mostrarDialogoEditar(planta)
             }
 
-            .setNegativeButton("Cancelar", null)
-            .show()
+        dialogView.findViewById<MaterialButton>(R.id.btnEliminar)
+            .setOnClickListener {
+                dialog.dismiss()
+                confirmarEliminar(planta)
+            }
+
+        dialogView.findViewById<TextView>(R.id.txtCancelar)
+            .setOnClickListener {
+                dialog.dismiss()
+            }
+
+        dialog.show()
     }
 
 
     private fun confirmarEliminar(planta: PlantaAlbum) {
         AlertDialog.Builder(requireContext())
             .setTitle("Eliminar planta")
-            .setMessage("¿Eliminar ${planta.nombre} del álbum?")
+            .setMessage("¿Eliminar ${planta.nombreCompleto} del álbum?")
             .setPositiveButton("Eliminar") { _, _ ->
                 editarAlbumViewModel.eliminarPlantaDelAlbum(
                     albumId = albumId,
@@ -182,7 +232,7 @@ class EditarAlbumFragment : Fragment(R.layout.fragment_editar_album) {
 
         Toast.makeText(
             requireContext(),
-            "ENTRÓ A EDITAR ${planta.nombre}",
+            "ENTRÓ A EDITAR ${planta.nombreCompleto}",
             Toast.LENGTH_SHORT
         ).show()
 
@@ -196,7 +246,7 @@ class EditarAlbumFragment : Fragment(R.layout.fragment_editar_album) {
         dialogBinding.etPrecio.setText(planta.precio.toString())
 
         androidx.appcompat.app.AlertDialog.Builder(requireContext())
-            .setTitle("Editar ${planta.nombre}")
+            .setTitle("Editar ${planta.nombreCompleto}")
             .setView(dialogBinding.root)
             .setPositiveButton("Guardar") { _, _ ->
 

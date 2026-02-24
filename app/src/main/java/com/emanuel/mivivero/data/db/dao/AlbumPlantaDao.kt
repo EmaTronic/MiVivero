@@ -14,21 +14,17 @@ interface AlbumPlantaDao {
     // PLANTAS DEL ÁLBUM
     // =========================
     @Query("""
-        SELECT 
-            p.id AS plantaId,
-            (p.familia || 
-                CASE 
-                    WHEN p.especie IS NOT NULL THEN ' ' || p.especie 
-                    ELSE '' 
-                END
-            ) AS nombre,
-            ap.cantidad AS cantidad,
-            ap.precio AS precio,
-            p.fotoRuta AS fotoRuta
-        FROM plantas p
-        INNER JOIN album_planta ap ON p.id = ap.plantaId
-        WHERE ap.albumId = :albumId
-    """)
+    SELECT 
+        p.id AS plantaId,
+        p.familia AS familia,
+        p.especie AS especie,
+        ap.cantidad AS cantidad,
+        ap.precio AS precio,
+        p.fotoRuta AS fotoRuta
+    FROM plantas p
+    INNER JOIN album_planta ap ON p.id = ap.plantaId
+    WHERE ap.albumId = :albumId
+""")
     fun obtenerPlantasDelAlbum(
         albumId: Long
     ): LiveData<List<PlantaAlbum>>
@@ -87,16 +83,25 @@ interface AlbumPlantaDao {
 
 
     @Query("""
-    SELECT p.id as plantaId,
-           p.familia || ' ' || IFNULL(p.especie, '') as nombre,
-           ap.cantidad,
-           ap.precio,
-           p.fotoRuta
+    SELECT 
+        p.id AS plantaId,
+        p.familia AS familia,
+        p.especie AS especie,
+        ap.cantidad AS cantidad,
+        ap.precio AS precio,
+        p.fotoRuta AS fotoRuta
     FROM album_planta ap
     INNER JOIN plantas p ON p.id = ap.plantaId
     WHERE ap.albumId = :albumId
 """)
-    suspend fun obtenerPlantasDelAlbumSuspend(albumId: Long): List<PlantaAlbum>
+    suspend fun obtenerPlantasDelAlbumSuspend(
+        albumId: Long
+    ): List<PlantaAlbum>
+
+
+
+
+
 
     @Query("SELECT * FROM album_planta WHERE albumId = :albumId")
     suspend fun obtenerPlantasDelAlbumRaw(albumId: Long): List<AlbumPlantaEntity>

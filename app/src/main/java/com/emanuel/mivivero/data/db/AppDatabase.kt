@@ -51,7 +51,7 @@ abstract class AppDatabase : RoomDatabase() {
                 INSTANCE ?: Room.databaseBuilder(
                     context.applicationContext,
                     AppDatabase::class.java,
-                    "vivero.db"
+                    "vivero_test.db"
                 )
                     .fallbackToDestructiveMigration()
                     .build()

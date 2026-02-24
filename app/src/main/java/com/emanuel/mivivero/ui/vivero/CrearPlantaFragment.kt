@@ -43,6 +43,10 @@ class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
         if (plantaId != -1L) {
             binding.txtTitulo.text = "Editar planta"
             binding.btnGuardar.text = "Guardar cambios"
+
+            // 🔥 OCULTAR FAMILIA EN EDICIÓN
+            binding.actFamilia.visibility = View.GONE
+
         } else {
             binding.txtTitulo.text = "Crear planta"
             binding.btnGuardar.text = "Guardar"
@@ -59,7 +63,7 @@ class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
             viewModel.plantas.observe(viewLifecycleOwner) { lista ->
                 val planta = lista.find { it.id == plantaId } ?: return@observe
 
-                binding.actFamilia.setText(planta.familia, false)
+                binding.etFamilia.setText(planta.familia, false)
                 binding.etEspecie.setText(planta.especie ?: "", false)
                 binding.etLugar.setText(planta.lugar)
                 binding.etCantidad.setText(planta.cantidad.toString())
@@ -152,9 +156,15 @@ class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
                 else
                     ahora
 
+            val numeroFinal =
+                if (plantaExistente != null)
+                    plantaExistente.numeroPlanta
+                else
+                    -1   // o el valor que uses para creación
+
             val planta = Planta(
                 id = idFinal,
-                numeroPlanta = -1,
+                numeroPlanta = numeroFinal,
                 familia = familia,
                 especie = especie.ifBlank { null },
                 lugar = binding.etLugar.text.toString(),
@@ -206,9 +216,14 @@ class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
 
     private fun actualizarEstadoGuardar() {
 
-        val habilitar =
+        val habilitar = if (plantaId != -1L) {
+            // MODO EDICIÓN → no exigir familia
+            true
+        } else {
+            // MODO CREACIÓN → exigir familia y foto
             binding.actFamilia.text.toString().isNotBlank() &&
                     fotoUri != null
+        }
 
         binding.btnGuardar.isEnabled = habilitar
 
