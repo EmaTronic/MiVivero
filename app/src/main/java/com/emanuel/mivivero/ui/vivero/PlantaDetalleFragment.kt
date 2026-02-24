@@ -24,6 +24,7 @@ import com.emanuel.mivivero.R
 import com.emanuel.mivivero.databinding.FragmentPlantaDetalleBinding
 import com.emanuel.mivivero.data.model.FotoPlanta
 import com.emanuel.mivivero.data.model.Planta
+import com.emanuel.mivivero.ui.albumes.FotoAmpliadaDialog
 import com.emanuel.mivivero.ui.vivero.FotoAdapter
 import com.emanuel.mivivero.ui.vivero.ViveroViewModel
 import java.io.File
@@ -428,6 +429,25 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
                 // 🔹 CLICK → seleccionar foto
                 slot.setOnClickListener {
 
+                    // 🔥 SI NO HAY NINGUNA FOTO SELECCIONADA → AMPLIAR
+                    if (fotosSeleccionadas.isEmpty()) {
+
+                        val formato = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
+                        val fechaFormateada = formato.format(Date(foto.fecha))
+
+                        FotoAmpliadaDialog(
+                            rutaFoto = foto.ruta,
+                            nombre = listOfNotNull(
+                                plantaActual?.familia,
+                                plantaActual?.especie?.takeIf { it.isNotBlank() }
+                            ).joinToString(" "),
+                            fecha = "Foto tomada el $fechaFormateada"
+                        ).show(parentFragmentManager, "foto")
+
+                        return@setOnClickListener
+                    }
+
+                    // 🔹 SI YA ESTÁ EN MODO SELECCIÓN → mantener lógica actual
                     if (fotosSeleccionadas.contains(foto)) {
                         fotosSeleccionadas.remove(foto)
                     } else if (fotosSeleccionadas.size < 2) {
@@ -448,7 +468,6 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
                             View.VISIBLE
                         else
                             View.GONE
-
 
                     binding.btnCompararFotos.isEnabled =
                         fotosSeleccionadas.size == 2
