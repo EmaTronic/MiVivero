@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -33,39 +34,58 @@ class AlbumDetalleFragment : Fragment(R.layout.fragment_album_detalle) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         _binding = FragmentAlbumDetalleBinding.bind(view)
 
-        albumId = arguments?.getLong("albumId") ?: -1L
-        if (albumId == -1L) {
-            requireActivity().onBackPressedDispatcher.onBackPressed()
-            return
+        val albumId = requireArguments().getLong("albumId")
+
+        // 1️⃣ LISTENER (una sola vez)
+        binding.btnFinalizarAlbum.setOnClickListener {
+
+            viewModel.finalizarAlbum(albumId) { resultado ->
+
+                if (!resultado.esValido) {
+                    Toast.makeText(
+                        requireContext(),
+                        resultado.mensaje,
+                        Toast.LENGTH_LONG
+                    ).show()
+                    return@finalizarAlbum
+                }
+
+                findNavController().popBackStack()
+            }
         }
 
-        val columnas =
-            if (resources.configuration.smallestScreenWidthDp >= 600) 5 else 3
+        binding.btnEditarAlbum.setOnClickListener {
+            findNavController().navigate(
+                R.id.action_albumDetalleFragment_to_editarAlbumFragment,
+                bundleOf("albumId" to albumId)
+            )
+        }
 
+        // 🔹 Cargar plantas del álbum en Detalle
         binding.recyclerPlantasAlbum.layoutManager =
-            GridLayoutManager(requireContext(), columnas)
+            GridLayoutManager(requireContext(), 3)
 
-        // Datos del álbum
-        viewModel.obtenerAlbum(albumId)
-            .observe(viewLifecycleOwner) { album ->
+        viewModel.obtenerPlantasDelAlbum(albumId)
+            .observe(viewLifecycleOwner) { lista ->
 
-                if (album == null) return@observe
+                binding.recyclerPlantasAlbum.adapter =
+                    PlantasAlbumAdapter(
+                        items = lista,
+                        onAgregarClick = { },
+                        onItemClick = { },
+                        onItemLongClick = { planta ->
+                            mostrarOpcionesPlanta(planta)
+                        },
+                        esEditable = false
+                    )
 
-                val estado = EstadoAlbum.valueOf(album.estado)
-
-                binding.btnPublicarAlbum.visibility =
-                    if (estado == EstadoAlbum.FINALIZADO)
-                        View.VISIBLE
-                    else
-                        View.GONE
-
-                binding.txtNombreAlbum.text = album.nombre
-                binding.txtEstadoAlbum.text = album.estado
-
-                configurarEstadoUI(EstadoAlbum.valueOf(album.estado))
             }
+
+
+
         binding.btnEditarNombre.setOnClickListener {
 
             val editText = android.widget.EditText(requireContext())
@@ -107,26 +127,33 @@ class AlbumDetalleFragment : Fragment(R.layout.fragment_album_detalle) {
 
 
         // Plantas del álbum
-        viewModel.obtenerPlantasDelAlbum(albumId)
-            .observe(viewLifecycleOwner) { lista ->
+        viewModel.obtenerAlbum(albumId)
+            .observe(viewLifecycleOwner) { album ->
 
-                binding.recyclerPlantasAlbum.adapter =
-                    PlantasAlbumAdapter(
-                        items = lista,
-                        esEditable = false,   // 🔒 SIEMPRE NO EDITABLE EN DETALLE
-                        onAgregarClick = {
-                            navegarAListaPlantas()
-                        },
-                        onItemClick = { planta -> },
-                        onItemLongClick = { planta ->
-                            // opcional: mostrar mensaje si querés
-                            Toast.makeText(
-                                requireContext(),
-                                "No se puede editar desde detalle",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                    )
+                if (album == null) return@observe
+
+                val estado = EstadoAlbum.valueOf(album.estado)
+
+                binding.txtNombreAlbum.text = album.nombre
+                configurarEstadoUI(estado)
+
+                when (estado) {
+
+                    EstadoAlbum.BORRADOR -> {
+                        binding.btnFinalizarAlbum.visibility = View.VISIBLE
+                        binding.btnEditarAlbum.visibility = View.VISIBLE
+                    }
+
+                    EstadoAlbum.FINALIZADO -> {
+                        binding.btnFinalizarAlbum.visibility = View.GONE
+                        binding.btnEditarAlbum.visibility = View.VISIBLE
+                    }
+
+                    EstadoAlbum.PUBLICADO -> {
+                        binding.btnFinalizarAlbum.visibility = View.GONE
+                        binding.btnEditarAlbum.visibility = View.GONE
+                    }
+                }
             }
     }
 

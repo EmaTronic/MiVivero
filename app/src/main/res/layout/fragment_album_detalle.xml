@@ -108,27 +108,27 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnEditarAlbum"
             android:layout_width="match_parent"
-            android:layout_height="52dp"
+            android:layout_height="48dp"
             android:text="Continuar editando"
             android:textAllCaps="false"
             android:textStyle="bold"
-            android:textSize="20sp"
+            android:textSize="16sp"
             android:textColor="@android:color/white"
-            app:cornerRadius="14dp"
+            app:cornerRadius="16dp"
             app:backgroundTint="@color/teal_primary"/>
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnPublicarAlbum"
+            android:id="@+id/btnFinalizarAlbum"
             android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:text="Publicar álbum"
+            android:layout_height="48dp"
+            android:text="Finalizar álbum"
             android:textAllCaps="false"
             android:textStyle="bold"
-            android:textSize="20sp"
+            android:textSize="16sp"
             android:textColor="@android:color/white"
             android:layout_marginTop="10dp"
-            app:cornerRadius="14dp"
-            app:backgroundTint="#4CAF50"/>
+            app:cornerRadius="16dp"
+            app:backgroundTint="#2E7D32"/>
 
     </LinearLayout>
 

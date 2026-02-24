@@ -156,28 +156,9 @@ class EditarAlbumFragment : Fragment(R.layout.fragment_editar_album) {
         }
 
         // 🔹 BOTÓN FINALIZAR
-        binding.btnFinalizarAlbum.setOnClickListener {
-
-            editarAlbumViewModel.finalizarAlbum(albumId) { resultado ->
-
-                if (!resultado.esValido) {
-                    Toast.makeText(
-                        requireContext(),
-                        resultado.mensaje,
-                        Toast.LENGTH_LONG
-                    ).show()
-                } else {
-
-                    findNavController().navigate(
-                        R.id.albumesFragment,
-                        null,
-                        androidx.navigation.NavOptions.Builder()
-                            .setPopUpTo(R.id.listaPlantasFragment, false)
-                            .build()
-                    )
-
-                }
-            }
+        // 🔹 BOTÓN VOLVER
+        binding.btnVolverDetalle.setOnClickListener {
+            findNavController().popBackStack()
         }
 
 
