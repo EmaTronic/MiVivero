@@ -5,7 +5,9 @@ import android.app.AlertDialog
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
+import android.view.GestureDetector
 import android.view.Gravity
+import android.view.MotionEvent
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -427,50 +429,60 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
                 slot.addView(btnEliminar)
 
                 // 🔹 CLICK → seleccionar foto
-                slot.setOnClickListener {
+                val gestureDetector = GestureDetector(
+                    requireContext(),
+                    object : GestureDetector.SimpleOnGestureListener() {
 
-                    // 🔥 SI NO HAY NINGUNA FOTO SELECCIONADA → AMPLIAR
-                    if (fotosSeleccionadas.isEmpty()) {
+                        override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
 
-                        val formato = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
-                        val fechaFormateada = formato.format(Date(foto.fecha))
+                            // 🔹 SELECCIÓN NORMAL
+                            if (fotosSeleccionadas.contains(foto)) {
+                                fotosSeleccionadas.remove(foto)
+                            } else if (fotosSeleccionadas.size < 2) {
+                                fotosSeleccionadas.add(foto)
+                            }
 
-                        FotoAmpliadaDialog(
-                            rutaFoto = foto.ruta,
-                            nombre = listOfNotNull(
-                                plantaActual?.familia,
-                                plantaActual?.especie?.takeIf { it.isNotBlank() }
-                            ).joinToString(" "),
-                            fecha = "Foto tomada el $fechaFormateada"
-                        ).show(parentFragmentManager, "foto")
+                            val seleccionada = fotosSeleccionadas.contains(foto)
 
-                        return@setOnClickListener
+                            overlay.visibility =
+                                if (seleccionada) View.VISIBLE else View.GONE
+
+                            btnEliminar.visibility =
+                                if (
+                                    fotosSeleccionadas.size == 1 &&
+                                    seleccionada &&
+                                    !esPrincipal
+                                )
+                                    View.VISIBLE
+                                else
+                                    View.GONE
+
+                            binding.btnCompararFotos.isEnabled =
+                                fotosSeleccionadas.size == 2
+
+                            return true
+                        }
+
+                        override fun onDoubleTap(e: MotionEvent): Boolean{
+
+                            // 🔥 AMPLIAR FOTO
+                            val formato = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
+                            val fechaFormateada = formato.format(Date(foto.fecha))
+
+                            FotoAmpliadaDialog(
+                                rutaFoto = foto.ruta,
+                                nombre = "${plantaActual?.familia ?: ""} ${plantaActual?.especie ?: ""}".trim(),
+                                fecha = "Foto tomada el $fechaFormateada"
+                            ).show(parentFragmentManager, "foto")
+
+                            return true
+                        }
                     }
+                )
 
-                    // 🔹 SI YA ESTÁ EN MODO SELECCIÓN → mantener lógica actual
-                    if (fotosSeleccionadas.contains(foto)) {
-                        fotosSeleccionadas.remove(foto)
-                    } else if (fotosSeleccionadas.size < 2) {
-                        fotosSeleccionadas.add(foto)
-                    }
-
-                    val seleccionada = fotosSeleccionadas.contains(foto)
-
-                    overlay.visibility =
-                        if (seleccionada) View.VISIBLE else View.GONE
-
-                    btnEliminar.visibility =
-                        if (
-                            fotosSeleccionadas.size == 1 &&
-                            seleccionada &&
-                            !esPrincipal
-                        )
-                            View.VISIBLE
-                        else
-                            View.GONE
-
-                    binding.btnCompararFotos.isEnabled =
-                        fotosSeleccionadas.size == 2
+                slot.setOnTouchListener { _, event ->
+                    gestureDetector.onTouchEvent(event)
+                    true
                 }
 
                 // 🔹 LONG CLICK → cambiar principal
