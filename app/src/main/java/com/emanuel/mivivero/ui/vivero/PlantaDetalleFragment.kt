@@ -3,14 +3,19 @@ package com.emanuel.mivivero.ui.viviero
 import android.Manifest
 import android.app.AlertDialog
 import android.content.pm.PackageManager
+import android.graphics.Color
+import android.graphics.Outline
+import android.graphics.PorterDuff
 import android.net.Uri
 import android.os.Bundle
 import android.view.GestureDetector
 import android.view.Gravity
 import android.view.MotionEvent
 import android.view.View
+import android.view.ViewOutlineProvider
 import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -346,7 +351,6 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
             .show()
     }
 
-
     private fun mostrarFotosEnSlots(fotos: List<FotoPlanta>) {
 
         val slots = listOf(
@@ -356,7 +360,13 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
             binding.slot4
         )
 
-        slots.forEach { it.removeAllViews() }
+        slots.forEach {
+            it.removeAllViews()
+            it.setBackgroundResource(0)
+            it.setOnClickListener(null)
+            it.setOnTouchListener(null)
+            it.setOnLongClickListener(null)
+        }
 
         for (i in 0 until 4) {
 
@@ -370,19 +380,80 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
                     plantaActual?.fotoRuta != null &&
                             foto.ruta.startsWith(plantaActual!!.fotoRuta!!)
 
+                // =========================
+                // 🔹 MARCO
+                // =========================
+                // Quitamos fondo del slot
+                slot.setBackgroundResource(0)
+
+// CONTENEDOR EXTERIOR → MARCO
+                val borderContainer = FrameLayout(requireContext()).apply {
+                    layoutParams = FrameLayout.LayoutParams(
+                        FrameLayout.LayoutParams.MATCH_PARENT,
+                        FrameLayout.LayoutParams.MATCH_PARENT
+                    )
+                    setBackgroundResource(R.drawable.bg_foto_slot)
+                }
+
+// CONTENEDOR INTERIOR → RECORTE
+                val clipContainer = FrameLayout(requireContext()).apply {
+                    layoutParams = FrameLayout.LayoutParams(
+                        FrameLayout.LayoutParams.MATCH_PARENT,
+                        FrameLayout.LayoutParams.MATCH_PARENT
+                    ).apply {
+                        val strokePx = (6 * resources.displayMetrics.density).toInt()
+                        setMargins(strokePx, strokePx, strokePx, strokePx)
+                    }
+
+                    clipToOutline = true
+                    outlineProvider = object : ViewOutlineProvider() {
+                        override fun getOutline(view: View, outline: Outline) {
+                            val radius = 18 * resources.displayMetrics.density
+                            outline.setRoundRect(0, 0, view.width, view.height, radius)
+                        }
+                    }
+                }
+
+// IMAGEN
                 val imageView = ImageView(requireContext()).apply {
                     layoutParams = FrameLayout.LayoutParams(
                         FrameLayout.LayoutParams.MATCH_PARENT,
                         FrameLayout.LayoutParams.MATCH_PARENT
                     )
                     scaleType = ImageView.ScaleType.CENTER_CROP
-                    clipToOutline = true
                     setImageURI(Uri.parse(foto.ruta))
                 }
 
-                slot.addView(imageView)
+                clipContainer.addView(imageView)
+                borderContainer.addView(clipContainer)
+                slot.addView(borderContainer)
 
-                // Overlay selección
+                // =========================
+                // 🔹 BADGE PRINCIPAL
+                // =========================
+                if (esPrincipal) {
+
+                    val badge = TextView(requireContext()).apply {
+                        text = "Principal"
+                        setTextColor(Color.WHITE)
+                        textSize = 12f
+                        setPadding(20, 8, 20, 8)
+                        setBackgroundResource(R.drawable.bg_badge_principal)
+                    }
+
+                    val params = FrameLayout.LayoutParams(
+                        FrameLayout.LayoutParams.WRAP_CONTENT,
+                        FrameLayout.LayoutParams.WRAP_CONTENT
+                    )
+                    params.gravity = Gravity.TOP or Gravity.START
+                    params.setMargins(12, 12, 0, 0)
+
+                    clipContainer.addView(badge, params)
+                }
+
+                // =========================
+                // 🔹 OVERLAY
+                // =========================
                 val overlay = View(requireContext()).apply {
                     layoutParams = FrameLayout.LayoutParams(
                         FrameLayout.LayoutParams.MATCH_PARENT,
@@ -395,11 +466,11 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
                         else
                             View.GONE
                 }
+                clipContainer.addView(overlay)
 
-                slot.addView(overlay)
-
-                // Botón eliminar
-                // Botón eliminar
+                // =========================
+                // 🔹 BOTÓN ELIMINAR
+                // =========================
                 val btnEliminar = ImageView(requireContext()).apply {
                     layoutParams = FrameLayout.LayoutParams(
                         110,
@@ -414,28 +485,26 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
 
                     setColorFilter(
                         ContextCompat.getColor(context, android.R.color.holo_red_dark),
-                        android.graphics.PorterDuff.Mode.SRC_IN
+                        PorterDuff.Mode.SRC_IN
                     )
 
                     setBackgroundResource(R.drawable.bg_boton_eliminar)
                     setPadding(16, 16, 16, 16)
                     elevation = 12f
-
                     visibility = View.GONE
                 }
 
+                clipContainer.addView(btnEliminar)
 
-
-                slot.addView(btnEliminar)
-
-                // 🔹 CLICK → seleccionar foto
+                // =========================
+                // 🔹 GESTOS
+                // =========================
                 val gestureDetector = GestureDetector(
                     requireContext(),
                     object : GestureDetector.SimpleOnGestureListener() {
 
                         override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
 
-                            // 🔹 SELECCIÓN NORMAL
                             if (fotosSeleccionadas.contains(foto)) {
                                 fotosSeleccionadas.remove(foto)
                             } else if (fotosSeleccionadas.size < 2) {
@@ -463,9 +532,8 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
                             return true
                         }
 
-                        override fun onDoubleTap(e: MotionEvent): Boolean{
+                        override fun onDoubleTap(e: MotionEvent): Boolean {
 
-                            // 🔥 AMPLIAR FOTO
                             val formato = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
                             val fechaFormateada = formato.format(Date(foto.fecha))
 
@@ -485,8 +553,7 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
                     true
                 }
 
-                // 🔹 LONG CLICK → cambiar principal
-                slot.setOnLongClickListener {
+                clipContainer.setOnLongClickListener {
                     confirmarCambioFotoPrincipal(foto)
                     true
                 }
@@ -497,18 +564,37 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
 
             } else {
 
-                // SLOT VACÍO → agregar foto
-                val textView = TextView(requireContext()).apply {
+                // =========================
+                // 🔹 SLOT VACÍO
+                // =========================
+                slot.setBackgroundResource(R.drawable.bg_foto_slot)
+
+                val contenedor = LinearLayout(requireContext()).apply {
                     layoutParams = FrameLayout.LayoutParams(
                         FrameLayout.LayoutParams.MATCH_PARENT,
                         FrameLayout.LayoutParams.MATCH_PARENT
                     )
-                    text = "Agregar foto"
+                    orientation = LinearLayout.VERTICAL
                     gravity = Gravity.CENTER
-                    setTextColor(android.graphics.Color.DKGRAY)
                 }
 
-                slot.addView(textView)
+                val texto = TextView(requireContext()).apply {
+                    text = "Agregar foto"
+                    setTextColor(Color.DKGRAY)
+                    textSize = 14f
+                    gravity = Gravity.CENTER
+                }
+
+                val icono = ImageView(requireContext()).apply {
+                    setImageResource(R.drawable.ic_camara)
+                    val size = 80
+                    layoutParams = LinearLayout.LayoutParams(size, size)
+                }
+
+                contenedor.addView(texto)
+                contenedor.addView(icono)
+
+                slot.addView(contenedor)
 
                 slot.setOnClickListener {
 
@@ -534,8 +620,6 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
             }
         }
     }
-
-
 
     private fun cambiarFotoPrincipal(foto: FotoPlanta) {
         viewLifecycleOwner.lifecycleScope.launch {
