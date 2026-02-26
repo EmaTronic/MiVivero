@@ -173,59 +173,158 @@ object AlbumPublisher {
 
             val width = mutable.width
             val height = mutable.height
+            val padding = width * 0.06f
 
-            val padding = 40f
+            // =============================
+            // 🔼 DEGRADADO SUPERIOR
+            // =============================
 
-            val paintTitulo = Paint().apply {
+            val topGradient = LinearGradient(
+                0f,
+                0f,
+                0f,
+                height * 0.25f,
+                intArrayOf(Color.parseColor("#CC000000"), Color.TRANSPARENT),
+                null,
+                Shader.TileMode.CLAMP
+            )
+
+            val topPaint = Paint().apply { shader = topGradient }
+
+            canvas.drawRect(
+                0f,
+                0f,
+                width.toFloat(),
+                height * 0.25f,
+                topPaint
+            )
+
+            // =============================
+            // 🔽 DEGRADADO INFERIOR
+            // =============================
+
+            val bottomGradient = LinearGradient(
+                0f,
+                height * 0.65f,
+                0f,
+                height.toFloat(),
+                intArrayOf(Color.TRANSPARENT, Color.parseColor("#DD000000")),
+                null,
+                Shader.TileMode.CLAMP
+            )
+
+            val bottomPaint = Paint().apply { shader = bottomGradient }
+
+            canvas.drawRect(
+                0f,
+                height * 0.65f,
+                width.toFloat(),
+                height.toFloat(),
+                bottomPaint
+            )
+
+            // =============================
+            // 🏷 TEXTOS
+            // =============================
+
+            val paintAlbum = Paint().apply {
                 color = Color.WHITE
-                textSize = 110f
+                textSize = width * 0.07f
                 isFakeBoldText = true
                 setShadowLayer(8f, 0f, 0f, Color.BLACK)
             }
 
-            val paintTexto = Paint().apply {
+            val paintNombre = Paint().apply {
                 color = Color.WHITE
-                textSize = 85f
+                textSize = width * 0.08f
+                isFakeBoldText = true
+                setShadowLayer(8f, 0f, 0f, Color.BLACK)
+            }
+
+            val paintInfo = Paint().apply {
+                color = Color.WHITE
+                textSize = width * 0.055f
                 setShadowLayer(6f, 0f, 0f, Color.BLACK)
             }
 
-            val fondo = Paint().apply {
-                color = Color.parseColor("#AA000000")
-            }
-
-            // BLOQUE SUPERIOR
-            canvas.drawRect(0f, 0f, width.toFloat(), 180f, fondo)
-
+            // Nombre del álbum (arriba)
             canvas.drawText(
                 nombreAlbum,
                 padding,
-                120f,
-                paintTitulo
+                height * 0.12f,
+                paintAlbum
             )
 
-            // BLOQUE INFERIOR
-            val bloqueAltura = 350f
-            val topBloque = height - bloqueAltura
+// =============================
+// 🔽 BLOQUE INFERIOR
+// =============================
 
-            canvas.drawRect(
-                0f,
-                topBloque,
-                width.toFloat(),
-                height.toFloat(),
-                fondo
+            var y = height * 0.88f
+
+// 🔹 Nombre planta
+            canvas.drawText(
+                planta.nombreCompleto,
+                padding,
+                y,
+                paintNombre
             )
 
-            var y = topBloque + 120f
+// 🔹 Disponible
+            y += width * 0.085f
 
-            canvas.drawText(planta.nombreCompleto, padding, y, paintTexto)
-            y += 95f
+            val disponibleY = y
 
-            canvas.drawText("Disponible: ${planta.cantidad}", padding, y, paintTexto)
-            y += 95f
+            canvas.drawText(
+                "Disponible: ${planta.cantidad}",
+                padding,
+                disponibleY,
+                paintInfo
+            )
 
-            canvas.drawText("Precio: $${planta.precio}", padding, y, paintTexto)
+// 🔹 BADGE PRECIO alineado con Disponible
+            val badgeText = "$${planta.precio}"
+            val badgePadding = width * 0.025f
+            val badgeHeight = width * 0.07f
 
-            // GUARDAR
+            val textWidth = paintInfo.measureText(badgeText)
+            val badgeWidth = textWidth + badgePadding * 2
+
+            val badgeLeft = width - badgeWidth - padding
+            val badgeTop = disponibleY - badgeHeight * 0.75f
+
+            val badgeRect = RectF(
+                badgeLeft,
+                badgeTop,
+                badgeLeft + badgeWidth,
+                badgeTop + badgeHeight
+            )
+
+            val badgePaint = Paint().apply {
+                color = Color.parseColor("#2E7D32")
+            }
+
+            canvas.drawRoundRect(
+                badgeRect,
+                badgeHeight / 2,
+                badgeHeight / 2,
+                badgePaint
+            )
+
+            canvas.drawText(
+                badgeText,
+                badgeLeft + badgePadding,
+                badgeTop + badgeHeight * 0.72f,
+                paintInfo
+            )
+            // =============================
+            // 💰 BADGE PRECIO
+            // =============================
+
+
+            // =============================
+            // 💾 GUARDAR
+            // =============================
+
             val file = File(
                 context.cacheDir,
                 "album_${planta.plantaId}_${System.currentTimeMillis()}.jpg"
