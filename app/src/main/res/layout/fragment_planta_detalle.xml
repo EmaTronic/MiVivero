@@ -14,7 +14,11 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="240dp"
-            android:layout_marginBottom="16dp">
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/bg_marco_superior"
+            android:clipToOutline="true"
+
+            android:padding="4dp">
 
             <!-- FOTO PRINCIPAL -->
             <ImageView
@@ -22,7 +26,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"
-                android:background="#E0E0E0" />
+                 />
 
             <!-- OVERLAY 4 ESPACIOS -->
             <LinearLayout

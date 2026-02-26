@@ -401,7 +401,7 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
                         FrameLayout.LayoutParams.MATCH_PARENT,
                         FrameLayout.LayoutParams.MATCH_PARENT
                     ).apply {
-                        val strokePx = (6 * resources.displayMetrics.density).toInt()
+                        val strokePx = (3 * resources.displayMetrics.density).toInt()
                         setMargins(strokePx, strokePx, strokePx, strokePx)
                     }
 
@@ -548,9 +548,9 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
                     }
                 )
 
-                slot.setOnTouchListener { _, event ->
+                clipContainer.setOnTouchListener { _, event ->
                     gestureDetector.onTouchEvent(event)
-                    true
+                    false
                 }
 
                 clipContainer.setOnLongClickListener {
