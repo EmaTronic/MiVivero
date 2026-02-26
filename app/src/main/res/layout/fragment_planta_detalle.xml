@@ -1,67 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white"
-    android:padding="20dp">
+    android:background="#F1F8E9"
+    android:padding="16dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- FOTO PRINCIPAL CON MARCO -->
+        <!-- FOTO PRINCIPAL -->
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="240dp"
-            android:layout_marginBottom="16dp"
+            android:layout_height="280dp"
+            android:layout_marginBottom="24dp"
+            android:elevation="6dp"
             android:background="@drawable/bg_marco_superior"
-            android:clipToOutline="true"
+            android:clipToOutline="true">
 
-            android:padding="4dp">
-
-            <!-- FOTO PRINCIPAL -->
             <ImageView
                 android:id="@+id/imgDetallePlanta"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:scaleType="centerCrop"
-                 />
+                android:scaleType="centerCrop" />
 
-            <!-- OVERLAY 4 ESPACIOS -->
+            <!-- OVERLAY SLOTS -->
             <LinearLayout
                 android:id="@+id/layoutOverlayFotos"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
-                android:padding="12dp"
+                android:gravity="bottom"
+                android:padding="8dp"
+                android:paddingTop="48dp"
                 android:clickable="true"
-                android:focusable="true"
-                android:elevation="4dp">
+                android:focusable="true">
 
-
-            <!-- FILA 1 -->
+                <!-- FILA 1 -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_weight="1"
                     android:orientation="horizontal"
-                    android:layout_marginBottom="8dp">
+                    android:layout_marginBottom="6dp">
 
                     <FrameLayout
                         android:id="@+id/slot1"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:layout_marginEnd="8dp"
-                        />
+                        android:layout_marginEnd="6dp" />
 
                     <FrameLayout
                         android:id="@+id/slot2"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
-                        android:layout_weight="1"
-                       />
+                        android:layout_weight="1" />
                 </LinearLayout>
 
                 <!-- FILA 2 -->
@@ -76,96 +72,183 @@
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:layout_marginEnd="8dp"
-                       />
+                        android:layout_marginEnd="6dp" />
 
                     <FrameLayout
                         android:id="@+id/slot4"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        />
+                        android:layout_weight="1" />
                 </LinearLayout>
 
             </LinearLayout>
 
         </FrameLayout>
 
-
-
-        <!-- DATOS -->
-        <TextView
-            android:id="@+id/txtFamilia"
+        <!-- NOMBRE -->
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:textColor="#212121"
-            android:layout_marginTop="20dp"/>
+            android:orientation="horizontal"
+            android:layout_gravity="center"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="20dp">
 
-        <TextView
-            android:id="@+id/txtEspecie"
+            <ImageView
+                android:layout_width="65dp"
+                android:layout_height="65dp"
+                android:src="@drawable/ic_planta"
+                app:tint="#2E7D32"
+                android:layout_marginEnd="12dp" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/txtFamilia"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="26sp"
+                    android:textStyle="bold"
+                    android:textColor="#1B5E20"/>
+
+                <TextView
+                    android:id="@+id/txtEspecie"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="18sp"
+                    android:textColor="#2E7D32"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- DATOS CENTRADOS -->
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="16sp"
-            android:textColor="#616161"
-            android:layout_marginTop="4dp"/>
+            android:orientation="horizontal"
+            android:layout_gravity="center"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="8dp">
 
-        <TextView
-            android:id="@+id/txtCantidad"
+            <ImageView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:src="@drawable/ic_inventory_2"
+                app:tint="#2E7D32"
+                android:layout_marginEnd="6dp"/>
+
+            <TextView
+                android:id="@+id/txtCantidad"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="17sp"
+                android:textColor="#424242"/>
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="15sp"
-            android:textColor="#424242"
-            android:layout_marginTop="12dp"/>
+            android:orientation="horizontal"
+            android:layout_gravity="center"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="8dp">
 
-        <TextView
-            android:id="@+id/txtVenta"
+            <ImageView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:src="@drawable/ic_disponibilidad_task_alt"
+                app:tint="#2E7D32"
+                android:layout_marginEnd="6dp"/>
+
+            <TextView
+                android:id="@+id/txtVenta"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="17sp"
+                android:textColor="#2E7D32"
+                android:textStyle="bold"/>
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="15sp"
-            android:textStyle="bold"
-            android:textColor="@color/teal_primary"
-            android:layout_marginTop="6dp"/>
+            android:orientation="horizontal"
+            android:layout_gravity="center"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="28dp">
 
-        <TextView
-            android:id="@+id/txtFechaFoto"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="12sp"
-            android:textColor="#9E9E9E"
-            android:textStyle="italic"
-            android:layout_marginTop="16dp"/>
+            <ImageView
+                android:id="@+id/iconFecha"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:src="@drawable/ic_event_fecha"
+                android:tint="#616161"
+                android:layout_marginEnd="6dp"/>
+
+            <TextView
+                android:id="@+id/txtFechaFoto"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textColor="#616161"
+                android:textStyle="italic"/>
+        </LinearLayout>
 
         <!-- BOTONES -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnEditar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:minHeight="56dp"
+            android:paddingVertical="14dp"
             android:text="Editar planta"
-            android:layout_marginTop="20dp"
-            android:backgroundTint="@color/teal_light"
-            android:textColor="@color/teal_primary"/>
-
-
+            android:textAllCaps="false"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="16dp"
+            android:backgroundTint="#A5D6A7"
+            android:textColor="#1B5E20"
+            android:elevation="3dp"
+            android:stateListAnimator="@animator/button_elevation"
+            app:cornerRadius="28dp"
+            app:strokeWidth="1dp"
+            app:strokeColor="#1B5E20"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnCompararFotos"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
+            android:backgroundTint="#2E7D32"
+            android:elevation="3dp"
+            android:minHeight="56dp"
+            android:paddingVertical="14dp"
+            android:paddingTop="14dp"
+            android:paddingBottom="18dp"
+            android:stateListAnimator="@animator/button_elevation"
             android:text="Comparar fotos"
-            android:layout_marginTop="8dp"
-            android:backgroundTint="@color/teal_primary"
-            android:textColor="@android:color/white"/>
+            android:textAllCaps="false"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:cornerRadius="28dp"
+            app:strokeColor="#1B5E20"
+            app:strokeWidth="1dp" />
 
+        <!--
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnEliminar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Eliminar planta"
-            android:layout_marginTop="12dp"
-            android:backgroundTint="#E53935"
-            android:textColor="@android:color/white"/>
+            android:backgroundTint="#C62828"
+            android:textColor="@android:color/white"
+            app:cornerRadius="28dp"
+            android:elevation="2dp"/>-->
 
     </LinearLayout>
+
 </ScrollView>
