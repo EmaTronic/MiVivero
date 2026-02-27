@@ -7,4 +7,32 @@
     <style name="Theme.MiVivero"
         parent="Base.Theme.MiVivero" />
 
+
+    <!-- COLORES PLANTA -->
+    <style name="Theme.MiVivero.Plant" parent="Theme.Material3.DayNight.NoActionBar">
+
+        <!-- Colores base -->
+        <item name="colorPrimary">@color/plant_primary</item>
+        <item name="colorOnPrimary">@color/plant_primary_dark</item>
+
+        <item name="colorSecondary">@color/plant_secondary</item>
+
+        <item name="android:colorBackground">@color/plant_background</item>
+        <item name="colorSurface">@color/plant_background</item>
+
+    </style>
+
+
+    <!-- COLORES ALBUM -->
+    <style name="Theme.MiVivero.Album" parent="Theme.Material3.DayNight.NoActionBar">
+
+        <item name="colorPrimary">@color/album_primary</item>
+        <item name="colorOnPrimary">@android:color/white</item>
+
+        <item name="colorSecondary">@color/album_secondary</item>
+
+        <item name="android:colorBackground">@color/album_background</item>
+        <item name="colorSurface">@color/album_background</item>
+
+    </style>
 </resources>

@@ -41,6 +41,22 @@
 
 
 
+    <!-- COLORES DE PLANTAS -->
+    <color name="plant_primary">#BCE784</color>
+    <color name="plant_primary_dark">#5DD39E</color>
+    <color name="plant_secondary">#348AA7</color>
+    <color name="plant_accent_soft">#436E8E</color>
+    <color name="plant_background">#EFFBF5</color>
+    <color name="plant_on_primary">#FFFFFF</color>
+
+    <!-- COLORES DE ALBUMES -->
+    <color name="album_primary">#348AA7</color>
+    <color name="album_secondary">#5DD39E</color>
+    <color name="album_accent_soft">#BCE784</color>
+    <color name="album_text_strong">#525174</color>
+    <color name="album_deep">#513B56</color>
+    <color name="album_background">#FFFFFF</color>
+
 
 
 </resources>

@@ -41,6 +41,12 @@ class AlbumesFragment : Fragment(R.layout.fragment_albumes) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+
+        requireActivity().setTheme(R.style.Theme_MiVivero_Plant)
+
+
+
         _binding = FragmentAlbumesBinding.bind(view)
 
         configurarRecycler()

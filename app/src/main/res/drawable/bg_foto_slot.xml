@@ -2,6 +2,6 @@
     <solid android:color="@android:color/transparent"/>
     <stroke
         android:width="2dp"
-        android:color="@color/teal_primary"/>
+        android:color="@color/plant_primary_dark"/>
     <corners android:radius="18dp"/>
 </shape>
