@@ -15,4 +15,11 @@
         android:icon="@drawable/ic_search"
         android:title="Identificar"/>
 
+    <item
+        android:id="@+id/comunidadFragment"
+        android:icon="@drawable/ic_comunidad"
+        android:title="Comunidad" />
+
+
+
 </menu>

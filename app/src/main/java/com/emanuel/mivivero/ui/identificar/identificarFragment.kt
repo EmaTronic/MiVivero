@@ -166,7 +166,8 @@ class IdentificarFragment : Fragment() {
                     "imageUrl" to downloadUri.toString(),
                     "observacion" to observacion,
                     "fecha" to FieldValue.serverTimestamp(),
-                    "estado" to "activa"
+                    "estado" to "activa",
+                    "emailAutor" to auth.currentUser?.email
                 )
 
                 db.collection("publicaciones")

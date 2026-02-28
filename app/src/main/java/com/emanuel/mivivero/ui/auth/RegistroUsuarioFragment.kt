@@ -1,5 +1,6 @@
 package com.emanuel.mivivero.ui.auth
 
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.util.Patterns
@@ -20,6 +21,8 @@ import com.google.android.material.textfield.TextInputLayout
 import com.google.gson.Gson
 import kotlinx.coroutines.launch
 import android.text.TextWatcher
+import android.widget.Button
+import com.google.firebase.auth.FirebaseAuth
 
 class RegistroUsuarioFragment :
     Fragment(R.layout.fragment_registro_usuario) {
@@ -142,6 +145,17 @@ class RegistroUsuarioFragment :
 
                 findNavController().popBackStack()
             }
+        }
+
+
+        val btnCerrarSesion = view.findViewById<Button>(R.id.btnCerrarSesion)
+
+        btnCerrarSesion.setOnClickListener {
+
+            FirebaseAuth.getInstance().signOut()
+
+            startActivity(Intent(requireContext(), LoginActivity::class.java))
+            requireActivity().finish()
         }
     }
 

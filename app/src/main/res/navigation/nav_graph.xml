@@ -137,6 +137,11 @@
         android:name="com.emanuel.mivivero.ui.auth.RegistroUsuarioFragment"
         android:label="Registro Usuario" />
 
+    <fragment
+        android:id="@+id/comunidadFragment"
+        android:name="com.emanuel.mivivero.ui.comunidad.ComunidadFragment"
+        android:label="Comunidad" />
+
 
 
 
