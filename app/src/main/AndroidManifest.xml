@@ -5,6 +5,7 @@
     <!-- Permisos -->
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
 
     <!-- La cámara no es obligatoria -->
     <uses-feature
@@ -34,7 +35,24 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
-        <!-- MAIN ACTIVITY -->
+
+
+
+        <activity
+            android:name=".ui.test.TestAuthActivity"
+            android:exported="true">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+
+        </activity>
+
+
+
+
+        <!-- MAIN ACTIVITY
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -45,7 +63,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
-            <!-- 🔥 ESTE ES EL QUE FALTA -->
+
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -58,6 +76,8 @@
             </intent-filter>
 
         </activity>
+
+        -->
 
 
     </application>
