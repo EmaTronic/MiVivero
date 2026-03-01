@@ -1,5 +1,6 @@
 package com.emanuel.mivivero.ui.comunidad
 
+import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -31,6 +32,23 @@ class ComunidadAdapter(
 
         holder.observacion.text = publicacion.observacion
         holder.autor.text = "Publicado por: ${publicacion.emailAutor}"
+
+        holder.itemView.setOnClickListener {
+
+            val bundle = Bundle().apply {
+                putString("publicacionId", publicacion.id)
+            }
+
+            val navController =
+                androidx.navigation.Navigation.findNavController(holder.itemView)
+
+            navController.navigate(
+                R.id.detallePublicacionFragment,
+                bundle
+            )
+        }
+
+
 
         Glide.with(holder.itemView.context)
             .load(publicacion.imageUrl)

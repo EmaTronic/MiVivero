@@ -143,6 +143,18 @@
         android:label="Comunidad" />
 
 
+    <!-- NAVEGACIÓN A DETALLE_PUBLICACION-->
+    <fragment
+        android:id="@+id/detallePublicacionFragment"
+        android:name="com.emanuel.mivivero.ui.comunidad.DetallePublicacionFragment"
+        android:label="Detalle Publicación">
+
+        <argument
+            android:name="publicacionId"
+            app:argType="string" />
+    </fragment>
+
+
 
 
 
