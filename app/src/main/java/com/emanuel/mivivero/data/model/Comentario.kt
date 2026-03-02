@@ -10,4 +10,4 @@ data class Comentario(
     val tipo: String = "comentario", // comentario | propuesta
     val nombreComunPropuesto: String? = null,
     val nombreCientificoPropuesto: String? = null
-)ggi
+)

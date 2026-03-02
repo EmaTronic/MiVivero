@@ -19,4 +19,11 @@
         android:textSize="11sp"
         android:textColor="#777777"/>
 
+    <Button
+        android:id="@+id/btnAceptar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Aceptar"
+        android:visibility="gone"/>
+
 </LinearLayout>

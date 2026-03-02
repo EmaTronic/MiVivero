@@ -19,11 +19,14 @@ class DetallePublicacionFragment :
 
     private lateinit var recyclerComentarios: RecyclerView
 
+    private var uidAutorPost: String?= null
     // 🔹 BLOQUE IDENTIFICADA (PROPIEDADES DE CLASE)
     private lateinit var layoutIdentificada: LinearLayout
     private lateinit var tvNombreComun: TextView
     private lateinit var tvNombreCientifico: TextView
     private lateinit var tvIdentificadaPor: TextView
+
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -64,6 +67,7 @@ class DetallePublicacionFragment :
                 val imageUrl = doc.getString("imageUrl")
                 val observacion = doc.getString("observacion")
                 val emailAutor = doc.getString("emailAutor")
+
 
                 obs.text = observacion
                 autor.text = "Publicado por: $emailAutor"
@@ -148,6 +152,9 @@ class DetallePublicacionFragment :
 
                 if (doc == null || !doc.exists()) return@addSnapshotListener
 
+
+                uidAutorPost = doc.getString("uidAutor")
+
                 val estado = doc.getString("estado")
                 val nombreComun = doc.getString("nombreComun")
                 val nombreCientifico = doc.getString("nombreCientifico")
@@ -184,8 +191,10 @@ class DetallePublicacionFragment :
                         .copy(id = it.id)
                 }
 
-                recyclerComentarios.adapter =
-                    ComentariosAdapter(lista)
+                if (uidAutorPost != null) {
+                    recyclerComentarios.adapter =
+                        ComentariosAdapter(lista, publicacionId, uidAutorPost!!)
+                }
             }
     }
 }

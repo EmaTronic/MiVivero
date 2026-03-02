@@ -1,10 +1,12 @@
 package com.emanuel.mivivero.ui.comunidad
 
+import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.emanuel.mivivero.R
@@ -26,6 +28,7 @@ class MisPublicacionesAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+
         val publicacion = lista[position]
 
         holder.observacion.text = publicacion.observacion
@@ -33,6 +36,19 @@ class MisPublicacionesAdapter(
         Glide.with(holder.itemView.context)
             .load(publicacion.imageUrl)
             .into(holder.imagen)
+
+        // 👇 CLICK PARA IR AL DETALLE
+        holder.itemView.setOnClickListener {
+
+            val bundle = Bundle().apply {
+                putString("publicacionId", publicacion.id)
+            }
+
+            it.findNavController().navigate(
+                R.id.detallePublicacionFragment,
+                bundle
+            )
+        }
     }
 
     override fun getItemCount(): Int = lista.size

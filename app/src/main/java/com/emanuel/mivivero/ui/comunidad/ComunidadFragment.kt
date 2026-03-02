@@ -72,17 +72,28 @@ class ComunidadFragment : Fragment(R.layout.fragment_comunidad) {
         val auth = FirebaseAuth.getInstance()
         val uid = auth.currentUser?.uid ?: return
 
+        println("UID ACTUAL MIS PUBLICACIONES: ${FirebaseAuth.getInstance().currentUser?.uid}")
+
+        println("UID ACTUAL MIS PUBLICACIONES: $uid")
+
         db.collection("publicaciones")
             .whereEqualTo("uidAutor", uid)
-            .orderBy("fecha")
+
+            //.orderBy("fecha")
             .get()
             .addOnSuccessListener { result ->
+
+                println("CANTIDAD ENCONTRADA: ${result.size()}")
+
                 val lista = result.map {
                     it.toObject(Publicacion::class.java).copy(id = it.id)
                 }
 
                 recyclerMisPublicaciones.adapter =
                     MisPublicacionesAdapter(lista)
+            }
+            .addOnFailureListener { e ->
+                println("ERROR MIS PUBLICACIONES: ${e.message}")
             }
     }
     private fun cargarComunidad() {
