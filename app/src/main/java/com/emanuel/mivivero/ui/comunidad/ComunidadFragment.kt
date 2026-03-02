@@ -49,6 +49,10 @@ class ComunidadFragment : Fragment(R.layout.fragment_comunidad) {
         println("VOY A LLAMAR cargarComunidad()")
         cargarComunidad()
 
+
+
+
+
     }
 
     private fun cargarPublicaciones() {

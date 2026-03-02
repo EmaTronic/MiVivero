@@ -101,6 +101,42 @@ class DetallePublicacionFragment :
 
             etComentario.text.clear()
         }
+
+
+        val etNombreComun = view.findViewById<EditText>(R.id.etNombreComun)
+        val etNombreCientifico = view.findViewById<EditText>(R.id.etNombreCientifico)
+        val btnProponer = view.findViewById<Button>(R.id.btnProponer)
+
+        btnProponer.setOnClickListener {
+            println("BOTON PROPONER PRESIONADO")
+            val nombreComun = etNombreComun.text.toString().trim()
+            val nombreCientifico = etNombreCientifico.text.toString().trim()
+
+            if (nombreComun.isEmpty()) return@setOnClickListener
+
+            val user = FirebaseAuth.getInstance().currentUser ?: return@setOnClickListener
+
+            val propuesta = hashMapOf(
+                "uidAutor" to user.uid,
+                "emailAutor" to user.email,
+                "texto" to "Propuesta de identificación",
+                "fecha" to com.google.firebase.Timestamp.now(),
+                "tipo" to "propuesta",
+                "nombreComunPropuesto" to nombreComun,
+                "nombreCientificoPropuesto" to nombreCientifico
+            )
+
+            db.collection("publicaciones")
+                .document(publicacionId)
+                .collection("comentarios")
+                .add(propuesta)
+
+            etNombreComun.text.clear()
+            etNombreCientifico.text.clear()
+        }
+
+
+
     }
 
     // 🔹 ESCUCHAR ESTADO DE LA PUBLICACIÓN

@@ -5,5 +5,9 @@ data class Comentario(
     val uidAutor: String = "",
     val emailAutor: String = "",
     val texto: String = "",
-    val fecha: com.google.firebase.Timestamp? = null
-)
+    val fecha: com.google.firebase.Timestamp? = null,
+
+    val tipo: String = "comentario", // comentario | propuesta
+    val nombreComunPropuesto: String? = null,
+    val nombreCientificoPropuesto: String? = null
+)ggi

@@ -29,5 +29,19 @@ class ComentariosAdapter(
         val comentario = lista[position]
         holder.texto.text = comentario.texto
         holder.autor.text = comentario.emailAutor
+
+        if (comentario.tipo == "propuesta") {
+
+            holder.texto.text =
+                "🌿 Propuesta: ${comentario.nombreComunPropuesto}" +
+                        (if (!comentario.nombreCientificoPropuesto.isNullOrEmpty())
+                            "\n(${comentario.nombreCientificoPropuesto})"
+                        else "")
+
+        } else {
+            holder.texto.text = comentario.texto
+        }
+
+
     }
 }
