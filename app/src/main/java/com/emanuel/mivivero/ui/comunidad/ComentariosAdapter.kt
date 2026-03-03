@@ -68,6 +68,7 @@ class ComentariosAdapter(
                 .update(
                     mapOf(
                         "estado" to "identificada",
+                        "prioridadEstado" to 1,
                         "nombreComun" to comentario.nombreComunPropuesto,
                         "nombreCientifico" to comentario.nombreCientificoPropuesto,
                         "identificadaPorUid" to comentario.uidAutor,

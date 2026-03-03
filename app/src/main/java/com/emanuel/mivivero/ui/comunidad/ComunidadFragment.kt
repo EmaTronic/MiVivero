@@ -102,14 +102,13 @@ class ComunidadFragment : Fragment(R.layout.fragment_comunidad) {
         val uid = auth.currentUser?.uid ?: return
 
         db.collection("publicaciones")
-            .orderBy("fecha")
+            .orderBy("prioridadEstado")
+            .orderBy("fecha", com.google.firebase.firestore.Query.Direction.DESCENDING)
             .get()
             .addOnSuccessListener { result ->
 
                 val lista = result.map {
                     it.toObject(Publicacion::class.java).copy(id = it.id)
-                }.filter {
-                    it.uidAutor != uid
                 }
 
                 recyclerComunidad.adapter =

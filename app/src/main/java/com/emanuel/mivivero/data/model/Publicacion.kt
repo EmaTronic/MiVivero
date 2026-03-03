@@ -5,10 +5,11 @@ data class Publicacion(
     val imageUrl: String = "",
     val observacion: String = "",
     val emailAutor: String = "",
-    val uidAutor: String = "",   // 👈 ESTE ES CLAVE
+    val uidAutor: String = "",
     val estado: String = "pendiente",
     val nombreComun: String? = null,
     val nombreCientifico: String? = null,
     val identificadaPorUid: String? = null,
-    val identificadaPorEmail: String? = null
+    val identificadaPorEmail: String? = null,
+    val prioridadEstado: Int = 0
 )
