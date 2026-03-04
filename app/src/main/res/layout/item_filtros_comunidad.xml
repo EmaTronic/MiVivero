@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingTop="16dp"
+    android:paddingBottom="12dp">
+
+    <!-- Título sección -->
+    <TextView
+        android:id="@+id/tvTituloComunidad"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Comunidad"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"/>
+
+    <!-- Botones de filtro -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="12dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp">
+
+        <Button
+            android:id="@+id/btnFiltroTodas"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            android:text="Todas"/>
+
+        <Space
+            android:layout_width="8dp"
+            android:layout_height="wrap_content"/>
+
+        <Button
+            android:id="@+id/btnFiltroPendientes"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            android:text="Pendientes"/>
+
+        <Space
+            android:layout_width="8dp"
+            android:layout_height="wrap_content"/>
+
+        <Button
+            android:id="@+id/btnFiltroIdentificadas"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            android:text="Identificadas"/>
+    </LinearLayout>
+
+    <!-- Buscador -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="10dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp">
+
+        <EditText
+            android:id="@+id/etBuscarNombre"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            android:hint="Buscar por nombre común"
+            android:inputType="text"
+            android:imeOptions="actionSearch"/>
+
+        <Button
+            android:id="@+id/btnBuscar"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:text="Buscar"
+            android:layout_marginStart="8dp"/>
+
+    </LinearLayout>
+
+</LinearLayout>

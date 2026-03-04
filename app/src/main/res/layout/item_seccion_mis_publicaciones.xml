@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingTop="16dp"
+    android:paddingBottom="8dp">
+
+    <!-- Título -->
+    <TextView
+        android:id="@+id/tvTituloMisPublicaciones"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Mis publicaciones"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"/>
+
+    <!-- Carrusel horizontal -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerMisPublicaciones"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="8dp"
+        android:paddingEnd="32dp"
+        android:clipToPadding="false"
+        android:layout_marginTop="8dp"/>
+
+</LinearLayout>
