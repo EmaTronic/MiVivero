@@ -9,7 +9,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.emanuel.mivivero.R
 import com.emanuel.mivivero.data.model.Comentario
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
 
 class ComentariosAdapter(
     private val lista: List<Comentario>,
@@ -75,6 +77,21 @@ class ComentariosAdapter(
                         "identificadaPorEmail" to comentario.emailAutor
                     )
                 )
+
+                .addOnSuccessListener {
+                    val uidIdentificador = comentario.uidAutor
+
+                    db.collection("usuarios")
+                        .document(uidIdentificador)
+                        .set(
+                            mapOf(
+                                "uid" to uidIdentificador,
+                                "email" to comentario.emailAutor,
+                                "reputacion" to FieldValue.increment(1)
+                            ),
+                            SetOptions.merge()
+                        )
+                }
         }
     }
 }

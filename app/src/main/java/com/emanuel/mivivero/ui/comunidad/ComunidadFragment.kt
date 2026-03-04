@@ -2,39 +2,43 @@ package com.emanuel.mivivero.ui.comunidad
 
 import android.os.Bundle
 import android.view.View
+import android.widget.Button
+import android.widget.EditText
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import com.emanuel.mivivero.R
 import com.emanuel.mivivero.data.model.Publicacion
-import com.google.firebase.auth.FirebaseAuth
 
 class ComunidadFragment : Fragment(R.layout.fragment_comunidad) {
 
-    private lateinit var recycler: RecyclerView
     private val db = FirebaseFirestore.getInstance()
 
     private lateinit var recyclerMisPublicaciones: RecyclerView
     private lateinit var recyclerComunidad: RecyclerView
 
+    private lateinit var btnFiltroTodas: Button
+    private lateinit var btnFiltroPendientes: Button
+    private lateinit var btnFiltroIdentificadas: Button
+    private lateinit var etBuscarNombre: EditText
+    private lateinit var btnBuscar: Button
+
+    private var filtroEstadoActual: String? = null
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        println("ENTRO A onViewCreated COMUNIDAD")
+        recyclerMisPublicaciones = view.findViewById(R.id.recyclerMisPublicaciones)
+        recyclerComunidad = view.findViewById(R.id.recyclerComunidad)
 
-
-        val uidActual = FirebaseAuth.getInstance().currentUser?.uid
-        val emailActual = FirebaseAuth.getInstance().currentUser?.email
-
-        println("USUARIO ACTUAL UID: $uidActual")
-        println("USUARIO ACTUAL EMAIL: $emailActual")
-
-        recyclerMisPublicaciones =
-            view.findViewById(R.id.recyclerMisPublicaciones)
-
-        recyclerComunidad =
-            view.findViewById(R.id.recyclerComunidad)
+        btnFiltroTodas = view.findViewById(R.id.btnFiltroTodas)
+        btnFiltroPendientes = view.findViewById(R.id.btnFiltroPendientes)
+        btnFiltroIdentificadas = view.findViewById(R.id.btnFiltroIdentificadas)
+        etBuscarNombre = view.findViewById(R.id.etBuscarNombre)
+        btnBuscar = view.findViewById(R.id.btnBuscar)
 
         recyclerMisPublicaciones.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
@@ -42,48 +46,45 @@ class ComunidadFragment : Fragment(R.layout.fragment_comunidad) {
         recyclerComunidad.layoutManager =
             LinearLayoutManager(requireContext())
 
-        cargarPublicaciones()
+        configurarEventosFiltros()
+
         cargarMisPublicaciones()
-
-
-        println("VOY A LLAMAR cargarComunidad()")
         cargarComunidad()
-
-
-
-
-
     }
 
-    private fun cargarPublicaciones() {
-        db.collection("publicaciones")
-            .orderBy("fecha")
-            .get()
-            .addOnSuccessListener { result ->
-                // por ahora solo logueamos
-                for (doc in result) {
-                    println("Publicación: ${doc.data}")
-                }
-            }
+    private fun configurarEventosFiltros() {
+
+        btnFiltroTodas.setOnClickListener {
+            println("CLICK TODAS")
+            filtroEstadoActual = null
+            cargarComunidad()
+        }
+
+        btnFiltroPendientes.setOnClickListener {
+            println("CLICK PENDIENTES")
+            filtroEstadoActual = "pendiente"
+            cargarComunidad()
+        }
+
+        btnFiltroIdentificadas.setOnClickListener {
+            println("CLICK IDENTIFICADAS")
+            filtroEstadoActual = "identificada"
+            cargarComunidad()
+        }
+
+        btnBuscar.setOnClickListener {
+            cargarComunidad()
+        }
     }
 
     private fun cargarMisPublicaciones() {
 
-        val auth = FirebaseAuth.getInstance()
-        val uid = auth.currentUser?.uid ?: return
-
-        println("UID ACTUAL MIS PUBLICACIONES: ${FirebaseAuth.getInstance().currentUser?.uid}")
-
-        println("UID ACTUAL MIS PUBLICACIONES: $uid")
+        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
 
         db.collection("publicaciones")
             .whereEqualTo("uidAutor", uid)
-
-            //.orderBy("fecha")
             .get()
             .addOnSuccessListener { result ->
-
-                println("CANTIDAD ENCONTRADA: ${result.size()}")
 
                 val lista = result.map {
                     it.toObject(Publicacion::class.java).copy(id = it.id)
@@ -92,29 +93,49 @@ class ComunidadFragment : Fragment(R.layout.fragment_comunidad) {
                 recyclerMisPublicaciones.adapter =
                     MisPublicacionesAdapter(lista)
             }
-            .addOnFailureListener { e ->
-                println("ERROR MIS PUBLICACIONES: ${e.message}")
-            }
     }
+
     private fun cargarComunidad() {
 
-        val auth = FirebaseAuth.getInstance()
-        val uid = auth.currentUser?.uid ?: return
+        val textoBusqueda = etBuscarNombre.text.toString().trim()
 
-        db.collection("publicaciones")
-            .orderBy("prioridadEstado")
-            .orderBy("fecha", com.google.firebase.firestore.Query.Direction.DESCENDING)
-            .get()
+        var query: Query = db.collection("publicaciones")
+
+        if (filtroEstadoActual != null) {
+            // 🔹 Cuando hay filtro por estado
+            query = query
+                .whereEqualTo("estado", filtroEstadoActual)
+                .orderBy("fecha", Query.Direction.DESCENDING)
+        } else {
+            // 🔹 Cuando mostramos TODAS
+            query = query
+                .orderBy("prioridadEstado")
+                .orderBy("fecha", Query.Direction.DESCENDING)
+        }
+
+        query.get()
             .addOnSuccessListener { result ->
 
-                val lista = result.map {
+                var lista = result.map {
                     it.toObject(Publicacion::class.java).copy(id = it.id)
                 }
+
+                // 🔹 Filtro búsqueda en memoria (no en Firestore)
+                if (textoBusqueda.isNotEmpty()) {
+                    lista = lista.filter {
+                        it.nombreComun
+                            ?.contains(textoBusqueda, ignoreCase = true) == true
+                    }
+                }
+
+                println("RESULTADOS FILTRO: ${lista.size}")
+                println("ESTADO FILTRO: $filtroEstadoActual")
 
                 recyclerComunidad.adapter =
                     ComunidadAdapter(lista)
             }
+            .addOnFailureListener {
+                println("ERROR FILTRO: ${it.message}")
+            }
     }
-
-
 }

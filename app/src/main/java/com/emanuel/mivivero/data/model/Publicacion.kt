@@ -11,5 +11,6 @@ data class Publicacion(
     val nombreCientifico: String? = null,
     val identificadaPorUid: String? = null,
     val identificadaPorEmail: String? = null,
-    val prioridadEstado: Int = 0
+    val prioridadEstado: Int = 0,
+    val fecha: com.google.firebase.Timestamp? = null
 )
