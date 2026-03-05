@@ -12,12 +12,14 @@ import com.emanuel.mivivero.R
 import com.emanuel.mivivero.data.model.Publicacion
 
 class ComunidadFeedAdapter(
-    private val misPublicaciones: List<Publicacion>,
-    private val carruselesComunidad: List<List<Publicacion>>,
+    private var misPublicaciones: List<Publicacion>,
+    private var carruselesComunidad: List<List<Publicacion>>,
     private val onFiltroTodas: () -> Unit,
     private val onFiltroPendientes: () -> Unit,
     private val onFiltroIdentificadas: () -> Unit,
     private val onBuscar: (String) -> Unit
+
+
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     companion object {
@@ -109,7 +111,7 @@ class ComunidadFeedAdapter(
 
 
         holder: RecyclerView.ViewHolder,
-        position: Int
+         position: Int
     ) {
 
         when (holder) {
@@ -225,5 +227,16 @@ class ComunidadFeedAdapter(
 
         val recycler: RecyclerView =
             view.findViewById(R.id.recyclerCarruselComunidad)
+    }
+
+    fun updateData(
+        nuevasMisPublicaciones: List<Publicacion>,
+        nuevosCarruseles: List<List<Publicacion>>
+    ) {
+
+        misPublicaciones = nuevasMisPublicaciones
+        carruselesComunidad = nuevosCarruseles
+
+        notifyDataSetChanged()
     }
 }

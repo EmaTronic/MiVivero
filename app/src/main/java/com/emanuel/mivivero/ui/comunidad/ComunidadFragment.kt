@@ -12,16 +12,17 @@ import com.emanuel.mivivero.R
 import com.emanuel.mivivero.data.model.Publicacion
 import com.emanuel.mivivero.ui.comunidad.adapter.ComunidadFeedAdapter
 
+
+
+
 class ComunidadFragment : Fragment(R.layout.fragment_comunidad) {
 
     private val db = FirebaseFirestore.getInstance()
-
     private lateinit var recyclerFeed: RecyclerView
+    private lateinit var feedAdapter: ComunidadFeedAdapter
 
     private var listaMisPublicaciones: List<Publicacion> = emptyList()
-
     private var listaComunidadCompleta: List<Publicacion> = emptyList()
-
     private var filtroEstadoActual: String? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -32,6 +33,34 @@ class ComunidadFragment : Fragment(R.layout.fragment_comunidad) {
         recyclerFeed.layoutManager =
             LinearLayoutManager(requireContext())
 
+        // Crear adapter UNA sola vez
+        feedAdapter = ComunidadFeedAdapter(
+            misPublicaciones = listaMisPublicaciones,
+            carruselesComunidad = emptyList(),
+
+            onFiltroTodas = {
+                filtroEstadoActual = null
+                aplicarFiltros()
+            },
+
+            onFiltroPendientes = {
+                filtroEstadoActual = "pendiente"
+                aplicarFiltros()
+            },
+
+            onFiltroIdentificadas = {
+                filtroEstadoActual = "identificada"
+                aplicarFiltros()
+            },
+
+            onBuscar = { texto ->
+                aplicarFiltros(texto)
+            }
+        )
+
+        recyclerFeed.adapter = feedAdapter
+
+        // Cargar datos desde Firestore
         cargarMisPublicaciones()
         cargarComunidad()
     }
@@ -94,33 +123,9 @@ class ComunidadFragment : Fragment(R.layout.fragment_comunidad) {
 
         val carruseles = lista.chunked(8)
 
-        val adapter = ComunidadFeedAdapter(
-            misPublicaciones = listaMisPublicaciones,
-            carruselesComunidad = carruseles,
-
-            onFiltroTodas = {
-
-                filtroEstadoActual = null
-                aplicarFiltros()
-            },
-
-            onFiltroPendientes = {
-
-                filtroEstadoActual = "pendiente"
-                aplicarFiltros()
-            },
-
-            onFiltroIdentificadas = {
-
-                filtroEstadoActual = "identificada"
-                aplicarFiltros()
-            },
-
-            onBuscar = { texto ->
-
-                aplicarFiltros(texto)
-            }
+        feedAdapter.updateData(
+            listaMisPublicaciones,
+            carruseles
         )
-        recyclerFeed.adapter = adapter
     }
 }
