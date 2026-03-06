@@ -58,4 +58,9 @@
     </string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="comunidad_sin_elementos">No hay elementos para mostrar.</string>
+    <string name="comunidad_autor">por %1$s</string>
+
+
 </resources>
