@@ -9,7 +9,6 @@ import com.emanuel.mivivero.data.db.dao.PublicacionAlbumDao
 import com.emanuel.mivivero.data.db.dao.UsuarioDao
 import com.emanuel.mivivero.data.db.entity.UsuarioEntity
 import com.emanuel.mivivero.data.local.dao.AlbumPlantaDao
-
 import com.emanuel.mivivero.data.local.dao.FotoDao
 import com.emanuel.mivivero.data.local.dao.PlantaDao
 import com.emanuel.mivivero.data.local.entity.AlbumEntity
@@ -25,9 +24,10 @@ import com.emanuel.mivivero.data.local.entity.PublicacionAlbumEntity
         AlbumPlantaEntity::class,
         FotoEntity::class,
         UsuarioEntity::class,
-        PublicacionAlbumEntity::class
+        PublicacionAlbumEntity::class,
+        Lugar::class
     ],
-    version = 4,
+    version = 5,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -38,8 +38,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun albumPlantaDao(): AlbumPlantaDao
     abstract fun usuarioDao(): UsuarioDao
     abstract fun publicacionAlbumDao(): PublicacionAlbumDao
-
-
+    abstract fun lugarDao(): LugarDao
 
     companion object {
 

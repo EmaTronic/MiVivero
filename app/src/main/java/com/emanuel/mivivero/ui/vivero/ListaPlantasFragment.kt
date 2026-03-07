@@ -14,6 +14,7 @@ import com.emanuel.mivivero.data.model.Planta
 import com.emanuel.mivivero.databinding.FragmentListaPlantasBinding
 import androidx.core.widget.addTextChangedListener
 import android.view.inputmethod.InputMethodManager
+import android.widget.ArrayAdapter
 import com.emanuel.mivivero.ui.albumes.AgregarPlantaAlbumDialog
 
 
@@ -28,6 +29,7 @@ class ListaPlantasFragment : Fragment(R.layout.fragment_lista_plantas) {
     private var listaOriginal: List<Planta> = emptyList()
     private lateinit var adapter: PlantaAdapter
     private var ordenAZActivo = false
+    private var filtroLugarId: Int? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -113,7 +115,29 @@ class ListaPlantasFragment : Fragment(R.layout.fragment_lista_plantas) {
 
         viewModel.plantas.observe(viewLifecycleOwner) { lista ->
             listaOriginal = lista
-            aplicarOrdenYFiltro("")
+            aplicarOrdenYFiltro(binding.etBuscarPlantas.text.toString())
+        }
+
+        viewModel.lugares.observe(viewLifecycleOwner) { lugares ->
+            val opciones = mutableListOf("Mostrar todas")
+            opciones.addAll(lugares.map { "${it.icono} ${it.nombre}" })
+
+            val adapterFiltro = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, opciones)
+            adapterFiltro.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            binding.spFiltroLugar.adapter = adapterFiltro
+
+            if (binding.spFiltroLugar.selectedItemPosition == -1) {
+                binding.spFiltroLugar.setSelection(0)
+            }
+
+            binding.spFiltroLugar.onItemSelectedListener = object : android.widget.AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(parent: android.widget.AdapterView<*>?, view: View?, position: Int, id: Long) {
+                    filtroLugarId = if (position == 0) null else lugares[position - 1].id
+                    aplicarOrdenYFiltro(binding.etBuscarPlantas.text.toString())
+                }
+
+                override fun onNothingSelected(parent: android.widget.AdapterView<*>?) = Unit
+            }
         }
 
         // ================= BUSCADOR =================
@@ -169,6 +193,10 @@ class ListaPlantasFragment : Fragment(R.layout.fragment_lista_plantas) {
                         (it.especie?.lowercase()?.contains(filtro) == true)
             }
         }
+
+        lista = filtroLugarId?.let { idLugar ->
+            lista.filter { it.lugarId == idLugar }
+        } ?: lista
 
         if (ordenAZActivo) {
             lista = lista.sortedWith(

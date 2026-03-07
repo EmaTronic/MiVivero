@@ -8,10 +8,11 @@ object PlantaMapper {
     fun toEntity(model: Planta): PlantaEntity {
         return PlantaEntity(
             id = model.id,
-            numeroPlanta = model.numeroPlanta,   // 🔥 CLAVE
+            numeroPlanta = model.numeroPlanta,
             familia = model.familia,
             especie = model.especie,
             lugar = model.lugar,
+            lugarId = model.lugarId,
             fechaIngreso = model.fechaIngreso,
             cantidad = model.cantidad,
             aLaVenta = model.aLaVenta,
@@ -24,10 +25,11 @@ object PlantaMapper {
     fun toModel(entity: PlantaEntity): Planta {
         return Planta(
             id = entity.id,
-            numeroPlanta = entity.numeroPlanta,  // 🔥 CLAVE
+            numeroPlanta = entity.numeroPlanta,
             familia = entity.familia,
             especie = entity.especie,
             lugar = entity.lugar,
+            lugarId = entity.lugarId,
             fechaIngreso = entity.fechaIngreso,
             cantidad = entity.cantidad,
             aLaVenta = entity.aLaVenta,

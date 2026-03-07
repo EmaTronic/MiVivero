@@ -30,6 +30,7 @@ class PlantaAdapter(
         val txtFamiliaEspecie: TextView =
             itemView.findViewById(R.id.txtFamiliaEspecie)
         val txtCantidad: TextView = itemView.findViewById(R.id.txtCantidad)
+        val txtLugarIcono: TextView = itemView.findViewById(R.id.txtLugarIcono)
         val txtVenta: TextView = itemView.findViewById(R.id.txtVenta)
     }
 
@@ -73,6 +74,13 @@ class PlantaAdapter(
                     R.color.text_primary
                 )
             )
+        }
+
+        if (!planta.lugarIcono.isNullOrBlank()) {
+            holder.txtLugarIcono.visibility = View.VISIBLE
+            holder.txtLugarIcono.text = planta.lugarIcono
+        } else {
+            holder.txtLugarIcono.visibility = View.GONE
         }
 
         // 💰 Badge venta (solo visible si está en venta)
