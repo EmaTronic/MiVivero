@@ -228,19 +228,30 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnVolverEditarAlbum"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginBottom="16dp"
-            android:paddingStart="20dp"
-            android:paddingEnd="20dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="12dp"
             android:visibility="gone"
-            android:backgroundTint="@color/teal_light"
             android:text="Finalizar agregar plantas"
+            android:textAllCaps="false"
             android:textColor="@color/teal_primary"
-            app:cornerRadius="16dp"
+            android:textSize="17sp"
+            android:textStyle="bold"
+
+            app:icon="@drawable/ic_check"
+            app:iconGravity="textStart"
+            app:iconPadding="8dp"
+
+            app:backgroundTint="@android:color/white"
+            app:cornerRadius="18dp"
+            app:strokeColor="@color/teal_primary"
+            app:strokeWidth="2dp"
+
+            app:layout_constraintBottom_toTopOf="@id/btnAgregarPlanta"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+            app:layout_constraintEnd_toEndOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
