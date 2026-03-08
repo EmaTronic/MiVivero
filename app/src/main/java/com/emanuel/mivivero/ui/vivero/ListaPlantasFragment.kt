@@ -1,7 +1,12 @@
 package com.emanuel.mivivero.ui.vivero
 
 import android.content.Context
+import android.graphics.Color
+import android.graphics.Typeface
 import android.os.Bundle
+import android.text.Editable
+import android.text.Spannable
+import android.text.SpannableString
 import android.view.View
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
@@ -16,9 +21,17 @@ import androidx.core.widget.addTextChangedListener
 import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import com.emanuel.mivivero.ui.albumes.AgregarPlantaAlbumDialog
+import android.text.TextWatcher
+import android.text.style.ForegroundColorSpan
+import android.text.style.StyleSpan
+import android.view.inputmethod.EditorInfo
+import androidx.core.widget.doOnTextChanged
+
 
 
 class ListaPlantasFragment : Fragment(R.layout.fragment_lista_plantas) {
+
+
 
     private var albumId: Long = -1L
     private var _binding: FragmentListaPlantasBinding? = null
@@ -149,14 +162,6 @@ class ListaPlantasFragment : Fragment(R.layout.fragment_lista_plantas) {
             (binding.chipGroupLugares.getChildAt(0) as? com.google.android.material.chip.Chip)?.isChecked = true
         }
 
-        // ================= BUSCADOR =================
-
-        // ================= BUSCADOR =================
-
-        binding.etBuscarPlantas.addTextChangedListener { texto ->
-            aplicarOrdenYFiltro(texto?.toString().orEmpty())
-        }
-
         // ================= BOTÓN A-Z =================
 
         binding.btnOrdenarAZ.setOnClickListener {
@@ -178,6 +183,65 @@ class ListaPlantasFragment : Fragment(R.layout.fragment_lista_plantas) {
         binding.btnVolverEditarAlbum.setOnClickListener {
             findNavController().popBackStack()
         }
+
+
+        binding.etBuscarPlantas.doOnTextChanged { text, _, _, _ ->
+
+            val query = text.toString()
+
+            aplicarOrdenYFiltro(query)
+
+            val cantidad = adapter.itemCount
+
+            if (query.isNotEmpty()) {
+
+                binding.tvResultadosBusqueda.visibility = View.VISIBLE
+                binding.tvResultadosBusqueda.text =
+                    if (cantidad == 1) "1 resultado"
+                    else "$cantidad resultados"
+
+                binding.etBuscarPlantas.hint = "Buscar en resultados"
+
+                binding.scrollFiltros.animate()
+                    .alpha(0f)
+                    .setDuration(150)
+                    .withEndAction { binding.scrollFiltros.visibility = View.GONE }
+
+            } else {
+
+                binding.tvResultadosBusqueda.visibility = View.GONE
+
+                binding.etBuscarPlantas.hint = "Buscar plantas"
+
+                binding.scrollFiltros.visibility = View.VISIBLE
+                binding.scrollFiltros.animate().alpha(1f).setDuration(150)
+            }
+
+            binding.recyclerPlantas.scrollToPosition(0)
+        }
+
+        binding.etBuscarPlantas.setOnEditorActionListener { v, actionId, _ ->
+
+            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+
+                val texto = binding.etBuscarPlantas.text.toString()
+
+                aplicarOrdenYFiltro(texto)
+
+                val imm = requireContext()
+                    .getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+
+                imm.hideSoftInputFromWindow(v.windowToken, 0)
+
+                binding.etBuscarPlantas.clearFocus()
+
+                true
+            } else {
+                false
+            }
+        }
+
+
     }
 
 
@@ -195,12 +259,22 @@ class ListaPlantasFragment : Fragment(R.layout.fragment_lista_plantas) {
         val filtro = texto.trim().lowercase()
 
         var lista = if (filtro.isEmpty()) {
+
             listaOriginal
+
         } else {
-            listaOriginal.filter {
+
+            val empiezan = listaOriginal.filter {
+                it.familia.lowercase().startsWith(filtro) ||
+                        (it.especie?.lowercase()?.startsWith(filtro) == true)
+            }
+
+            val contienen = listaOriginal.filter {
                 it.familia.lowercase().contains(filtro) ||
                         (it.especie?.lowercase()?.contains(filtro) == true)
             }
+
+            (empiezan + contienen).distinct()
         }
 
         lista = filtroLugarId?.let { idLugar ->
@@ -214,8 +288,10 @@ class ListaPlantasFragment : Fragment(R.layout.fragment_lista_plantas) {
             )
         }
 
+        adapter.queryActual = filtro
         adapter.actualizarLista(lista)
     }
+
 
     private fun mostrarDialogoCantidadPrecio(planta: Planta) {
         AgregarPlantaAlbumDialog(planta)

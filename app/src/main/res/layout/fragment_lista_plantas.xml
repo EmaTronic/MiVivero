@@ -44,7 +44,8 @@
                 android:hint="Buscar plantas"
                 app:boxBackgroundMode="none"
                 app:startIconDrawable="@drawable/ic_search"
-                app:startIconTint="@color/teal_primary">
+                app:startIconTint="@color/teal_primary"
+                app:endIconMode="clear_text">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etBuscarPlantas"
@@ -55,6 +56,7 @@
                     android:textSize="15sp"
                     android:textColor="@color/text_primary"
                     android:background="@android:color/transparent"
+                    android:singleLine="true"
                     android:imeOptions="actionSearch"/>
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -100,6 +102,19 @@
                 app:chipSpacingHorizontal="8dp"/>
 
         </HorizontalScrollView>
+
+        <TextView
+            android:id="@+id/tvResultadosBusqueda"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0 resultados"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@color/text_primary"
+            android:visibility="gone"
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@id/scrollFiltros"
+            app:layout_constraintStart_toStartOf="parent"/>
 
         <!-- Botón agregar planta -->
 
@@ -203,7 +218,7 @@
             android:layout_marginTop="12dp"
             android:clipToPadding="false"
             android:paddingBottom="120dp"
-            app:layout_constraintTop_toBottomOf="@id/scrollFiltros"
+            app:layout_constraintTop_toBottomOf="@id/tvResultadosBusqueda"
             app:layout_constraintBottom_toTopOf="@id/btnAgregarPlanta"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
