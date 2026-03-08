@@ -119,25 +119,34 @@ class ListaPlantasFragment : Fragment(R.layout.fragment_lista_plantas) {
         }
 
         viewModel.lugares.observe(viewLifecycleOwner) { lugares ->
-            val opciones = mutableListOf("Mostrar todas")
+
+            binding.chipGroupLugares.removeAllViews()
+
+            val opciones = mutableListOf("🌿 Mostrar todas")
             opciones.addAll(lugares.map { "${it.icono} ${it.nombre}" })
 
-            val adapterFiltro = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, opciones)
-            adapterFiltro.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            binding.spFiltroLugar.adapter = adapterFiltro
+            opciones.forEachIndexed { index, texto ->
 
-            if (binding.spFiltroLugar.selectedItemPosition == -1) {
-                binding.spFiltroLugar.setSelection(0)
-            }
+                val chip = com.google.android.material.chip.Chip(requireContext()).apply {
 
-            binding.spFiltroLugar.onItemSelectedListener = object : android.widget.AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(parent: android.widget.AdapterView<*>?, view: View?, position: Int, id: Long) {
-                    filtroLugarId = if (position == 0) null else lugares[position - 1].id
-                    aplicarOrdenYFiltro(binding.etBuscarPlantas.text.toString())
+                    this.text = texto
+                    isCheckable = true
+                    textSize = 15f
+                    setPadding(20,10,20,10)
+
+                    setOnClickListener {
+
+                        filtroLugarId = if (index == 0) null else lugares[index - 1].id
+                        aplicarOrdenYFiltro(binding.etBuscarPlantas.text.toString())
+
+                    }
                 }
 
-                override fun onNothingSelected(parent: android.widget.AdapterView<*>?) = Unit
+                binding.chipGroupLugares.addView(chip)
             }
+
+            // seleccionar "mostrar todas"
+            (binding.chipGroupLugares.getChildAt(0) as? com.google.android.material.chip.Chip)?.isChecked = true
         }
 
         // ================= BUSCADOR =================

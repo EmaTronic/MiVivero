@@ -19,6 +19,8 @@ import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import java.io.File
+import com.google.android.material.snackbar.Snackbar
+import androidx.navigation.fragment.findNavController
 
 class IdentificarFragment : Fragment() {
 
@@ -178,17 +180,27 @@ class IdentificarFragment : Fragment() {
                 db.collection("publicaciones")
                     .add(publicacion)
                     .addOnSuccessListener {
-                        tvResultado.text = "Publicación subida correctamente"
+
                         etObservacion.text.clear()
+
+                        Snackbar.make(
+                            requireActivity().findViewById(android.R.id.content),
+                            "Ir a comunidad para ver los resultados",
+                            Snackbar.LENGTH_LONG
+                        ).setAction("Ir a comunidad") {
+
+                            findNavController().navigate(R.id.comunidadFragment)
+
+                        }.show()
+
                     }
                     .addOnFailureListener {
                         tvResultado.text = "Error guardando publicación"
                     }
-            }
-            .addOnFailureListener {
-                tvResultado.text = "Error subiendo imagen"
+
             }
     }
+
 
 
     private fun comprimirImagen(uri: Uri): Uri {
