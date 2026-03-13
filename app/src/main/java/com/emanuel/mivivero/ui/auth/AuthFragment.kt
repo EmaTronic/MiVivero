@@ -10,6 +10,7 @@ import com.emanuel.mivivero.databinding.FragmentAuthBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import com.emanuel.mivivero.data.firebase.UsuarioRepository
 
 class AuthFragment : Fragment(R.layout.fragment_auth) {
 
@@ -26,6 +27,8 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
 
         binding.btnEnviarLink.setOnClickListener {
 
+            binding.btnEnviarLink.isEnabled = false
+
             val email = binding.etEmail.text.toString().trim()
 
             if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
@@ -41,7 +44,7 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
 
         val actionCodeSettings =
             com.google.firebase.auth.ActionCodeSettings.newBuilder()
-                .setUrl("https://mivivero-ematroniq.web.app")
+                .setUrl("https://mivivero-ematroniq.firebaseapp.com")
 
                 .setHandleCodeInApp(true)
                 .setAndroidPackageName(
@@ -54,7 +57,12 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
         auth.sendSignInLinkToEmail(email, actionCodeSettings)
             .addOnCompleteListener { task ->
 
+                binding.btnEnviarLink.isEnabled = true
+
+
                 if (task.isSuccessful) {
+
+                    UsuarioRepository.crearUsuarioSiNoExiste()
 
                     requireActivity()
                         .getSharedPreferences("auth", 0)

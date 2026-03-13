@@ -35,9 +35,6 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
-
-
-
         <activity android:name=".ui.home.HomeActivity" />
 
         <activity
@@ -46,34 +43,23 @@
             android:exported="true"
             android:theme="@style/Theme.MiVivero">
 
+            <!-- Lanzador de la app -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
-        </activity>
-
-        <activity android:name=".ui.auth.LoginActivity" />
-
-
-
-
-        <!-- MAIN ACTIVITY
-        <activity
-            android:name=".MainActivity"
-            android:exported="true"
-            android:theme="@style/Theme.MiVivero">
-
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-
-
+            <!-- Firebase Email Link -->
             <intent-filter android:autoVerify="true">
+
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:scheme="https"
+                    android:host="mivivero-ematroniq.firebaseapp.com" />
 
                 <data
                     android:scheme="https"
@@ -82,9 +68,6 @@
             </intent-filter>
 
         </activity>
-
-        -->
-
 
     </application>
 

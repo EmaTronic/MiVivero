@@ -102,6 +102,23 @@ class IdentificarFragment : Fragment() {
 
         btnEnviar.setOnClickListener {
 
+            val auth = FirebaseAuth.getInstance()
+
+            if (auth.currentUser == null) {
+
+                Snackbar.make(
+                    requireView(),
+                    "Debes iniciar sesión para publicar",
+                    Snackbar.LENGTH_LONG
+                ).setAction("Ingresar") {
+
+                    findNavController().navigate(R.id.authFragment)
+
+                }.show()
+
+                return@setOnClickListener
+            }
+
             if (!::photoUri.isInitialized) {
                 tvResultado.text = "Tomá una foto primero"
                 return@setOnClickListener
@@ -161,16 +178,26 @@ class IdentificarFragment : Fragment() {
             .addOnSuccessListener { downloadUri ->
 
                 val auth = FirebaseAuth.getInstance()
+
+                val currentUser = auth.currentUser
+                if (currentUser == null) {
+                    tvResultado.text = "Debes iniciar sesión"
+                    return@addOnSuccessListener
+                }
+
+                val uid = currentUser.uid
+                val email = currentUser.email
+
                 val db = FirebaseFirestore.getInstance()
 
                 val publicacion = hashMapOf(
-                    "uidAutor" to auth.currentUser?.uid,
+                    "uidAutor" to uid,
                     "imageUrl" to downloadUri.toString(),
                     "observacion" to observacion,
                     "fecha" to FieldValue.serverTimestamp(),
                     "estado" to "pendiente",
                     "prioridadEstado" to 0,
-                    "emailAutor" to auth.currentUser?.email,
+                    "emailAutor" to email,
                     "nombreComun" to null,
                     "nombreCientifico" to null,
                     "identificadaPorUid" to null,

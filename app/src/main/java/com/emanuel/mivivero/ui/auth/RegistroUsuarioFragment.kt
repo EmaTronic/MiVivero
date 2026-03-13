@@ -154,8 +154,13 @@ class RegistroUsuarioFragment :
 
             FirebaseAuth.getInstance().signOut()
 
-            startActivity(Intent(requireContext(), LoginActivity::class.java))
-            requireActivity().finish()
+            Toast.makeText(
+                requireContext(),
+                "Sesión cerrada",
+                Toast.LENGTH_SHORT
+            ).show()
+
+            findNavController().popBackStack(R.id.albumesFragment, false)
         }
     }
 

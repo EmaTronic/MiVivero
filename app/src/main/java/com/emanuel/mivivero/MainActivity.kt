@@ -1,13 +1,12 @@
 package com.emanuel.mivivero
 
-import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.emanuel.mivivero.databinding.ActivityMainBinding
-import com.emanuel.mivivero.ui.auth.LoginActivity
 import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : AppCompatActivity() {
@@ -17,13 +16,41 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-
         val auth = FirebaseAuth.getInstance()
+        val intentData = intent?.data
 
-        if (auth.currentUser == null) {
-            startActivity(Intent(this, LoginActivity::class.java))
-            finish()
+        if (intentData != null && auth.isSignInWithEmailLink(intentData.toString())) {
+
+            val email = getSharedPreferences("auth", MODE_PRIVATE)
+                .getString("email", null)
+
+            if (email != null) {
+
+                auth.signInWithEmailLink(email, intentData.toString())
+                    .addOnCompleteListener { task ->
+
+                        if (task.isSuccessful) {
+
+                            Toast.makeText(
+                                this,
+                                "Sesión iniciada",
+                                Toast.LENGTH_LONG
+                            ).show()
+
+                        } else {
+
+                            Toast.makeText(
+                                this,
+                                "Error autenticando",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+                    }
+            }
         }
+
+
+
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -43,10 +70,6 @@ class MainActivity : AppCompatActivity() {
         // Click icono usuario
         binding.btnUsuario.setOnClickListener {
 
-            val navController =
-                (supportFragmentManager.findFragmentById(R.id.navHost) as NavHostFragment)
-                    .navController
-
             navController.navigate(
                 R.id.registroUsuarioFragment,
                 null,
@@ -55,7 +78,6 @@ class MainActivity : AppCompatActivity() {
                     .build()
             )
         }
-
 
         // Click logo (Acerca de)
         binding.imgLogoToolbar.setOnClickListener {
