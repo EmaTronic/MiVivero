@@ -9,6 +9,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -17,6 +18,7 @@ import com.emanuel.mivivero.data.model.EstadoAlbum
 import com.emanuel.mivivero.data.model.PlantaAlbum
 import com.emanuel.mivivero.databinding.DialogAgregarAlbumBinding
 import com.emanuel.mivivero.databinding.FragmentAlbumDetalleBinding
+import kotlinx.coroutines.launch
 
 class AlbumDetalleFragment : Fragment(R.layout.fragment_album_detalle) {
 
@@ -53,7 +55,47 @@ class AlbumDetalleFragment : Fragment(R.layout.fragment_album_detalle) {
                     return@finalizarAlbum
                 }
 
-                findNavController().popBackStack()
+                lifecycleScope.launch {
+
+                    val plantas =
+                        viewModel.obtenerPlantasDelAlbum(albumId).value ?: emptyList()
+
+                    val portadaUri =
+                        com.emanuel.mivivero.ui.utils.AlbumPublisher.generarPortadaAlbum(
+                            requireContext(),
+                            albumId,
+                            binding.txtNombreAlbum.text.toString(),
+                            1,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null
+                        )
+
+                    val fotosUris =
+                        com.emanuel.mivivero.ui.utils.AlbumPublisher.generarImagenesAlbum(
+                            requireContext(),
+                            plantas,
+                            binding.txtNombreAlbum.text.toString()
+                        )
+
+                    com.emanuel.mivivero.ui.utils.FirebaseAlbumPublisher.publicarAlbum(
+                        albumId = albumId.toString(),
+                        titulo = binding.txtNombreAlbum.text.toString(),
+                        portadaUri = portadaUri,
+                        fotos = fotosUris
+                    )
+
+                    Toast.makeText(
+                        requireContext(),
+                        "Álbum publicado en comunidad",
+                        Toast.LENGTH_LONG
+                    ).show()
+
+                    findNavController().popBackStack()
+                }
             }
         }
 
@@ -230,17 +272,61 @@ class AlbumDetalleFragment : Fragment(R.layout.fragment_album_detalle) {
     }
     private fun mostrarOpcionesPlanta(planta: PlantaAlbum) {
 
-        // Ejemplo básico
-        Toast.makeText(
-            requireContext(),
-            "Planta: ${planta.nombreCompleto}",
-            Toast.LENGTH_SHORT
-        ).show()
+        val inputCantidad = android.widget.EditText(requireContext())
+        inputCantidad.hint = "Cantidad"
 
-        // Acá podés:
-        // - Mostrar dialog
-        // - Editar cantidad
-        // - Eliminar del álbum
+        androidx.appcompat.app.AlertDialog.Builder(requireContext())
+            .setTitle("Reservar ${planta.nombreCompleto}")
+            .setView(inputCantidad)
+            .setPositiveButton("Reservar") { _, _ ->
+
+                val cantidad = inputCantidad.text.toString().toIntOrNull()
+
+                if (cantidad == null || cantidad <= 0) {
+                    Toast.makeText(
+                        requireContext(),
+                        "Cantidad inválida",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    return@setPositiveButton
+                }
+
+                val db = com.google.firebase.firestore.FirebaseFirestore.getInstance()
+
+                val reserva = hashMapOf(
+
+                    "uidAutor" to com.google.firebase.auth.FirebaseAuth
+                        .getInstance().uid,
+
+                    "emailAutor" to com.google.firebase.auth.FirebaseAuth
+                        .getInstance().currentUser?.email,
+
+                    "tipo" to "reserva",
+
+                    "plantaIndex" to planta.plantaId,
+
+                    "cantidad" to cantidad,
+
+                    "texto" to "Reservo $cantidad unidades de la planta ${planta.plantaId}",
+
+                    "estado" to "pendiente",
+
+                    "fecha" to com.google.firebase.firestore.FieldValue.serverTimestamp()
+                )
+
+                db.collection("albumsFeed")
+                    .document(albumId.toString())
+                    .collection("comentarios")
+                    .add(reserva)
+
+                Toast.makeText(
+                    requireContext(),
+                    "Reserva enviada",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+            .setNegativeButton("Cancelar", null)
+            .show()
     }
 
 

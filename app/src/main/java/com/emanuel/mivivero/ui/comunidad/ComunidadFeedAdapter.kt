@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.emanuel.mivivero.R
+import androidx.navigation.findNavController
 
 
 class ComunidadFeedAdapter(
@@ -289,6 +290,20 @@ private class HorizontalContentAdapter :
                 .load(item.portadaUrl)
                 .placeholder(R.drawable.bg_album_placeholder)
                 .into(imgPortada)
+
+            itemView.setOnClickListener {
+
+                val bundle = android.os.Bundle().apply {
+                    putString("albumId", item.stableId)
+                }
+
+                itemView.findNavController()
+
+                    .navigate(
+                        R.id.action_comunidadFragment_to_detallePublicacionFragment,
+                        bundle
+                    )
+            }
         }
     }
 }

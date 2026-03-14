@@ -147,21 +147,24 @@ class ComunidadFragment : Fragment(R.layout.fragment_comunidad) {
 
     private fun cargarAlbumes() {
 
-        db.collection("albumes")
+        db.collection("albumsFeed")
+            .orderBy("fechaPublicacion", Query.Direction.DESCENDING)
             .limit(20)
             .get()
             .addOnSuccessListener { result ->
 
-                listaAlbumes = result.mapIndexed { index, doc ->
+                listaAlbumes = result.map { doc ->
 
                     HorizontalContentItem.AlbumCard(
-                        stableId = doc.id.ifBlank { "album-$index" },
-                        titulo = doc.getString("nombre")
-                            .orEmpty()
-                            .ifBlank { "Álbum ${index + 1}" },
-                        descripcion = doc.getString("descripcion")
-                            .orEmpty()
-                            .ifBlank { "Sin descripción" },
+
+                        stableId = doc.id,
+
+                        titulo = doc.getString("titulo")
+                            ?: "Álbum",
+
+                        descripcion =
+                            "${doc.getLong("cantidadPlantas") ?: 0} plantas",
+
                         portadaUrl = doc.getString("portadaUrl")
                     )
                 }
