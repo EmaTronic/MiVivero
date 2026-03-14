@@ -8,10 +8,6 @@ import androidx.fragment.app.Fragment
 import com.emanuel.mivivero.R
 import com.emanuel.mivivero.databinding.FragmentAuthBinding
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
-import com.emanuel.mivivero.data.firebase.UsuarioRepository
-import com.google.firebase.auth.ActionCodeSettings
 
 class AuthFragment : Fragment(R.layout.fragment_auth) {
 
@@ -22,70 +18,51 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        _binding = FragmentAuthBinding.bind(view)
 
-        auth = Firebase.auth
+        _binding = FragmentAuthBinding.bind(view)
+        auth = FirebaseAuth.getInstance()
 
         binding.btnEnviarLink.setOnClickListener {
 
-            binding.btnEnviarLink.isEnabled = false
-
             val email = binding.etEmail.text.toString().trim()
+            val password = binding.etPassword.text.toString().trim()
 
             if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
                 binding.etEmail.error = "Correo inválido"
                 return@setOnClickListener
             }
 
-            enviarLink(email)
+            if (password.length < 6) {
+                binding.etPassword.error = "Mínimo 6 caracteres"
+                return@setOnClickListener
+            }
+
+            registrarUsuario(email, password)
         }
     }
 
-    private fun enviarLink(email: String) {
+    private fun registrarUsuario(email: String, password: String) {
 
-        val actionCodeSettings =
-            ActionCodeSettings.newBuilder()
-                .setUrl("https://mivivero-ematroniq.firebaseapp.com")
-                .setHandleCodeInApp(true)
-                .setAndroidPackageName(
-                    requireContext().packageName,
-                    true,
-                    null
-                )
-                .build()
-
-        auth.sendSignInLinkToEmail(email, actionCodeSettings)
+        auth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
-
-                binding.btnEnviarLink.isEnabled = true
-
 
                 if (task.isSuccessful) {
 
-                    UsuarioRepository.crearUsuarioSiNoExiste()
-
-                    requireActivity()
-                        .getSharedPreferences("auth", 0)
-                        .edit()
-                        .putString("email", email)
-                        .apply()
+                    auth.currentUser?.sendEmailVerification()
 
                     Toast.makeText(
                         requireContext(),
-                        "Link enviado al correo",
+                        "Cuenta creada. Revisa tu correo para verificar.",
                         Toast.LENGTH_LONG
                     ).show()
-
-
-
 
                 } else {
+
                     Toast.makeText(
                         requireContext(),
-                        task.exception?.message ?: "Error desconocido",
+                        task.exception?.message ?: "Error registrando usuario",
                         Toast.LENGTH_LONG
                     ).show()
-
                 }
             }
     }

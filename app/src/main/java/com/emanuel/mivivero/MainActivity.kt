@@ -1,14 +1,11 @@
 package com.emanuel.mivivero
 
-import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.emanuel.mivivero.databinding.ActivityMainBinding
-import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : AppCompatActivity() {
 
@@ -16,9 +13,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        // 👇 manejar login si la app se abrió desde el email
-        handleEmailLink(intent)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -32,6 +26,7 @@ class MainActivity : AppCompatActivity() {
 
         val navController = navHostFragment.navController
 
+        // Bottom navigation
         binding.bottomNav.setupWithNavController(navController)
 
         // botón usuario
@@ -54,45 +49,5 @@ class MainActivity : AppCompatActivity() {
                 .setPositiveButton("Cerrar", null)
                 .show()
         }
-    }
-
-    // 👇 se ejecuta si la app ya estaba abierta
-    override fun onNewIntent(intent: Intent?) {
-        super.onNewIntent(intent)
-        handleEmailLink(intent)
-    }
-
-    private fun handleEmailLink(intent: Intent?) {
-
-        val auth = FirebaseAuth.getInstance()
-        val intentData = intent?.data ?: return
-
-        if (!auth.isSignInWithEmailLink(intentData.toString())) return
-
-        val email = getSharedPreferences("auth", MODE_PRIVATE)
-            .getString("email", null) ?: return
-
-        auth.signInWithEmailLink(email, intentData.toString())
-            .addOnCompleteListener { task ->
-
-                if (task.isSuccessful) {
-
-                    Toast.makeText(
-                        this,
-                        "Sesión iniciada",
-                        Toast.LENGTH_LONG
-                    ).show()
-
-                    intent.data = null   // evita repetir login
-
-                } else {
-
-                    Toast.makeText(
-                        this,
-                        "Error autenticando",
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-            }
     }
 }

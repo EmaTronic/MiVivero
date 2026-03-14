@@ -91,6 +91,7 @@ class RegistroUsuarioFragment :
             val provincia = binding.spProvincia.text.toString().trim()
             val ciudad = binding.spCiudad.text.toString().trim()
             val email = binding.etEmail.text.toString().trim()
+            val password = binding.etPassword.text.toString().trim()
 
             var hayError = false
 
@@ -121,6 +122,14 @@ class RegistroUsuarioFragment :
                 binding.tilEmail.error = null
             }
 
+            // Validación contraseña
+            if (password.length < 6) {
+                binding.tilPassword.error = "Mínimo 6 caracteres"
+                hayError = true
+            } else {
+                binding.tilPassword.error = null
+            }
+
             if (hayError) return@setOnClickListener
 
             val usuario = UsuarioEntity(
@@ -134,17 +143,36 @@ class RegistroUsuarioFragment :
                 fechaRegistro = System.currentTimeMillis()
             )
 
-            viewLifecycleOwner.lifecycleScope.launch {
-                viewModel.guardarUsuario(usuario)
+            val auth = FirebaseAuth.getInstance()
 
-                Toast.makeText(
-                    requireContext(),
-                    "Usuario guardado correctamente",
-                    Toast.LENGTH_SHORT
-                ).show()
+            auth.createUserWithEmailAndPassword(email, password)
+                .addOnSuccessListener {
 
-                findNavController().popBackStack()
-            }
+                    // enviar verificación
+                    auth.currentUser?.sendEmailVerification()
+
+                    viewLifecycleOwner.lifecycleScope.launch {
+
+                        viewModel.guardarUsuarioSiNoExiste(usuario)
+
+                        Toast.makeText(
+                            requireContext(),
+                            "Cuenta creada. Revisá tu correo para verificar.",
+                            Toast.LENGTH_LONG
+                        ).show()
+
+                        findNavController().popBackStack()
+                    }
+
+                }
+                .addOnFailureListener {
+
+                    Toast.makeText(
+                        requireContext(),
+                        it.message ?: "Error creando usuario",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
         }
 
 

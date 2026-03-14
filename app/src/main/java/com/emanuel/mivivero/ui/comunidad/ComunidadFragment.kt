@@ -135,6 +135,8 @@ class ComunidadFragment : Fragment(R.layout.fragment_comunidad) {
             .get()
             .addOnSuccessListener { result ->
 
+                android.util.Log.d("FIRESTORE", "docs: ${result.size()}")
+
                 listaComunidadCompleta = result.map { doc ->
                     doc.toObject(Publicacion::class.java).copy(id = doc.id)
                 }

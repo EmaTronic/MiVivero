@@ -51,6 +51,7 @@
 
             <!-- Firebase Email Link -->
             <intent-filter android:autoVerify="true">
+
                 <action android:name="android.intent.action.VIEW"/>
 
                 <category android:name="android.intent.category.DEFAULT"/>
@@ -60,6 +61,7 @@
                     android:scheme="https"
                     android:host="mivivero-ematroniq.firebaseapp.com"
                     android:pathPrefix="/__/auth"/>
+
             </intent-filter>
 
 

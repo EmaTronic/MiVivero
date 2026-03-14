@@ -24,11 +24,8 @@ import androidx.navigation.fragment.findNavController
 
 class IdentificarFragment : Fragment() {
 
-
-
     private lateinit var galleryLauncher: ActivityResultLauncher<String>
     private lateinit var etObservacion: EditText
-
     private lateinit var btnEnviar: Button
     private lateinit var permissionLauncher: ActivityResultLauncher<String>
     private lateinit var imgPreview: ImageView
@@ -36,7 +33,7 @@ class IdentificarFragment : Fragment() {
     private lateinit var btnGaleria: Button
     private lateinit var tvResultado: TextView
 
-    private lateinit var photoUri: Uri
+    private var photoUri: Uri? = null
     private lateinit var cameraLauncher: ActivityResultLauncher<Uri>
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,13 +49,14 @@ class IdentificarFragment : Fragment() {
             }
         }
 
-        // Registrar launcher de cámara
         cameraLauncher = registerForActivityResult(
             ActivityResultContracts.TakePicture()
         ) { success ->
             if (success) {
-                imgPreview.setImageURI(photoUri)
-                tvResultado.text = "Foto capturada correctamente"
+                photoUri?.let {
+                    imgPreview.setImageURI(it)
+                    tvResultado.text = "Foto capturada correctamente"
+                }
             } else {
                 tvResultado.text = "No se pudo capturar la imagen"
             }
@@ -80,10 +78,8 @@ class IdentificarFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+
         val view = inflater.inflate(R.layout.fragment_identificar, container, false)
-
-
-
 
         imgPreview = view.findViewById(R.id.imgPreview)
         btnCamara = view.findViewById(R.id.btnCamara)
@@ -103,23 +99,22 @@ class IdentificarFragment : Fragment() {
         btnEnviar.setOnClickListener {
 
             val auth = FirebaseAuth.getInstance()
+            val user = auth.currentUser
 
-            if (auth.currentUser == null) {
+            if (user == null) {
 
                 Snackbar.make(
                     requireView(),
                     "Debes iniciar sesión para publicar",
                     Snackbar.LENGTH_LONG
                 ).setAction("Ingresar") {
-
                     findNavController().navigate(R.id.authFragment)
-
                 }.show()
 
                 return@setOnClickListener
             }
 
-            if (!::photoUri.isInitialized) {
+            if (photoUri == null) {
                 tvResultado.text = "Tomá una foto primero"
                 return@setOnClickListener
             }
@@ -131,7 +126,25 @@ class IdentificarFragment : Fragment() {
                 return@setOnClickListener
             }
 
-            subirPublicacion(observacion)
+            user.reload().addOnSuccessListener {
+
+                if (!user.isEmailVerified) {
+
+                    Snackbar.make(
+                        requireView(),
+                        "Debes verificar tu correo antes de publicar",
+                        Snackbar.LENGTH_LONG
+                    ).setAction("Reenviar") {
+                        user.sendEmailVerification()
+                    }.show()
+
+                    return@addOnSuccessListener
+                }
+
+                btnEnviar.isEnabled = false
+
+                subirPublicacion(observacion, user.uid, user.email)
+            }
         }
 
         return view
@@ -155,80 +168,69 @@ class IdentificarFragment : Fragment() {
             file
         )
 
-        return photoUri
+        return photoUri!!
     }
 
+    private fun subirPublicacion(
+        observacion: String,
+        uid: String,
+        email: String?
+    ) {
 
-    private fun subirPublicacion(observacion: String) {
+        tvResultado.text = "Iniciando subida..."
+
+        val uri = photoUri ?: return
 
         val storage = FirebaseStorage.getInstance()
         val storageRef = storage.reference
 
-        val fileName = "publicaciones/${System.currentTimeMillis()}.jpg"
+        val fileName = "publicaciones/$uid/${System.currentTimeMillis()}.jpg"
         val fileRef = storageRef.child(fileName)
 
-        val compressedUri = comprimirImagen(photoUri)
+        val compressedUri = comprimirImagen(uri)
+
         fileRef.putFile(compressedUri)
-            .continueWithTask { task ->
-                if (!task.isSuccessful) {
-                    throw task.exception ?: Exception("Error subiendo imagen")
+
+            .addOnSuccessListener {
+
+                tvResultado.text = "Imagen subida correctamente"
+
+                fileRef.downloadUrl.addOnSuccessListener { downloadUri ->
+
+                    tvResultado.text = "URL obtenida"
+
+                    val db = FirebaseFirestore.getInstance()
+
+                    val publicacion = hashMapOf(
+                        "uidAutor" to uid,
+                        "imageUrl" to downloadUri.toString(),
+                        "observacion" to observacion,
+                        "fecha" to FieldValue.serverTimestamp()
+                    )
+
+                    db.collection("publicaciones")
+                        .add(publicacion)
+                        .addOnSuccessListener {
+
+                            tvResultado.text = "PUBLICACIÓN CREADA"
+
+                        }
+                        .addOnFailureListener { e ->
+
+                            tvResultado.text = "ERROR FIRESTORE: ${e.message}"
+
+                        }
+
                 }
-                fileRef.downloadUrl
+
             }
-            .addOnSuccessListener { downloadUri ->
 
-                val auth = FirebaseAuth.getInstance()
+            .addOnFailureListener { e ->
 
-                val currentUser = auth.currentUser
-                if (currentUser == null) {
-                    tvResultado.text = "Debes iniciar sesión"
-                    return@addOnSuccessListener
-                }
-
-                val uid = currentUser.uid
-                val email = currentUser.email
-
-                val db = FirebaseFirestore.getInstance()
-
-                val publicacion = hashMapOf(
-                    "uidAutor" to uid,
-                    "imageUrl" to downloadUri.toString(),
-                    "observacion" to observacion,
-                    "fecha" to FieldValue.serverTimestamp(),
-                    "estado" to "pendiente",
-                    "prioridadEstado" to 0,
-                    "emailAutor" to email,
-                    "nombreComun" to null,
-                    "nombreCientifico" to null,
-                    "identificadaPorUid" to null,
-                    "identificadaPorEmail" to null
-                )
-
-                db.collection("publicaciones")
-                    .add(publicacion)
-                    .addOnSuccessListener {
-
-                        etObservacion.text.clear()
-
-                        Snackbar.make(
-                            requireActivity().findViewById(android.R.id.content),
-                            "Ir a comunidad para ver los resultados",
-                            Snackbar.LENGTH_LONG
-                        ).setAction("Ir a comunidad") {
-
-                            findNavController().navigate(R.id.comunidadFragment)
-
-                        }.show()
-
-                    }
-                    .addOnFailureListener {
-                        tvResultado.text = "Error guardando publicación"
-                    }
+                tvResultado.text = "ERROR STORAGE: ${e.message}"
 
             }
     }
-
-
 
     private fun comprimirImagen(uri: Uri): Uri {
 
@@ -237,7 +239,6 @@ class IdentificarFragment : Fragment() {
 
         inputStream?.close()
 
-        // Redimensionar a ancho máximo 1080px
         val maxWidth = 1080
         val ratio = bitmap.width.toFloat() / bitmap.height.toFloat()
 
@@ -251,7 +252,6 @@ class IdentificarFragment : Fragment() {
             true
         )
 
-        // Crear archivo comprimido
         val file = File(
             requireContext().cacheDir,
             "compressed_${System.currentTimeMillis()}.jpg"
@@ -261,7 +261,7 @@ class IdentificarFragment : Fragment() {
 
         resizedBitmap.compress(
             android.graphics.Bitmap.CompressFormat.JPEG,
-            70, // calidad
+            70,
             outputStream
         )
 
@@ -274,5 +274,4 @@ class IdentificarFragment : Fragment() {
             file
         )
     }
-
 }

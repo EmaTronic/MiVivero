@@ -1,5 +1,6 @@
 package com.emanuel.mivivero.ui.comunidad
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,6 +15,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.emanuel.mivivero.R
+
 
 class ComunidadFeedAdapter(
     private val onToggleSection: (FeedSection) -> Unit,
@@ -249,17 +251,25 @@ private class HorizontalContentAdapter :
 
             val publicacion = item.publicacion
 
-            tvNombre.text = publicacion.nombreComun ?: "Sin nombre"
-            tvEstado.text = publicacion.estado
+
+            Log.d("DEBUG_PUBLICACION", publicacion.toString())
+
+            tvNombre.text = publicacion.nombreComun ?: "Planta"
+            tvEstado.text = publicacion.estado ?: "pendiente"
+
             tvAutor.text =
                 itemView.context.getString(
                     R.string.comunidad_autor,
-                    publicacion.emailAutor
+                    publicacion.emailAutor ?: "usuario"
                 )
+
+            Log.d("GLIDE_URL", publicacion.imageUrl ?: "URL NULL")
 
             Glide.with(itemView)
                 .load(publicacion.imageUrl)
                 .placeholder(R.drawable.ic_planta_placeholder)
+                .error(R.drawable.ic_planta_placeholder)
+                .diskCacheStrategy(com.bumptech.glide.load.engine.DiskCacheStrategy.ALL)
                 .into(imgPlanta)
         }
     }
