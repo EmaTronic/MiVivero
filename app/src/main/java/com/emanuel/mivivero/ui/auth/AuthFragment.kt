@@ -11,6 +11,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.emanuel.mivivero.data.firebase.UsuarioRepository
+import com.google.firebase.auth.ActionCodeSettings
 
 class AuthFragment : Fragment(R.layout.fragment_auth) {
 
@@ -43,9 +44,8 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
     private fun enviarLink(email: String) {
 
         val actionCodeSettings =
-            com.google.firebase.auth.ActionCodeSettings.newBuilder()
+            ActionCodeSettings.newBuilder()
                 .setUrl("https://mivivero-ematroniq.firebaseapp.com")
-
                 .setHandleCodeInApp(true)
                 .setAndroidPackageName(
                     requireContext().packageName,
@@ -75,6 +75,9 @@ class AuthFragment : Fragment(R.layout.fragment_auth) {
                         "Link enviado al correo",
                         Toast.LENGTH_LONG
                     ).show()
+
+
+
 
                 } else {
                     Toast.makeText(

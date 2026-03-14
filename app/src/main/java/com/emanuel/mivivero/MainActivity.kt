@@ -1,5 +1,6 @@
 package com.emanuel.mivivero
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -16,58 +17,24 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val auth = FirebaseAuth.getInstance()
-        val intentData = intent?.data
-
-        if (intentData != null && auth.isSignInWithEmailLink(intentData.toString())) {
-
-            val email = getSharedPreferences("auth", MODE_PRIVATE)
-                .getString("email", null)
-
-            if (email != null) {
-
-                auth.signInWithEmailLink(email, intentData.toString())
-                    .addOnCompleteListener { task ->
-
-                        if (task.isSuccessful) {
-
-                            Toast.makeText(
-                                this,
-                                "Sesión iniciada",
-                                Toast.LENGTH_LONG
-                            ).show()
-
-                        } else {
-
-                            Toast.makeText(
-                                this,
-                                "Error autenticando",
-                                Toast.LENGTH_LONG
-                            ).show()
-                        }
-                    }
-            }
-        }
-
-
-
+        // 👇 manejar login si la app se abrió desde el email
+        handleEmailLink(intent)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Configurar Toolbar como ActionBar
+        // Toolbar
         setSupportActionBar(binding.topAppBar)
 
-        // Obtener NavController
+        // NavController
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.navHost) as NavHostFragment
 
         val navController = navHostFragment.navController
 
-        // Conectar BottomNavigation
         binding.bottomNav.setupWithNavController(navController)
 
-        // Click icono usuario
+        // botón usuario
         binding.btnUsuario.setOnClickListener {
 
             navController.navigate(
@@ -79,7 +46,7 @@ class MainActivity : AppCompatActivity() {
             )
         }
 
-        // Click logo (Acerca de)
+        // logo
         binding.imgLogoToolbar.setOnClickListener {
             AlertDialog.Builder(this)
                 .setTitle("Mi Vivero")
@@ -87,5 +54,45 @@ class MainActivity : AppCompatActivity() {
                 .setPositiveButton("Cerrar", null)
                 .show()
         }
+    }
+
+    // 👇 se ejecuta si la app ya estaba abierta
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        handleEmailLink(intent)
+    }
+
+    private fun handleEmailLink(intent: Intent?) {
+
+        val auth = FirebaseAuth.getInstance()
+        val intentData = intent?.data ?: return
+
+        if (!auth.isSignInWithEmailLink(intentData.toString())) return
+
+        val email = getSharedPreferences("auth", MODE_PRIVATE)
+            .getString("email", null) ?: return
+
+        auth.signInWithEmailLink(email, intentData.toString())
+            .addOnCompleteListener { task ->
+
+                if (task.isSuccessful) {
+
+                    Toast.makeText(
+                        this,
+                        "Sesión iniciada",
+                        Toast.LENGTH_LONG
+                    ).show()
+
+                    intent.data = null   // evita repetir login
+
+                } else {
+
+                    Toast.makeText(
+                        this,
+                        "Error autenticando",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
     }
 }
