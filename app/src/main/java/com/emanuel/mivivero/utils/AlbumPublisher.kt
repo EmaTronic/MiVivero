@@ -155,7 +155,7 @@ object AlbumPublisher {
 
         val uris = mutableListOf<Uri>()
 
-        plantas.forEach { planta ->
+        plantas.forEachIndexed { index, planta ->
 
             val original = try {
                 val inputStream = context.contentResolver.openInputStream(
@@ -170,7 +170,7 @@ object AlbumPublisher {
                 null
             }
 
-            if (original == null) return@forEach
+            if (original == null) return@forEachIndexed
 
             val mutable = original.copy(Bitmap.Config.ARGB_8888, true)
             val canvas = Canvas(mutable)
@@ -178,6 +178,7 @@ object AlbumPublisher {
             val width = mutable.width
             val height = mutable.height
             val padding = width * 0.06f
+
 
             // =============================
             // 🔼 DEGRADADO SUPERIOR
@@ -203,6 +204,7 @@ object AlbumPublisher {
                 topPaint
             )
 
+
             // =============================
             // 🔽 DEGRADADO INFERIOR
             // =============================
@@ -226,6 +228,7 @@ object AlbumPublisher {
                 height.toFloat(),
                 bottomPaint
             )
+
 
             // =============================
             // 🏷 TEXTOS
@@ -251,7 +254,8 @@ object AlbumPublisher {
                 setShadowLayer(6f, 0f, 0f, Color.BLACK)
             }
 
-            // Nombre del álbum (arriba)
+
+            // Nombre del álbum
             canvas.drawText(
                 nombreAlbum,
                 padding,
@@ -259,13 +263,13 @@ object AlbumPublisher {
                 paintAlbum
             )
 
-// =============================
-// 🔽 BLOQUE INFERIOR
-// =============================
+
+            // =============================
+            // BLOQUE INFERIOR
+            // =============================
 
             var y = height * 0.88f
 
-// 🔹 Nombre planta
             canvas.drawText(
                 planta.nombreCompleto,
                 padding,
@@ -273,7 +277,6 @@ object AlbumPublisher {
                 paintNombre
             )
 
-// 🔹 Disponible
             y += width * 0.085f
 
             val disponibleY = y
@@ -285,7 +288,11 @@ object AlbumPublisher {
                 paintInfo
             )
 
-// 🔹 BADGE PRECIO alineado con Disponible
+
+            // =============================
+            // BADGE PRECIO
+            // =============================
+
             val badgeText = "$${planta.precio}"
             val badgePadding = width * 0.025f
             val badgeHeight = width * 0.07f
@@ -320,13 +327,62 @@ object AlbumPublisher {
                 badgeTop + badgeHeight * 0.72f,
                 paintInfo
             )
-            // =============================
-            // 💰 BADGE PRECIO
-            // =============================
+
+
+            // ======================================================
+            // NUMERO DE PLANTA (SIEMPRE AL FINAL)
+            // ======================================================
+
+            val numeroPlanta = index + 1
+
+            val circleRadius = width * 0.125f
+            val cx = width - circleRadius - padding
+            val cy = circleRadius + padding
+
+
+            val blurPaint = Paint().apply {
+                color = Color.parseColor("#55000000")
+                isAntiAlias = true
+            }
+
+            canvas.drawCircle(
+                cx,
+                cy,
+                circleRadius * 1.25f,
+                blurPaint
+            )
+
+            val solidPaint = Paint().apply {
+                color = Color.parseColor("#2E7D32")
+                isAntiAlias = true
+            }
+
+            canvas.drawCircle(
+                cx,
+                cy,
+                circleRadius,
+                solidPaint
+            )
+
+            val paintNumero = Paint().apply {
+                color = Color.WHITE
+                textSize = circleRadius * 1.1f
+                textAlign = Paint.Align.CENTER
+                isFakeBoldText = true
+            }
+
+            val textY = cy + circleRadius * 0.35f
+
+            canvas.drawText(
+                numeroPlanta.toString(),
+                cx,
+                textY,
+                paintNumero
+            )
 
 
             // =============================
-            // 💾 GUARDAR
+            // GUARDAR
             // =============================
 
             val file = File(
