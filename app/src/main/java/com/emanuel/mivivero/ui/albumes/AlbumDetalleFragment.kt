@@ -85,7 +85,8 @@ class AlbumDetalleFragment : Fragment(R.layout.fragment_album_detalle) {
                         albumId = albumId.toString(),
                         titulo = binding.txtNombreAlbum.text.toString(),
                         portadaUri = portadaUri,
-                        fotos = fotosUris
+                        fotos = fotosUris,
+                        plantas = plantas
                     )
 
                     Toast.makeText(

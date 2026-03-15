@@ -1,6 +1,7 @@
 package com.emanuel.mivivero.ui.utils
 
 import android.net.Uri
+import com.emanuel.mivivero.data.model.PlantaAlbum
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
@@ -15,7 +16,8 @@ object FirebaseAlbumPublisher {
         albumId: String,
         titulo: String,
         portadaUri: Uri,
-        fotos: List<Uri>
+        fotos: List<Uri>,
+        plantas: List<PlantaAlbum>
     ) {
 
         android.util.Log.d("AUTH_CHECK", FirebaseAuth.getInstance().currentUser?.uid ?: "USER_NULL")
@@ -54,7 +56,8 @@ object FirebaseAlbumPublisher {
                                     uid,
                                     titulo,
                                     portadaUrl.toString(),
-                                    fotosUrls
+                                    fotosUrls,
+                                    plantas
                                 )
                             }
                         }
@@ -67,8 +70,10 @@ object FirebaseAlbumPublisher {
         uid: String,
         titulo: String,
         portadaUrl: String,
-        fotos: List<String>
-    ) {
+        fotos: List<String>,
+        plantas: List<PlantaAlbum>
+    )
+    {
 
         val feed = hashMapOf(
 
@@ -97,9 +102,14 @@ object FirebaseAlbumPublisher {
 
         val fotosMap = fotos.mapIndexed { index, url ->
 
+            val planta = plantas[index]
+
             mapOf(
                 "url" to url,
-                "plantaIndex" to (index + 1)
+                "plantaIndex" to (index + 1),
+                "nombre" to planta.nombreCompleto,
+                "precio" to planta.precio,
+                "cantidad" to planta.cantidad
             )
         }
 

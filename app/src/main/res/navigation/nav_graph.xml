@@ -159,6 +159,7 @@
         <argument
             android:name="publicacionId"
             app:argType="string" />
+
     </fragment>
 
 

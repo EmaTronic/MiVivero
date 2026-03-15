@@ -10,6 +10,7 @@ import com.emanuel.mivivero.data.model.Publicacion
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import androidx.navigation.fragment.findNavController
 
 class ComunidadFragment : Fragment(R.layout.fragment_comunidad) {
 
@@ -75,6 +76,20 @@ class ComunidadFragment : Fragment(R.layout.fragment_comunidad) {
 
         feedAdapter = ComunidadFeedAdapter(
 
+            onAlbumClick = { albumId ->
+
+                val bundle = Bundle().apply {
+                    putString("publicacionId", albumId)
+                }
+
+                findNavController().navigate(
+                    R.id.action_comunidadFragment_to_detallePublicacionFragment,
+                    bundle
+                )
+
+
+            },
+
             onToggleSection = { section ->
                 expandedSections[section] = !(expandedSections[section] ?: false)
                 reconstruirFeed()
@@ -100,6 +115,7 @@ class ComunidadFragment : Fragment(R.layout.fragment_comunidad) {
                 aplicarFiltros()
             }
         )
+
 
         recyclerFeed.adapter = feedAdapter
 

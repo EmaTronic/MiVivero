@@ -54,9 +54,13 @@ class DetallePublicacionFragment :
 
         recyclerComentarios.layoutManager =
             LinearLayoutManager(requireContext())
+        recyclerComentarios.adapter =
+            ComentariosAdapter(emptyList(), publicacionId, "")
 
-        escucharComentarios(publicacionId)
+
         escucharPublicacion(publicacionId)
+        escucharComentarios(publicacionId)
+
 
         // 🔹 CARGA INICIAL DE DATOS
         db.collection("publicaciones")
@@ -72,9 +76,15 @@ class DetallePublicacionFragment :
                 obs.text = observacion
                 autor.text = "Publicado por: $emailAutor"
 
-                Glide.with(requireContext())
-                    .load(imageUrl)
-                    .into(img)
+                if (!imageUrl.isNullOrEmpty()) {
+                    Glide.with(requireContext())
+                        .load(imageUrl)
+                        .into(img)
+                } else {
+                    img.setImageResource(R.drawable.ic_planta_placeholder)
+                }
+
+
             }
 
         // 🔹 ENVIAR COMENTARIO
@@ -193,7 +203,8 @@ class DetallePublicacionFragment :
 
                 if (uidAutorPost != null) {
                     recyclerComentarios.adapter =
-                        ComentariosAdapter(lista, publicacionId, uidAutorPost!!)
+                        ComentariosAdapter(lista, publicacionId, uidAutorPost ?: "")
+
                 }
             }
     }

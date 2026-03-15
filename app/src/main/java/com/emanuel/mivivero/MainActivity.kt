@@ -29,6 +29,12 @@ class MainActivity : AppCompatActivity() {
         // Bottom navigation
         binding.bottomNav.setupWithNavController(navController)
 
+
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            android.util.Log.d("NAV", "DESTINO: ${destination.label}")
+        }
+
+
         // botón usuario
         binding.btnUsuario.setOnClickListener {
 

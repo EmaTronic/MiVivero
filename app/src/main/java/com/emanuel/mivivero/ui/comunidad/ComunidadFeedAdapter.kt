@@ -9,6 +9,7 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.view.isVisible
+import androidx.navigation.NavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
@@ -19,12 +20,14 @@ import androidx.navigation.findNavController
 
 
 class ComunidadFeedAdapter(
+    private val onAlbumClick: (String) -> Unit,
     private val onToggleSection: (FeedSection) -> Unit,
     private val onFiltroTodas: () -> Unit,
     private val onFiltroPendientes: () -> Unit,
     private val onFiltroIdentificadas: () -> Unit,
     private val onBuscar: (String) -> Unit
-) : ListAdapter<FeedItem, RecyclerView.ViewHolder>(FeedItemDiffCallback()) {
+)
+ : ListAdapter<FeedItem, RecyclerView.ViewHolder>(FeedItemDiffCallback()) {
 
     private val sharedViewPool = RecyclerView.RecycledViewPool()
 
@@ -121,7 +124,8 @@ class ComunidadFeedAdapter(
 
             val adapter =
                 recycler.adapter as? HorizontalContentAdapter
-                    ?: HorizontalContentAdapter().also { recycler.adapter = it }
+                    ?: HorizontalContentAdapter(onAlbumClick).also { recycler.adapter = it }
+
 
             adapter.submitList(item.items)
         }
@@ -173,8 +177,10 @@ private class FeedItemDiffCallback : DiffUtil.ItemCallback<FeedItem>() {
     }
 }
 
-private class HorizontalContentAdapter :
-    ListAdapter<HorizontalContentItem, RecyclerView.ViewHolder>(HorizontalContentDiffCallback()) {
+private class HorizontalContentAdapter(
+    private val onAlbumClick: (String) -> Unit
+) : ListAdapter<HorizontalContentItem, RecyclerView.ViewHolder>(HorizontalContentDiffCallback())
+ {
 
     companion object {
         private const val TYPE_ARTICULO = 0
@@ -201,10 +207,11 @@ private class HorizontalContentAdapter :
             TYPE_ARTICULO -> ArticuloViewHolder(
                 inflater.inflate(R.layout.item_horizontal_articulo, parent, false)
             )
-
             TYPE_ALBUM -> AlbumViewHolder(
-                inflater.inflate(R.layout.item_horizontal_album, parent, false)
+                inflater.inflate(R.layout.item_horizontal_album, parent, false),
+                onAlbumClick
             )
+
 
             else -> PublicacionViewHolder(
                 inflater.inflate(R.layout.item_publicacion_card, parent, false)
@@ -275,9 +282,13 @@ private class HorizontalContentAdapter :
         }
     }
 
-    class AlbumViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+     class AlbumViewHolder(
+         view: View,
+         private val onAlbumClick: (String) -> Unit
+     ) : RecyclerView.ViewHolder(view)
+     {
 
-        private val imgPortada: ImageView = view.findViewById(R.id.imgAlbum)
+        private val imgAlbum: ImageView = view.findViewById(R.id.imgAlbum)
         private val tvTitulo: TextView = view.findViewById(R.id.tvAlbumTitulo)
         private val tvDescripcion: TextView = view.findViewById(R.id.tvAlbumDescripcion)
 
@@ -289,21 +300,12 @@ private class HorizontalContentAdapter :
             Glide.with(itemView)
                 .load(item.portadaUrl)
                 .placeholder(R.drawable.bg_album_placeholder)
-                .into(imgPortada)
+                .into(imgAlbum)
 
             itemView.setOnClickListener {
-
-                val bundle = android.os.Bundle().apply {
-                    putString("albumId", item.stableId)
-                }
-
-                itemView.findNavController()
-
-                    .navigate(
-                        R.id.action_comunidadFragment_to_detallePublicacionFragment,
-                        bundle
-                    )
+                onAlbumClick(item.stableId)
             }
+
         }
     }
 }
