@@ -155,6 +155,16 @@
     </fragment>
 
 
+    <fragment
+        android:id="@+id/albumComunidadFragment"
+        android:name="com.emanuel.mivivero.ui.comunidad.AlbumComunidadFragment"
+        android:label="Álbum Comunidad">
+
+        <argument
+            android:name="albumId"
+            app:argType="string"/>
+    </fragment>
+
 
 
 

@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.emanuel.mivivero.R
@@ -75,6 +76,18 @@ class ComunidadFragment : Fragment(R.layout.fragment_comunidad) {
         recyclerFeed.layoutManager = LinearLayoutManager(requireContext())
 
         feedAdapter = ComunidadFeedAdapter(
+
+
+
+            onAlbumClick = { albumId ->
+
+                findNavController().navigate(
+                    R.id.albumComunidadFragment,
+                    Bundle().apply {
+                        putString("albumId", albumId)
+                    }
+                )
+            },
 
             onToggleSection = { section ->
                 expandedSections[section] = !(expandedSections[section] ?: false)
@@ -149,9 +162,6 @@ class ComunidadFragment : Fragment(R.layout.fragment_comunidad) {
     private fun cargarAlbumes() {
 
 
-
-
-
         db.collection("albumsFeed")
             .orderBy("fechaPublicacion", Query.Direction.DESCENDING)
             .limit(20)
@@ -162,14 +172,23 @@ class ComunidadFragment : Fragment(R.layout.fragment_comunidad) {
 
                 listaAlbumes = result.mapIndexed { index, doc ->
 
+                    Log.d("ALBUM_DOC", doc.data.toString())
+
+                    val raw = doc.get("previewFotos")
+                    Log.d("ALBUM_DOC", "previewFotos raw = $raw  type=${raw?.javaClass}")
+
+                    val preview = (raw as? List<*>)?.mapNotNull { it as? String }
+                        ?: listOfNotNull(doc.getString("portadaUrl"))
+
+                    Log.d("ALBUM_DOC", "previewFotos parsed = $preview")
+
                     HorizontalContentItem.AlbumCard(
                         stableId = doc.id,
                         titulo = doc.getString("titulo") ?: "Álbum ${index + 1}",
                         descripcion = "${doc.getLong("cantidadPlantas") ?: 0} plantas",
-                        portadaUrl = doc.getString("portadaUrl")
+                        previewFotos = preview
                     )
                 }
-
                 reconstruirFeed()
             }
     }

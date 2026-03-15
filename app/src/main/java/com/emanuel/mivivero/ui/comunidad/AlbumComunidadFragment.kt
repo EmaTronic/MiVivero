@@ -13,6 +13,7 @@ import com.emanuel.mivivero.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 
 class AlbumComunidadFragment : Fragment(R.layout.fragment_album_comunidad) {
 
@@ -59,25 +60,34 @@ class AlbumComunidadFragment : Fragment(R.layout.fragment_album_comunidad) {
 
     private fun cargarFotosAlbum() {
 
-        val bucket = "mivivero-ematronik.firebasestorage.app"
+        val storage = FirebaseStorage.getInstance()
+        val ref = storage.reference.child("albums/$albumId")
 
-        val urls = mutableListOf<String>()
+        ref.listAll()
+            .addOnSuccessListener { result ->
 
-        for (i in 0..19) {
+                val urls = mutableListOf<String>()
 
-            val url =
-                "https://firebasestorage.googleapis.com/v0/b/$bucket/o/albums%2F$albumId%2Fimg_$i.jpg?alt=media"
+                val tasks = result.items.map { item ->
+                    item.downloadUrl.addOnSuccessListener { uri ->
+                        urls.add(uri.toString())
 
-            urls.add(url)
-        }
+                        if (urls.size == result.items.size) {
+                            mostrarCarruseles(urls)
+                        }
+                    }
+                }
+            }
+    }
+
+    private fun mostrarCarruseles(urls: List<String>) {
 
         val carrusel1 = urls.take(10)
         val carrusel2 = urls.drop(10).take(10)
 
-         recyclerCarrusel1.adapter = AlbumFotoAdapter(carrusel1)
-         recyclerCarrusel2.adapter = AlbumFotoAdapter(carrusel2)
+        recyclerCarrusel1.adapter = AlbumFotoAdapter(carrusel1)
+        recyclerCarrusel2.adapter = AlbumFotoAdapter(carrusel2)
     }
-
     private fun reservar() {
 
         val planta = etPlanta.text.toString()

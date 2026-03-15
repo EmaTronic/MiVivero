@@ -18,6 +18,7 @@ import com.emanuel.mivivero.R
 
 
 class ComunidadFeedAdapter(
+    private val onAlbumClick: (String) -> Unit,
     private val onToggleSection: (FeedSection) -> Unit,
     private val onFiltroTodas: () -> Unit,
     private val onFiltroPendientes: () -> Unit,
@@ -117,10 +118,9 @@ class ComunidadFeedAdapter(
             layoutManager.initialPrefetchItemCount = 4
 
             recycler.setRecycledViewPool(sharedViewPool)
-
             val adapter =
                 recycler.adapter as? HorizontalContentAdapter
-                    ?: HorizontalContentAdapter().also { recycler.adapter = it }
+                    ?: HorizontalContentAdapter(onAlbumClick).also { recycler.adapter = it }
 
             adapter.submitList(item.items)
         }
@@ -172,7 +172,9 @@ private class FeedItemDiffCallback : DiffUtil.ItemCallback<FeedItem>() {
     }
 }
 
-private class HorizontalContentAdapter :
+private class HorizontalContentAdapter(
+    private val onAlbumClick: (String) -> Unit
+) :
     ListAdapter<HorizontalContentItem, RecyclerView.ViewHolder>(HorizontalContentDiffCallback()) {
 
     companion object {
@@ -202,7 +204,8 @@ private class HorizontalContentAdapter :
             )
 
             TYPE_ALBUM -> AlbumViewHolder(
-                inflater.inflate(R.layout.item_horizontal_album, parent, false)
+                inflater.inflate(R.layout.item_horizontal_album, parent, false),
+                onAlbumClick
             )
 
             else -> PublicacionViewHolder(
@@ -274,21 +277,43 @@ private class HorizontalContentAdapter :
         }
     }
 
-    class AlbumViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    class AlbumViewHolder(
+        view: View,
+        private val onAlbumClick: (String) -> Unit
+    ) : RecyclerView.ViewHolder(view) {
 
-        private val imgPortada: ImageView = view.findViewById(R.id.imgAlbum)
+        private val img1: ImageView = view.findViewById(R.id.img1)
+        private val img2: ImageView = view.findViewById(R.id.img2)
+        private val img3: ImageView = view.findViewById(R.id.img3)
+        private val img4: ImageView = view.findViewById(R.id.img4)
+
+
         private val tvTitulo: TextView = view.findViewById(R.id.tvAlbumTitulo)
-        private val tvDescripcion: TextView = view.findViewById(R.id.tvAlbumDescripcion)
+        private val tvUsuario: TextView = view.findViewById(R.id.tvAlbumUsuario)
+        private val tvCantidad: TextView = view.findViewById(R.id.tvAlbumCantidad)
+        private val tvFecha: TextView = view.findViewById(R.id.tvAlbumFecha)
 
         fun bind(item: HorizontalContentItem.AlbumCard) {
 
             tvTitulo.text = item.titulo
-            tvDescripcion.text = item.descripcion
 
-            Glide.with(itemView)
-                .load(item.portadaUrl)
-                .placeholder(R.drawable.bg_album_placeholder)
-                .into(imgPortada)
+            val imgs = listOf(img1, img2, img3, img4)
+
+            for (i in imgs.indices) {
+
+                val url = item.previewFotos.getOrNull(i)
+
+                Glide.with(itemView)
+                    .load(url)
+                    .placeholder(R.drawable.bg_album_placeholder)
+                    .error(R.drawable.bg_album_placeholder)
+                    .centerCrop()
+                    .into(imgs[i])
+            }
+
+            itemView.setOnClickListener {
+                onAlbumClick(item.stableId)
+            }
         }
     }
 }

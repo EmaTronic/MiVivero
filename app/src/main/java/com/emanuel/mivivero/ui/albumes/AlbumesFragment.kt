@@ -23,8 +23,9 @@ import com.emanuel.mivivero.ui.utils.AlbumPublisher
 import kotlinx.coroutines.launch
 import com.emanuel.mivivero.utils.InstagramCollageGenerator
 import androidx.lifecycle.lifecycleScope
-import com.emanuel.mivivero.data.firebase.AlbumRepository
+
 import com.google.firebase.auth.FirebaseAuth
+import com.emanuel.mivivero.data.firebase.AlbumRepository
 
 
 class AlbumesFragment : Fragment(R.layout.fragment_albumes) {
@@ -137,28 +138,11 @@ class AlbumesFragment : Fragment(R.layout.fragment_albumes) {
 
                 PublicarAlbumDialog { fondo, nombreVivero, fechaHasta, pago, envio, retiro, obs ->
 
-                    val portadaUri = AlbumPublisher.generarPortadaAlbum(
-                        requireContext(),
-                        album.id,
-                        album.nombre,
-                        fondo,
-                        nombreVivero,
-                        fechaHasta,
-                        pago,
-                        envio,
-                        retiro,
-                        obs
-                    )
-
                     val fotosUri = AlbumPublisher.generarImagenesAlbum(
                         requireContext(),
                         plantas,
                         album.nombre
                     )
-
-                    val listaFinal = mutableListOf<Uri>()
-                    listaFinal.add(portadaUri)
-                    listaFinal.addAll(fotosUri)
 
                     AlertDialog.Builder(requireContext())
                         .setTitle("Publicar álbum")
@@ -167,8 +151,25 @@ class AlbumesFragment : Fragment(R.layout.fragment_albumes) {
                             if (which == 0) {
 
                                 // ======================
-                                // COMPARTIR
+                                // COMPARTIR EN REDES
                                 // ======================
+
+                                val portadaUri = AlbumPublisher.generarPortadaAlbum(
+                                    requireContext(),
+                                    album.id,
+                                    album.nombre,
+                                    fondo,
+                                    nombreVivero,
+                                    fechaHasta,
+                                    pago,
+                                    envio,
+                                    retiro,
+                                    obs
+                                )
+
+                                val listaFinal = mutableListOf<Uri>()
+                                listaFinal.add(portadaUri)
+                                listaFinal.addAll(fotosUri)
 
                                 val intent = Intent(Intent.ACTION_SEND_MULTIPLE).apply {
                                     type = "image/*"
@@ -189,7 +190,6 @@ class AlbumesFragment : Fragment(R.layout.fragment_albumes) {
                                 // PUBLICAR EN COMUNIDAD
                                 // ======================
 
-
                                 val auth = FirebaseAuth.getInstance()
 
                                 if (auth.currentUser == null) {
@@ -201,9 +201,88 @@ class AlbumesFragment : Fragment(R.layout.fragment_albumes) {
                                     ).show()
 
                                     findNavController().navigate(R.id.authFragment)
-
                                     return@setItems
                                 }
+
+                                lifecycleScope.launch {
+
+                                    try {
+
+                                        // SOLO FOTOS (SIN PORTADA)
+                                        AlbumRepository.publicarAlbum(
+                                            titulo = album.nombre,
+                                            categoria = "general",
+                                            pais = usuario.pais,
+                                            provincia = usuario.provincia,
+                                            ciudad = usuario.ciudad,
+                                            lat = null,
+                                            lng = null,
+                                            imagenes = fotosUri
+                                        )
+
+                                        Toast.makeText(
+                                            requireContext(),
+                                            "Álbum publicado en comunidad",
+                                            Toast.LENGTH_LONG
+                                        ).show()
+
+                                    } catch (e: Exception) {
+
+                                        Log.e("ALBUM", "Error publicando", e)
+
+                                        Toast.makeText(
+                                            requireContext(),
+                                            e.message ?: "Error desconocido",
+                                            Toast.LENGTH_LONG
+                                        ).show()
+                                    }
+                                }
+                            }
+                        }
+                        .show()
+
+
+
+                    AlertDialog.Builder(requireContext())
+                        .setTitle("Publicar álbum")
+                        .setItems(arrayOf("Compartir", "Publicar en comunidad")) { _, which ->
+
+                            if (which == 0) {
+
+                                // ======================
+                                // COMPARTIR EN REDES
+                                // ======================
+
+                                val portadaUri = AlbumPublisher.generarPortadaAlbum(
+                                    requireContext(),
+                                    album.id,
+                                    album.nombre,
+                                    fondo,
+                                    nombreVivero,
+                                    fechaHasta,
+                                    pago,
+                                    envio,
+                                    retiro,
+                                    obs
+                                )
+
+                                val listaFinal = mutableListOf<Uri>()
+                                listaFinal.add(portadaUri)
+                                listaFinal.addAll(fotosUri)
+
+                                val intent = Intent(Intent.ACTION_SEND_MULTIPLE).apply {
+                                    type = "image/*"
+                                    putParcelableArrayListExtra(
+                                        Intent.EXTRA_STREAM,
+                                        ArrayList(listaFinal)
+                                    )
+                                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                }
+
+                                startActivity(
+                                    Intent.createChooser(intent, "Compartir álbum")
+                                )
+                            } else {
 
                                 lifecycleScope.launch {
 
@@ -217,7 +296,7 @@ class AlbumesFragment : Fragment(R.layout.fragment_albumes) {
                                             ciudad = usuario.ciudad,
                                             lat = null,
                                             lng = null,
-                                            imagenes = listaFinal
+                                            imagenes = fotosUri
                                         )
 
                                         Toast.makeText(
@@ -226,7 +305,7 @@ class AlbumesFragment : Fragment(R.layout.fragment_albumes) {
                                             Toast.LENGTH_LONG
                                         ).show()
 
-                                    }catch (e: Exception) {
+                                    } catch (e: Exception) {
 
                                         Log.e("ALBUM", "Error publicando", e)
 

@@ -1,6 +1,7 @@
 package com.emanuel.mivivero.data.firebase
 
 import android.net.Uri
+import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
@@ -35,6 +36,8 @@ object AlbumRepository {
 
         val urls = mutableListOf<String>()
 
+
+
         imagenes.forEachIndexed { index, uri ->
 
             val ref = storage
@@ -49,6 +52,8 @@ object AlbumRepository {
 
         val portada = urls.first()
 
+
+        Log.d("ALBUM_UPLOAD", "urls = $urls")
         // =========================
         // 2. albumsFeed (liviano)
         // =========================
@@ -71,6 +76,9 @@ object AlbumRepository {
             "lng" to lng,
 
             "portadaUrl" to portada,
+
+            "previewFotos" to urls.take(4),
+
             "cantidadPlantas" to (urls.size - 1),
             "comentariosCount" to 0,
 
