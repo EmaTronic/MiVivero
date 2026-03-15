@@ -5,6 +5,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -15,8 +16,10 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.emanuel.mivivero.R
+import com.emanuel.mivivero.data.local.Lugar
 import com.emanuel.mivivero.data.model.Planta
 import com.emanuel.mivivero.databinding.FragmentCrearPlantaBinding
+import com.emanuel.mivivero.ui.lugares.AgregarLugarDialog
 import com.emanuel.mivivero.utils.cargarCatalogo
 import java.io.File
 
@@ -29,6 +32,9 @@ class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
 
     private var fotoUri: Uri? = null
     private var plantaId: Long = -1L
+    private var lugaresDisponibles: List<Lugar> = emptyList()
+    private var lugarPreseleccionadoId: Int? = null
+    private var lugarPreseleccionadoNombre: String? = null
 
     private lateinit var catalogoFinal:
             Map<String, Map<String, List<String>>>
@@ -65,13 +71,16 @@ class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
 
                 binding.etFamilia.setText(planta.familia, false)
                 binding.etEspecie.setText(planta.especie ?: "", false)
-                binding.etLugar.setText(planta.lugar)
+                lugarPreseleccionadoId = planta.lugarId
+                lugarPreseleccionadoNombre = planta.lugar
                 binding.etCantidad.setText(planta.cantidad.toString())
                 binding.cbALaVenta.isChecked = planta.aLaVenta
                 binding.etObservaciones.setText(planta.observaciones ?: "")
 
-                fotoUri = Uri.parse(planta.fotoRuta)
-                binding.imgFoto.setImageURI(fotoUri)
+                if (!planta.fotoRuta.isNullOrBlank()) {
+                    fotoUri = Uri.parse(planta.fotoRuta)
+                    binding.imgFoto.setImageURI(fotoUri)
+                }
 
                 actualizarEstadoGuardar()
             }
@@ -86,13 +95,17 @@ class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
 
         catalogoFinal = unirCatalogos(c1, c2, c3, c4)
         configurarAutocomplete()
+        configurarSpinnerLugares()
+
+        binding.btnCrearLugarRapido.setOnClickListener {
+            AgregarLugarDialog.nuevaInstancia().show(parentFragmentManager, "CrearLugarRapidoDialog")
+        }
 
         /* ===================== LISTENERS PARA HABILITAR GUARDAR ===================== */
 
         binding.actFamilia.addTextChangedListener { actualizarEstadoGuardar() }
         binding.etEspecie.addTextChangedListener { actualizarEstadoGuardar() }
         binding.etCantidad.addTextChangedListener { actualizarEstadoGuardar() }
-        binding.etLugar.addTextChangedListener { actualizarEstadoGuardar() }
         binding.etObservaciones.addTextChangedListener { actualizarEstadoGuardar() }
 
         /* ===================== FOTO ===================== */
@@ -167,7 +180,8 @@ class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
                 numeroPlanta = numeroFinal,
                 familia = familia,
                 especie = especie.ifBlank { null },
-                lugar = binding.etLugar.text.toString(),
+                lugar = obtenerLugarSeleccionado()?.nombre.orEmpty(),
+                lugarId = obtenerLugarSeleccionado()?.id,
                 fechaIngreso = fechaIngresoFinal,
                 cantidad = cantidad,
                 aLaVenta = binding.cbALaVenta.isChecked,
@@ -190,7 +204,41 @@ class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
     }
 
 
-        private fun obtenerFechaRealDeFoto(uri: Uri): Long {
+    private fun configurarSpinnerLugares() {
+        viewModel.lugares.observe(viewLifecycleOwner) { lugares ->
+            lugaresDisponibles = lugares
+            val opciones = mutableListOf("Sin lugar")
+            opciones.addAll(lugares.map { "${it.icono} ${it.nombre}" })
+
+            val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, opciones)
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            binding.spLugar.adapter = adapter
+
+            val preId = lugarPreseleccionadoId
+            val preNombre = lugarPreseleccionadoNombre
+            if (preId != null || !preNombre.isNullOrBlank()) {
+                val index = lugares.indexOfFirst { lugar ->
+                    (preId != null && lugar.id == preId) ||
+                        (!preNombre.isNullOrBlank() && lugar.nombre.equals(preNombre, ignoreCase = true))
+                }
+                binding.spLugar.setSelection(if (index >= 0) index + 1 else 0, false)
+                lugarPreseleccionadoId = null
+                lugarPreseleccionadoNombre = null
+            }
+        }
+
+        binding.spLugar.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) = Unit
+            override fun onNothingSelected(parent: AdapterView<*>?) = Unit
+        }
+    }
+
+    private fun obtenerLugarSeleccionado(): Lugar? {
+        val index = binding.spLugar.selectedItemPosition - 1
+        return if (index in lugaresDisponibles.indices) lugaresDisponibles[index] else null
+    }
+
+    private fun obtenerFechaRealDeFoto(uri: Uri): Long {
         return try {
             val inputStream = requireContext().contentResolver.openInputStream(uri)
             val exif = androidx.exifinterface.media.ExifInterface(inputStream!!)

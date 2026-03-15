@@ -10,6 +10,7 @@ import com.emanuel.mivivero.data.model.Publicacion
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import androidx.navigation.fragment.findNavController
 
 class ComunidadFragment : Fragment(R.layout.fragment_comunidad) {
 
@@ -75,6 +76,20 @@ class ComunidadFragment : Fragment(R.layout.fragment_comunidad) {
 
         feedAdapter = ComunidadFeedAdapter(
 
+            onAlbumClick = { albumId ->
+
+                val bundle = Bundle().apply {
+                    putString("publicacionId", albumId)
+                }
+
+                findNavController().navigate(
+                    R.id.action_comunidadFragment_to_detallePublicacionFragment,
+                    bundle
+                )
+
+
+            },
+
             onToggleSection = { section ->
                 expandedSections[section] = !(expandedSections[section] ?: false)
                 reconstruirFeed()
@@ -100,6 +115,7 @@ class ComunidadFragment : Fragment(R.layout.fragment_comunidad) {
                 aplicarFiltros()
             }
         )
+
 
         recyclerFeed.adapter = feedAdapter
 
@@ -135,6 +151,8 @@ class ComunidadFragment : Fragment(R.layout.fragment_comunidad) {
             .get()
             .addOnSuccessListener { result ->
 
+                android.util.Log.d("FIRESTORE", "docs: ${result.size()}")
+
                 listaComunidadCompleta = result.map { doc ->
                     doc.toObject(Publicacion::class.java).copy(id = doc.id)
                 }
@@ -145,21 +163,24 @@ class ComunidadFragment : Fragment(R.layout.fragment_comunidad) {
 
     private fun cargarAlbumes() {
 
-        db.collection("albumes")
+        db.collection("albumsFeed")
+            .orderBy("fechaPublicacion", Query.Direction.DESCENDING)
             .limit(20)
             .get()
             .addOnSuccessListener { result ->
 
-                listaAlbumes = result.mapIndexed { index, doc ->
+                listaAlbumes = result.map { doc ->
 
                     HorizontalContentItem.AlbumCard(
-                        stableId = doc.id.ifBlank { "album-$index" },
-                        titulo = doc.getString("nombre")
-                            .orEmpty()
-                            .ifBlank { "Álbum ${index + 1}" },
-                        descripcion = doc.getString("descripcion")
-                            .orEmpty()
-                            .ifBlank { "Sin descripción" },
+
+                        stableId = doc.id,
+
+                        titulo = doc.getString("titulo")
+                            ?: "Álbum",
+
+                        descripcion =
+                            "${doc.getLong("cantidadPlantas") ?: 0} plantas",
+
                         portadaUrl = doc.getString("portadaUrl")
                     )
                 }

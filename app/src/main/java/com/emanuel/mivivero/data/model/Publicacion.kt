@@ -2,11 +2,11 @@ package com.emanuel.mivivero.data.model
 
 data class Publicacion(
     val id: String = "",
-    val imageUrl: String = "",
-    val observacion: String = "",
-    val emailAutor: String = "",
-    val uidAutor: String = "",
-    val estado: String = "pendiente",
+    val imageUrl: String? = null,
+    val observacion: String? = null,
+    val emailAutor: String? = null,
+    val uidAutor: String? = null,
+    val estado: String? = null,
     val nombreComun: String? = null,
     val nombreCientifico: String? = null,
     val identificadaPorUid: String? = null,

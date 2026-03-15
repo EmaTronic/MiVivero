@@ -140,7 +140,14 @@
     <fragment
         android:id="@+id/comunidadFragment"
         android:name="com.emanuel.mivivero.ui.comunidad.ComunidadFragment"
-        android:label="Comunidad" />
+        android:label="Comunidad">
+
+        <action
+            android:id="@+id/action_comunidadFragment_to_detallePublicacionFragment"
+            app:destination="@id/detallePublicacionFragment" />
+
+    </fragment>
+
 
 
     <!-- NAVEGACIÓN A DETALLE_PUBLICACION-->
@@ -152,6 +159,7 @@
         <argument
             android:name="publicacionId"
             app:argType="string" />
+
     </fragment>
 
 

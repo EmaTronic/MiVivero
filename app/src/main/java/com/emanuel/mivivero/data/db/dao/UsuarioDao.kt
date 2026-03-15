@@ -19,4 +19,8 @@ interface UsuarioDao {
 
     @Update
     suspend fun actualizarUsuario(usuario: UsuarioEntity)
+
+
+    @Query("SELECT * FROM usuario WHERE email = :email LIMIT 1")
+    suspend fun obtenerPorEmail(email: String): UsuarioEntity?
 }

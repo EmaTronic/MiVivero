@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -22,9 +23,8 @@ import com.emanuel.mivivero.ui.utils.AlbumPublisher
 import kotlinx.coroutines.launch
 import com.emanuel.mivivero.utils.InstagramCollageGenerator
 import androidx.lifecycle.lifecycleScope
-import kotlinx.coroutines.launch
-
-
+import com.emanuel.mivivero.data.firebase.AlbumRepository
+import com.google.firebase.auth.FirebaseAuth
 
 
 class AlbumesFragment : Fragment(R.layout.fragment_albumes) {
@@ -108,6 +108,9 @@ class AlbumesFragment : Fragment(R.layout.fragment_albumes) {
                 return@launch
             }
 
+
+
+
             if (usuario.usuarioBloqueado) {
                 Toast.makeText(
                     requireContext(),
@@ -116,8 +119,6 @@ class AlbumesFragment : Fragment(R.layout.fragment_albumes) {
                 ).show()
                 return@launch
             }
-
-            val nombreAlbum = album.nombre
 
             val liveData = viewModel.obtenerPlantasDelAlbumRaw(album.id)
 
@@ -159,27 +160,93 @@ class AlbumesFragment : Fragment(R.layout.fragment_albumes) {
                     listaFinal.add(portadaUri)
                     listaFinal.addAll(fotosUri)
 
-                    val intent = Intent(Intent.ACTION_SEND_MULTIPLE).apply {
-                        type = "image/*"
-                        putParcelableArrayListExtra(
-                            Intent.EXTRA_STREAM,
-                            ArrayList(listaFinal)
-                        )
-                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                    }
+                    AlertDialog.Builder(requireContext())
+                        .setTitle("Publicar álbum")
+                        .setItems(arrayOf("Compartir", "Publicar en comunidad")) { _, which ->
 
-                    startActivity(
-                        Intent.createChooser(intent, "Compartir álbum")
-                    )
+                            if (which == 0) {
+
+                                // ======================
+                                // COMPARTIR
+                                // ======================
+
+                                val intent = Intent(Intent.ACTION_SEND_MULTIPLE).apply {
+                                    type = "image/*"
+                                    putParcelableArrayListExtra(
+                                        Intent.EXTRA_STREAM,
+                                        ArrayList(listaFinal)
+                                    )
+                                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                }
+
+                                startActivity(
+                                    Intent.createChooser(intent, "Compartir álbum")
+                                )
+
+                            } else {
+
+                                // ======================
+                                // PUBLICAR EN COMUNIDAD
+                                // ======================
+
+
+                                val auth = FirebaseAuth.getInstance()
+
+                                if (auth.currentUser == null) {
+
+                                    Toast.makeText(
+                                        requireContext(),
+                                        "Debes iniciar sesión para publicar en comunidad",
+                                        Toast.LENGTH_LONG
+                                    ).show()
+
+                                    findNavController().navigate(R.id.authFragment)
+
+                                    return@setItems
+                                }
+
+                                lifecycleScope.launch {
+
+                                    try {
+
+                                        AlbumRepository.publicarAlbum(
+                                            titulo = album.nombre,
+                                            categoria = "general",
+                                            pais = usuario.pais,
+                                            provincia = usuario.provincia,
+                                            ciudad = usuario.ciudad,
+                                            lat = null,
+                                            lng = null,
+                                            imagenes = listaFinal
+                                        )
+
+                                        Toast.makeText(
+                                            requireContext(),
+                                            "Álbum publicado en comunidad",
+                                            Toast.LENGTH_LONG
+                                        ).show()
+
+                                    }catch (e: Exception) {
+
+                                        Log.e("ALBUM", "Error publicando", e)
+
+                                        Toast.makeText(
+                                            requireContext(),
+                                            e.message ?: "Error desconocido",
+                                            Toast.LENGTH_LONG
+                                        ).show()
+                                    }
+                                }
+                            }
+
+                        }
+                        .show()
 
                 }.show(parentFragmentManager, "PublicarDialog")
 
-            } // ← CIERRA observe
-
-        } // ← CIERRA launch
-
-    } // ← CIERRA publicarAlbum
-
+            }
+        }
+    }
 
     // ================================
     // ELIMINAR

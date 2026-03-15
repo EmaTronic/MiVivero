@@ -34,5 +34,16 @@ class RegistroViewModel(application: Application) :
         }
     }
 
+    suspend fun guardarUsuarioSiNoExiste(usuario: UsuarioEntity) {
+
+        val existente = usuarioDao.obtenerPorEmail(usuario.email)
+
+        if (existente == null) {
+            usuarioDao.insertarUsuario(usuario)
+        } else {
+            usuarioDao.actualizarUsuario(usuario)
+        }
+    }
+
 
 }

@@ -1,13 +1,12 @@
 package com.emanuel.mivivero.ui.home
 
-import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.emanuel.mivivero.R
-import com.emanuel.mivivero.ui.auth.LoginActivity
 
 class HomeActivity : AppCompatActivity() {
 
@@ -25,24 +24,21 @@ class HomeActivity : AppCompatActivity() {
         val currentUser = auth.currentUser
 
         if (currentUser != null) {
-            tvUser.text = "UID: ${currentUser.uid}"
+            tvUser.text = "Usuario: ${currentUser.email}"
+        } else {
+            tvUser.text = "No autenticado"
         }
 
         btnLogout.setOnClickListener {
+
             auth.signOut()
 
-            val intent = Intent(this, LoginActivity::class.java)
-            startActivity(intent)
-            finish()
-        }
-    }
+            Toast.makeText(
+                this,
+                "Sesión cerrada",
+                Toast.LENGTH_SHORT
+            ).show()
 
-    override fun onStart() {
-        super.onStart()
-
-        if (auth.currentUser == null) {
-            val intent = Intent(this, LoginActivity::class.java)
-            startActivity(intent)
             finish()
         }
     }

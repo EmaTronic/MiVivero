@@ -45,10 +45,23 @@
                 style="@style/FormInput"
                 android:hint="Especie (opcional)"/>
 
-            <EditText
-                android:id="@+id/etLugar"
-                style="@style/FormInput"
-                android:hint="Lugar"/>
+            <Spinner
+                android:id="@+id/spLugar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/bg_foto_slot"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnCrearLugarRapido"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="+ Crear lugar"
+                android:textAllCaps="false"
+                app:backgroundTint="@android:color/transparent"
+                app:strokeColor="@color/teal_primary"
+                app:strokeWidth="1dp"
+                android:textColor="@color/teal_primary"/>
 
             <EditText
                 android:id="@+id/etCantidad"

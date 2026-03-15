@@ -1,14 +1,11 @@
 package com.emanuel.mivivero
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.emanuel.mivivero.databinding.ActivityMainBinding
-import com.emanuel.mivivero.ui.auth.LoginActivity
-import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : AppCompatActivity() {
 
@@ -17,35 +14,29 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-
-        val auth = FirebaseAuth.getInstance()
-
-        if (auth.currentUser == null) {
-            startActivity(Intent(this, LoginActivity::class.java))
-            finish()
-        }
-
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Configurar Toolbar como ActionBar
+        // Toolbar
         setSupportActionBar(binding.topAppBar)
 
-        // Obtener NavController
+        // NavController
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.navHost) as NavHostFragment
 
         val navController = navHostFragment.navController
 
-        // Conectar BottomNavigation
+        // Bottom navigation
         binding.bottomNav.setupWithNavController(navController)
 
-        // Click icono usuario
-        binding.btnUsuario.setOnClickListener {
 
-            val navController =
-                (supportFragmentManager.findFragmentById(R.id.navHost) as NavHostFragment)
-                    .navController
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            android.util.Log.d("NAV", "DESTINO: ${destination.label}")
+        }
+
+
+        // botón usuario
+        binding.btnUsuario.setOnClickListener {
 
             navController.navigate(
                 R.id.registroUsuarioFragment,
@@ -56,8 +47,7 @@ class MainActivity : AppCompatActivity() {
             )
         }
 
-
-        // Click logo (Acerca de)
+        // logo
         binding.imgLogoToolbar.setOnClickListener {
             AlertDialog.Builder(this)
                 .setTitle("Mi Vivero")

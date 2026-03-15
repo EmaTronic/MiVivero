@@ -8,6 +8,11 @@ data class Comentario(
     val fecha: com.google.firebase.Timestamp? = null,
 
     val tipo: String = "comentario", // comentario | propuesta
+
     val nombreComunPropuesto: String? = null,
-    val nombreCientificoPropuesto: String? = null
+    val nombreCientificoPropuesto: String? = null,
+
+    val cantidad: Int? = null
+
+
 )

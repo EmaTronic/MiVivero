@@ -66,6 +66,14 @@
                 android:textColor="#555555"
                 android:layout_marginTop="6dp"/>
 
+            <TextView
+                android:id="@+id/txtLugarIcono"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:textSize="18sp"
+                android:visibility="gone"/>
+
             <!-- BADGE ESTADO -->
             <TextView
                 android:id="@+id/txtVenta"
