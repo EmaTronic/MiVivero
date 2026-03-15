@@ -86,7 +86,13 @@ class AlbumComunidadFragment : Fragment(R.layout.fragment_album_comunidad) {
         val carrusel2 = urls.drop(10).take(10)
 
         recyclerCarrusel1.adapter = AlbumFotoAdapter(carrusel1)
-        recyclerCarrusel2.adapter = AlbumFotoAdapter(carrusel2)
+
+        if (carrusel2.isNotEmpty()) {
+            recyclerCarrusel2.visibility = View.VISIBLE
+            recyclerCarrusel2.adapter = AlbumFotoAdapter(carrusel2)
+        } else {
+            recyclerCarrusel2.visibility = View.GONE
+        }
     }
     private fun reservar() {
 
