@@ -161,7 +161,11 @@ object AlbumPublisher {
                 val inputStream = context.contentResolver.openInputStream(
                     Uri.parse(planta.fotoRuta)
                 )
-                BitmapFactory.decodeStream(inputStream)
+                val options = BitmapFactory.Options().apply {
+                    inPreferredConfig = Bitmap.Config.RGB_565
+                }
+
+                BitmapFactory.decodeStream(inputStream, null, options)
             } catch (e: Exception) {
                 null
             }
@@ -331,7 +335,7 @@ object AlbumPublisher {
             )
 
             FileOutputStream(file).use { fos ->
-                mutable.compress(Bitmap.CompressFormat.JPEG, 70, fos)
+                mutable.compress(Bitmap.CompressFormat.JPEG, 50, fos)
             }
 
             val uri = FileProvider.getUriForFile(

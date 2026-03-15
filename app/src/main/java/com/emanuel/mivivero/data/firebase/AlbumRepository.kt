@@ -1,7 +1,9 @@
 package com.emanuel.mivivero.data.firebase
 
+import android.content.Context
 import android.net.Uri
 import android.util.Log
+import com.emanuel.mivivero.utils.ImageUtils
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
@@ -15,6 +17,7 @@ object AlbumRepository {
     private val storage = FirebaseStorage.getInstance().reference
 
     suspend fun publicarAlbum(
+        context: Context,
         titulo: String,
         categoria: String,
         pais: String,
@@ -22,8 +25,8 @@ object AlbumRepository {
         ciudad: String,
         lat: Double?,
         lng: Double?,
-        imagenes: List<Uri> // portada + fotos
-    ) {
+        imagenes: List<Uri>
+    ){
 
         val uid = FirebaseAuth.getInstance().currentUser?.uid
             ?: throw Exception("Usuario no autenticado")
@@ -43,7 +46,9 @@ object AlbumRepository {
             val ref = storage
                 .child("albums/$albumId/img_$index.jpg")
 
-            ref.putFile(uri).await()
+            val bytes = ImageUtils.compressImage(context, uri)
+
+            ref.putBytes(bytes).await()
 
             val url = ref.downloadUrl.await().toString()
 

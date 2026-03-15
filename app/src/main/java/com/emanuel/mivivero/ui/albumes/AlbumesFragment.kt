@@ -210,6 +210,7 @@ class AlbumesFragment : Fragment(R.layout.fragment_albumes) {
 
                                         // SOLO FOTOS (SIN PORTADA)
                                         AlbumRepository.publicarAlbum(
+                                            context = requireContext(),
                                             titulo = album.nombre,
                                             categoria = "general",
                                             pais = usuario.pais,
@@ -289,6 +290,7 @@ class AlbumesFragment : Fragment(R.layout.fragment_albumes) {
                                     try {
 
                                         AlbumRepository.publicarAlbum(
+                                            context = requireContext(),
                                             titulo = album.nombre,
                                             categoria = "general",
                                             pais = usuario.pais,
