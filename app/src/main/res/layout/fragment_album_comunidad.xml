@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- ========================= -->
+        <!-- TÍTULO ÁLBUM -->
+        <!-- ========================= -->
+
+        <TextView
+            android:id="@+id/tvTituloAlbum"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Álbum"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:padding="16dp" />
+
+        <!-- ========================= -->
+        <!-- CARRUSEL 1 -->
+        <!-- ========================= -->
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerCarrusel1"
+            android:layout_width="match_parent"
+            android:layout_height="220dp"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"/>
+
+        <!-- ========================= -->
+        <!-- CARRUSEL 2 -->
+        <!-- ========================= -->
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerCarrusel2"
+            android:layout_width="match_parent"
+            android:layout_height="220dp"
+            android:layout_marginTop="10dp"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"/>
+
+        <!-- ========================= -->
+        <!-- BLOQUE RESERVA -->
+        <!-- ========================= -->
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Reservar planta"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:padding="16dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp">
+
+            <EditText
+                android:id="@+id/etPlantaNumero"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="Planta nº"
+                android:inputType="number"/>
+
+            <EditText
+                android:id="@+id/etCantidad"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="Cantidad"
+                android:inputType="number"
+                android:layout_marginStart="8dp"/>
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btnReservar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Reservar"
+            android:layout_margin="12dp"/>
+
+        <!-- ========================= -->
+        <!-- COMENTARIOS / RESERVAS -->
+        <!-- ========================= -->
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Reservas"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:padding="16dp"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerComentarios"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp"/>
+
+    </LinearLayout>
+
+</ScrollView>

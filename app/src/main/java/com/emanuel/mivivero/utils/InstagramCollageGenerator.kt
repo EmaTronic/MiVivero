@@ -64,7 +64,7 @@ object InstagramCollageGenerator {
         )
 
         FileOutputStream(archivo).use {
-            collage.compress(Bitmap.CompressFormat.JPEG, 95, it)
+            collage.compress(Bitmap.CompressFormat.JPEG, 70, it)
         }
 
         return FileProvider.getUriForFile(

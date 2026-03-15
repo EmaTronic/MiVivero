@@ -133,7 +133,7 @@ object AlbumPublisher {
         )
 
         FileOutputStream(file).use { fos ->
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 95, fos)
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 70, fos)
         }
 
         return FileProvider.getUriForFile(
@@ -331,7 +331,7 @@ object AlbumPublisher {
             )
 
             FileOutputStream(file).use { fos ->
-                mutable.compress(Bitmap.CompressFormat.JPEG, 95, fos)
+                mutable.compress(Bitmap.CompressFormat.JPEG, 70, fos)
             }
 
             val uri = FileProvider.getUriForFile(

@@ -1,6 +1,7 @@
 package com.emanuel.mivivero.ui.comunidad
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -147,21 +148,24 @@ class ComunidadFragment : Fragment(R.layout.fragment_comunidad) {
 
     private fun cargarAlbumes() {
 
-        db.collection("albumes")
+
+
+
+
+        db.collection("albumsFeed")
+            .orderBy("fechaPublicacion", Query.Direction.DESCENDING)
             .limit(20)
             .get()
             .addOnSuccessListener { result ->
 
+                Log.d("ALBUMES_FEED", "cantidad=${result.size()}")
+
                 listaAlbumes = result.mapIndexed { index, doc ->
 
                     HorizontalContentItem.AlbumCard(
-                        stableId = doc.id.ifBlank { "album-$index" },
-                        titulo = doc.getString("nombre")
-                            .orEmpty()
-                            .ifBlank { "Álbum ${index + 1}" },
-                        descripcion = doc.getString("descripcion")
-                            .orEmpty()
-                            .ifBlank { "Sin descripción" },
+                        stableId = doc.id,
+                        titulo = doc.getString("titulo") ?: "Álbum ${index + 1}",
+                        descripcion = "${doc.getLong("cantidadPlantas") ?: 0} plantas",
                         portadaUrl = doc.getString("portadaUrl")
                     )
                 }
