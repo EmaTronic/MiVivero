@@ -54,7 +54,7 @@ class ComentariosAdapter(
         // Mostrar botón ACEPTAR solo si:
         // - Es propuesta
         // - El usuario actual es el autor del post
-        if (comentario.tipo == "propuesta" && currentUid == uidAutorPost) {
+        if (comentario.tipo == "propuesta" && uidAutorPost.isNotEmpty() && currentUid == uidAutorPost) {
             holder.btnAceptar.visibility = View.VISIBLE
         } else {
             holder.btnAceptar.visibility = View.GONE
