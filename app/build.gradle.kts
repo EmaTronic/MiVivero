@@ -47,43 +47,34 @@ android {
 
 dependencies {
 
+    // FIREBASE (BOM maneja versiones)
+    implementation(platform("com.google.firebase:firebase-bom:33.5.1"))
 
-    //FIREBASE
-    implementation(platform("com.google.firebase:firebase-bom:32.8.0"))
-    implementation("com.google.firebase:firebase-auth")
-    implementation("com.google.firebase:firebase-firestore")
-    implementation("com.google.firebase:firebase-storage")
-
-
+    implementation("com.google.firebase:firebase-auth-ktx")
+    implementation("com.google.firebase:firebase-firestore-ktx")
+    implementation("com.google.firebase:firebase-storage-ktx")
 
 
-
-
-
+    // ANDROIDX
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
-    implementation (libs.androidx.exifinterface)
+    implementation(libs.androidx.exifinterface)
 
-    implementation("com.google.code.gson:gson:2.10.1")
-
-            //TEST
-
-    testImplementation("junit:junit:4.13.2")
-
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
-
-    // 🔥 ESTO FALTABA
     implementation("androidx.recyclerview:recyclerview:1.3.2")
+
+
+    // JSON
+    implementation("com.google.code.gson:gson:2.10.1")
 
 
     // GLIDE
     implementation("com.github.bumptech.glide:glide:4.16.0")
     kapt("com.github.bumptech.glide:compiler:4.16.0")
+
 
     // ROOM
     val roomVersion = "2.6.1"
@@ -91,16 +82,10 @@ dependencies {
     implementation("androidx.room:room-ktx:$roomVersion")
     kapt("androidx.room:room-compiler:$roomVersion")
 
-    //CORREO
-    implementation("com.google.firebase:firebase-auth-ktx:22.3.0")
 
+    // TEST
+    testImplementation("junit:junit:4.13.2")
+    androidTestImplementation("androidx.test.ext:junit:1.1.5")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 
-    //COMUNIDAD
-    implementation("com.github.bumptech.glide:glide:4.16.0")
-    kapt("com.github.bumptech.glide:compiler:4.16.0")
-
-
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
 }

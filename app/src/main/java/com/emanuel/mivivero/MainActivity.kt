@@ -6,16 +6,21 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.emanuel.mivivero.databinding.ActivityMainBinding
+import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+    private lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        // inicializar FirebaseAuth
+        auth = FirebaseAuth.getInstance()
 
         // Toolbar
         setSupportActionBar(binding.topAppBar)
@@ -32,15 +37,24 @@ class MainActivity : AppCompatActivity() {
         // botón usuario
         binding.btnUsuario.setOnClickListener {
 
-            navController.navigate(
-                R.id.registroUsuarioFragment,
-                null,
-                androidx.navigation.NavOptions.Builder()
-                    .setLaunchSingleTop(true)
-                    .build()
-            )
-        }
+            val usuarioActual = auth.currentUser
 
+            if (usuarioActual == null) {
+
+                navController.navigate(R.id.loginFragment)
+
+            } else {
+
+                AlertDialog.Builder(this)
+                    .setTitle("Usuario")
+                    .setMessage("Sesión iniciada como:\n${usuarioActual.email}")
+                    .setPositiveButton("Cerrar sesión") { _, _ ->
+                        auth.signOut()
+                    }
+                    .setNegativeButton("Cancelar", null)
+                    .show()
+            }
+        }
         // logo
         binding.imgLogoToolbar.setOnClickListener {
             AlertDialog.Builder(this)

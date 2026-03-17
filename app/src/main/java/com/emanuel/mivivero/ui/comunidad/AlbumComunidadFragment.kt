@@ -57,8 +57,7 @@ class AlbumComunidadFragment : Fragment(R.layout.fragment_album_comunidad) {
             reservar()
         }
     }
-
-    private fun cargarFotosAlbum() {
+   private fun cargarFotosAlbum() {
 
         val storage = FirebaseStorage.getInstance()
         val ref = storage.reference.child("albums/$albumId")
