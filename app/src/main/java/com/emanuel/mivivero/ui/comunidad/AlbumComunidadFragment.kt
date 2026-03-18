@@ -135,7 +135,10 @@ class AlbumComunidadFragment : Fragment(R.layout.fragment_album_comunidad) {
 
                 if (snapshot == null) return@addSnapshotListener
 
-                val lista = snapshot.toObjects(Comentario::class.java)
+                val lista = snapshot.documents.map { doc ->
+                    val comentario = doc.toObject(Comentario::class.java)!!
+                    comentario.copy(id = doc.id)
+                }
 
                 recyclerComentarios.adapter =
                     ComentariosAdapter(
@@ -201,59 +204,37 @@ class AlbumComunidadFragment : Fragment(R.layout.fragment_album_comunidad) {
 
     private fun comentar() {
 
-        android.util.Log.d("COMENTARIO_DEBUG","ENTRO A FUNCION COMENTAR")
-
         val texto = etComentario.text.toString()
 
-        android.util.Log.d("COMENTARIO_DEBUG","texto='$texto'")
-
         if (texto.isBlank()) {
-            Log.d("COMENTARIO_DEBUG","BOTON PRESIONADO")
-            Toast.makeText(
-                requireContext(),
-                "Escribí un comentario",
-                Toast.LENGTH_SHORT
-            ).show()
-
+            Toast.makeText(requireContext(),"Escribí un comentario",Toast.LENGTH_SHORT).show()
             return
         }
 
-        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
-        val email = FirebaseAuth.getInstance().currentUser?.email ?: "usuario"
+        val user = FirebaseAuth.getInstance().currentUser ?: return
+        val uid = user.uid
 
-        val comentario = hashMapOf(
-            "uidUsuario" to uid,
-            "usuario" to email,
-            "texto" to texto,
-            "fecha" to FieldValue.serverTimestamp()
-        )
+        db.collection("usuarios")
+            .document(uid)
+            .get()
+            .addOnSuccessListener { doc ->
 
-        android.util.Log.d("COMENTARIO_DEBUG","GUARDANDO COMENTARIO: $texto")
+                val nick = doc.getString("nick") ?: "usuario"
 
-        db.collection("albumsFeed")
-            .document(albumId)
-            .collection("comentarios")
-            .add(comentario)
-            .addOnSuccessListener {
+                val comentario = hashMapOf(
+                    "uidAutor" to uid,
+                    "nickAutor" to nick,
+                    "texto" to texto,
+                    "fecha" to FieldValue.serverTimestamp(),
+                    "tipo" to "comentario"
+                )
 
-                Toast.makeText(
-                    requireContext(),
-                    "Comentario enviado",
-                    Toast.LENGTH_SHORT
-                ).show()
+                db.collection("albumsFeed")
+                    .document(albumId)
+                    .collection("comentarios")
+                    .add(comentario)
 
                 etComentario.setText("")
             }
-            .addOnFailureListener { e ->
-
-                android.util.Log.e("COMENTARIO_DEBUG","ERROR FIRESTORE", e)
-
-                Toast.makeText(
-                    requireContext(),
-                    "Error guardando comentario",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-
     }
 }

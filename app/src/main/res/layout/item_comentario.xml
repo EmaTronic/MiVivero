@@ -19,6 +19,37 @@
         android:textSize="11sp"
         android:textColor="#777777"/>
 
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnEditarComentario"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Editar"
+            android:visibility="gone"/>
+
+        <Button
+            android:id="@+id/btnEliminarComentario"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Eliminar"
+            android:visibility="gone"
+            android:layout_marginStart="8dp"/>
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvFechaComentario"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="11sp"
+        android:textColor="#777"/>
+
+
+
     <Button
         android:id="@+id/btnAceptar"
         android:layout_width="wrap_content"

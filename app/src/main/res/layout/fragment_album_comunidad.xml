@@ -96,28 +96,7 @@
         <!-- COMENTARIOS -->
         <!-- ========================= -->
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Comentarios"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:padding="16dp"/>
 
-        <EditText
-            android:id="@+id/etComentario"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Escribí un comentario sobre el álbum"
-            android:layout_marginStart="12dp"
-            android:layout_marginEnd="12dp"/>
-
-        <Button
-            android:id="@+id/btnComentar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Comentar"
-            android:layout_margin="12dp"/>
         <!-- ========================= -->
         <!-- COMENTARIOS / RESERVAS -->
         <!-- ========================= -->
@@ -135,6 +114,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="8dp"/>
+
 
 
 

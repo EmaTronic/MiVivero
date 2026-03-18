@@ -1,12 +1,13 @@
 package com.emanuel.mivivero.ui.auth
 
-import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
+import android.text.TextWatcher
+import android.util.Log
 import android.util.Patterns
 import android.view.View
-import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -18,14 +19,12 @@ import com.emanuel.mivivero.data.db.entity.UsuarioEntity
 import com.emanuel.mivivero.data.model.Root
 import com.emanuel.mivivero.databinding.FragmentRegistroUsuarioBinding
 import com.google.android.material.textfield.TextInputLayout
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.gson.Gson
 import kotlinx.coroutines.launch
-import android.text.TextWatcher
-import android.widget.Button
-import com.google.firebase.auth.FirebaseAuth
 
-class RegistroUsuarioFragment :
-    Fragment(R.layout.fragment_registro_usuario) {
+class RegistroUsuarioFragment : Fragment(R.layout.fragment_registro_usuario) {
 
     private var _binding: FragmentRegistroUsuarioBinding? = null
     private val binding get() = _binding!!
@@ -36,10 +35,8 @@ class RegistroUsuarioFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         _binding = FragmentRegistroUsuarioBinding.bind(view)
-
-
-
 
         limpiarErrorAlEscribir(binding.etNombreReal, binding.tilNombreReal)
         limpiarErrorAlEscribir(binding.etNick, binding.tilNick)
@@ -47,6 +44,7 @@ class RegistroUsuarioFragment :
         limpiarErrorAlEscribir(binding.spPais, binding.tilPais)
         limpiarErrorAlEscribir(binding.spProvincia, binding.tilProvincia)
         limpiarErrorAlEscribir(binding.spCiudad, binding.tilCiudad)
+
         binding.etEmail.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 val email = s.toString()
@@ -56,6 +54,7 @@ class RegistroUsuarioFragment :
                     binding.tilEmail.error = null
                 }
             }
+
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
@@ -63,8 +62,8 @@ class RegistroUsuarioFragment :
         cargarJson()
         configurarSpinners()
 
-        // Cargar usuario si existe
         viewLifecycleOwner.lifecycleScope.launch {
+
             val usuario = viewModel.obtenerUsuario()
 
             if (usuario != null) {
@@ -77,7 +76,6 @@ class RegistroUsuarioFragment :
                 binding.etNombreVivero.setText(usuario.nombreVivero)
                 binding.etEmail.setText(usuario.email)
 
-                // Seleccionar valores guardados
                 seleccionarUbicacion(usuario.pais, usuario.provincia, usuario.ciudad)
             }
         }
@@ -111,7 +109,6 @@ class RegistroUsuarioFragment :
             validar(binding.tilProvincia, provincia)
             validar(binding.tilCiudad, ciudad)
 
-            // Validación email
             if (email.isBlank()) {
                 binding.tilEmail.error = "Campo obligatorio"
                 hayError = true
@@ -122,7 +119,6 @@ class RegistroUsuarioFragment :
                 binding.tilEmail.error = null
             }
 
-            // Validación contraseña
             if (password.length < 6) {
                 binding.tilPassword.error = "Mínimo 6 caracteres"
                 hayError = true
@@ -131,6 +127,8 @@ class RegistroUsuarioFragment :
             }
 
             if (hayError) return@setOnClickListener
+
+            Log.d("REGISTRO_DEBUG", "Intentando registrar usuario")
 
             val usuario = UsuarioEntity(
                 nombreReal = nombreReal,
@@ -146,35 +144,69 @@ class RegistroUsuarioFragment :
             val auth = FirebaseAuth.getInstance()
 
             auth.createUserWithEmailAndPassword(email, password)
-                .addOnSuccessListener {
 
-                    // enviar verificación
-                    auth.currentUser?.sendEmailVerification()
+                .addOnSuccessListener { result ->
 
-                    viewLifecycleOwner.lifecycleScope.launch {
+                    val uid = result.user?.uid ?: return@addOnSuccessListener
 
-                        viewModel.guardarUsuarioSiNoExiste(usuario)
+                    val usuarioFirestore = hashMapOf(
+                        "uid" to uid,
+                        "nombreReal" to nombreReal,
+                        "nick" to nick,
+                        "nombreVivero" to vivero,
+                        "pais" to pais,
+                        "provincia" to provincia,
+                        "ciudad" to ciudad,
+                        "email" to email,
+                        "fechaRegistro" to System.currentTimeMillis()
+                    )
 
-                        Toast.makeText(
-                            requireContext(),
-                            "Cuenta creada. Revisá tu correo para verificar.",
-                            Toast.LENGTH_LONG
-                        ).show()
+                    FirebaseFirestore.getInstance()
+                        .collection("usuarios")
+                        .document(uid)
+                        .set(usuarioFirestore)
 
-                        findNavController().popBackStack()
-                    }
+                        .addOnSuccessListener {
 
+                            auth.currentUser?.sendEmailVerification()
+
+                            viewLifecycleOwner.lifecycleScope.launch {
+
+                                viewModel.guardarUsuarioSiNoExiste(usuario)
+
+                                Toast.makeText(
+                                    requireContext(),
+                                    "Cuenta creada. Revisá tu correo para verificar.",
+                                    Toast.LENGTH_LONG
+                                ).show()
+
+                                findNavController().popBackStack()
+                            }
+                        }
+
+                        .addOnFailureListener { e ->
+
+                            Log.e("REGISTRO_DEBUG", "ERROR GUARDANDO USUARIO", e)
+
+                            Toast.makeText(
+                                requireContext(),
+                                "Error guardando datos de usuario",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
                 }
-                .addOnFailureListener {
+
+                .addOnFailureListener { e ->
+
+                    Log.e("REGISTRO_DEBUG", "ERROR REGISTRO", e)
 
                     Toast.makeText(
                         requireContext(),
-                        it.message ?: "Error creando usuario",
+                        e.message ?: "Error creando usuario",
                         Toast.LENGTH_LONG
                     ).show()
                 }
         }
-
 
         val btnCerrarSesion = view.findViewById<Button>(R.id.btnCerrarSesion)
 
@@ -192,22 +224,24 @@ class RegistroUsuarioFragment :
         }
     }
 
+    private fun limpiarErrorAlEscribir(editText: EditText, layout: TextInputLayout) {
 
-    private fun limpiarErrorAlEscribir(
-        editText: EditText,
-        layout: TextInputLayout
-    ) {
         editText.addTextChangedListener(object : TextWatcher {
+
             override fun afterTextChanged(s: Editable?) {
                 if (!s.isNullOrBlank()) {
                     layout.error = null
                 }
             }
+
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
     }
+
     private fun cargarJson() {
+
         val jsonString = requireContext().assets
             .open("argentina_ordenado.json")
             .bufferedReader()
@@ -271,14 +305,12 @@ class RegistroUsuarioFragment :
         }
     }
 
-
-        private fun seleccionarUbicacion(
-    pais: String,
-    provincia: String,
-    ciudad: String
+    private fun seleccionarUbicacion(
+        pais: String,
+        provincia: String,
+        ciudad: String
     ) {
 
-        // 1️⃣ Setear país
         binding.spPais.setText(pais, false)
 
         val paisSeleccionado = rootData.paises
@@ -294,8 +326,6 @@ class RegistroUsuarioFragment :
         )
 
         binding.spProvincia.setAdapter(adapterProvincia)
-
-        // 2️⃣ Setear provincia
         binding.spProvincia.setText(provincia, false)
 
         val provinciaSeleccionada = paisSeleccionado.provincias
@@ -311,8 +341,6 @@ class RegistroUsuarioFragment :
         )
 
         binding.spCiudad.setAdapter(adapterCiudad)
-
-        // 3️⃣ Setear ciudad
         binding.spCiudad.setText(ciudad, false)
     }
 

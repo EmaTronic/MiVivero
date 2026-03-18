@@ -1,9 +1,11 @@
 package com.emanuel.mivivero.ui.comunidad
 
+import android.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.EditText
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.emanuel.mivivero.R
@@ -20,9 +22,16 @@ class ComentariosAdapter(
 ) : RecyclerView.Adapter<ComentariosAdapter.ViewHolder>() {
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+
         val texto: TextView = view.findViewById(R.id.tvTextoComentario)
         val autor: TextView = view.findViewById(R.id.tvAutorComentario)
+        val fecha: TextView = view.findViewById(R.id.tvFechaComentario)
+
         val btnAceptar: Button = view.findViewById(R.id.btnAceptar)
+
+
+        val btnEditar: Button = view.findViewById(R.id.btnEditarComentario)
+        val btnEliminar: Button = view.findViewById(R.id.btnEliminarComentario)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -38,6 +47,55 @@ class ComentariosAdapter(
         val comentario = lista[position]
         val currentUid = FirebaseAuth.getInstance().currentUser?.uid
 
+
+
+        if (currentUid == comentario.uidAutor) {
+            holder.btnEditar.visibility = View.VISIBLE
+            holder.btnEliminar.visibility = View.VISIBLE
+        } else {
+            holder.btnEditar.visibility = View.GONE
+            holder.btnEliminar.visibility = View.GONE
+        }
+
+        holder.btnEliminar.setOnClickListener {
+
+            FirebaseFirestore.getInstance()
+                .collection("albumsFeed")
+                .document(publicacionId)
+                .collection("comentarios")
+                .document(comentario.id)
+                .delete()
+        }
+
+        holder.btnEditar.setOnClickListener {
+
+            val context = holder.itemView.context
+
+            val editText = EditText(context)
+            editText.setText(comentario.texto)
+
+            AlertDialog.Builder(context)
+                .setTitle("Editar comentario")
+                .setView(editText)
+
+                .setPositiveButton("Guardar") { _, _ ->
+
+                    val nuevoTexto = editText.text.toString()
+
+                    FirebaseFirestore.getInstance()
+                        .collection("albumsFeed")
+                        .document(publicacionId)
+                        .collection("comentarios")
+                        .document(comentario.id)
+                        .update("texto", nuevoTexto)
+                }
+
+                .setNegativeButton("Cancelar", null)
+                .show()
+        }
+
+
+
         // Mostrar texto normal o propuesta
         if (comentario.tipo == "propuesta") {
             holder.texto.text =
@@ -49,7 +107,17 @@ class ComentariosAdapter(
             holder.texto.text = comentario.texto
         }
 
-        holder.autor.text = comentario.emailAutor
+        //AUTOR
+        holder.autor.text = comentario.nickAutor
+
+
+        // FECHA
+        val fecha = comentario.fecha?.toDate()
+
+        if (fecha != null) {
+            val formato = java.text.SimpleDateFormat("dd/MM/yyyy HH:mm", java.util.Locale.getDefault())
+            holder.fecha.text = formato.format(fecha)
+        }
 
         // Mostrar botón ACEPTAR solo si:
         // - Es propuesta

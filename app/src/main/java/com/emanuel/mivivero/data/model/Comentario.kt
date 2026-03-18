@@ -3,7 +3,9 @@ package com.emanuel.mivivero.data.model
 data class Comentario(
     val id: String = "",
     val uidAutor: String = "",
+    val nickAutor: String = "",
     val emailAutor: String = "",
+    val nombreAutor: String = "",
     val texto: String = "",
     val fecha: com.google.firebase.Timestamp? = null,
 
