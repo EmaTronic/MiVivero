@@ -10,6 +10,7 @@ import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : AppCompatActivity() {
 
+    private var sessionListener: com.google.firebase.firestore.ListenerRegistration? = null
     private lateinit var binding: ActivityMainBinding
     private lateinit var auth: FirebaseAuth
 
@@ -22,6 +23,70 @@ class MainActivity : AppCompatActivity() {
         // inicializar FirebaseAuth
         auth = FirebaseAuth.getInstance()
 
+        val user = FirebaseAuth.getInstance().currentUser
+
+        if (user != null) {
+
+            val uid = user.uid
+
+            sessionListener = com.google.firebase.firestore.FirebaseFirestore.getInstance()
+                .collection("usuarios")
+                .document(uid)
+                .addSnapshotListener { doc, _ ->
+
+                    android.util.Log.d("SESSION_DEBUG", "🔥 LISTENER DISPARADO")
+
+                    if (doc == null || !doc.exists()) {
+                        android.util.Log.d("SESSION_DEBUG", "❌ DOC NULL O NO EXISTE")
+                        return@addSnapshotListener
+                    }
+
+                  val remoteSessionId = doc.getString("sessionId")
+
+                    val prefs = getSharedPreferences("session", MODE_PRIVATE)
+                    val localSessionId = prefs.getString("sessionId", null)
+
+                        // 👇 SOLO el que NO coincide muestra aviso
+                    if (localSessionId != null && localSessionId != remoteSessionId) {
+
+                        android.widget.Toast.makeText(
+                            this,
+                            "Tu sesión fue iniciada en otro dispositivo",
+                            android.widget.Toast.LENGTH_LONG
+                        ).show()
+
+                        FirebaseAuth.getInstance().signOut()
+
+                        val navHostFragment =
+                            supportFragmentManager.findFragmentById(R.id.navHost) as NavHostFragment
+
+                        val navController = navHostFragment.navController
+
+                        navController.navigate(R.id.loginFragment)
+                    }
+
+
+
+                    if (localSessionId != null && localSessionId != remoteSessionId) {
+
+
+                        android.widget.Toast.makeText(
+                            this,
+                            "Tu sesión fue iniciada en otro dispositivo",
+                            android.widget.Toast.LENGTH_LONG
+                        ).show()
+
+                        val navHostFragment =
+                            supportFragmentManager.findFragmentById(R.id.navHost) as NavHostFragment
+
+                        val navController = navHostFragment.navController
+
+                        navController.navigate(R.id.loginFragment)
+
+                        FirebaseAuth.getInstance().signOut()
+                    }
+                }
+        }
         // Toolbar
         setSupportActionBar(binding.topAppBar)
 
@@ -78,5 +143,10 @@ class MainActivity : AppCompatActivity() {
                 .setPositiveButton("Cerrar", null)
                 .show()
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        sessionListener?.remove()
     }
 }

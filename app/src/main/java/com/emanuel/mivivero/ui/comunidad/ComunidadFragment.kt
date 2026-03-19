@@ -3,6 +3,7 @@ package com.emanuel.mivivero.ui.comunidad
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -133,6 +134,41 @@ class ComunidadFragment : Fragment(R.layout.fragment_comunidad) {
         cargarMisPublicaciones()
         cargarComunidad()
         cargarAlbumes()
+
+
+        val user = FirebaseAuth.getInstance().currentUser ?: return
+
+        val uid = user.uid
+
+        FirebaseFirestore.getInstance()
+            .collection("usuarios")
+            .document(uid)
+            .addSnapshotListener { doc, _ ->
+
+                if (doc == null || !doc.exists()) return@addSnapshotListener
+
+                val remoteSessionId = doc.getString("sessionId") ?: return@addSnapshotListener
+
+                val prefs = requireContext().getSharedPreferences("session", 0)
+                val localSessionId = prefs.getString("sessionId", null)
+
+                if (localSessionId != null && localSessionId != remoteSessionId) {
+
+                    // 🔥 SESIÓN INVALIDADA
+
+                    FirebaseAuth.getInstance().signOut()
+
+                    Toast.makeText(
+                        requireContext(),
+                        "Tu sesión fue iniciada en otro dispositivo",
+                        Toast.LENGTH_LONG
+                    ).show()
+
+                    findNavController().navigate(R.id.loginFragment)
+                }
+            }
+
+
     }
 
     private fun cargarMisPublicaciones() {

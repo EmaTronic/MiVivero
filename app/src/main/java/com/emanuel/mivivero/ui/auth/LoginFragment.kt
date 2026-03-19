@@ -34,36 +34,42 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
             }
 
             auth.signInWithEmailAndPassword(email, pass)
-                .addOnCompleteListener { task ->
+                .addOnSuccessListener {
 
-                    if (task.isSuccessful) {
+                    val user = FirebaseAuth.getInstance().currentUser ?: return@addOnSuccessListener
+                    val uid = user.uid
 
-                        val user = FirebaseAuth.getInstance().currentUser ?: return@addOnCompleteListener
-                        val uid = user.uid
+                    val sessionId = System.currentTimeMillis().toString()
 
-                        val sessionId = System.currentTimeMillis().toString()
+                    // 🔹 Firestore
+                    com.google.firebase.firestore.FirebaseFirestore.getInstance()
+                        .collection("usuarios")
+                        .document(uid)
+                        .set(
+                            mapOf(
+                                "sessionId" to sessionId
+                            ),
+                            com.google.firebase.firestore.SetOptions.merge()
+                        )
 
-                        // 🔹 Guardar en Firestore
-                        com.google.firebase.firestore.FirebaseFirestore.getInstance()
-                            .collection("usuarios")
-                            .document(uid)
-                            .set(
-                                mapOf("sessionId" to sessionId),
-                                com.google.firebase.firestore.SetOptions.merge()
-                            )
+                    // 🔹 Local
+                    val prefs = requireContext().getSharedPreferences("session", 0)
+                    prefs.edit().putString("sessionId", sessionId).apply()
 
-                        // 🔹 Guardar local
-                        val prefs = requireContext().getSharedPreferences("session", 0)
-                        prefs.edit().putString("sessionId", sessionId).apply()
+                    Toast.makeText(
+                        requireContext(),
+                        "Sesión iniciada",
+                        Toast.LENGTH_SHORT
+                    ).show()
 
-                        Toast.makeText(
-                            requireContext(),
-                            "Sesión iniciada",
-                            Toast.LENGTH_SHORT
-                        ).show()
-
-                        findNavController().popBackStack()
-                    }
+                    findNavController().popBackStack()
+                }
+                .addOnFailureListener {
+                    Toast.makeText(
+                        requireContext(),
+                        "Email o contraseña incorrectos",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
         }
 
