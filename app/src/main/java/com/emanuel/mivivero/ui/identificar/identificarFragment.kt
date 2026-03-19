@@ -203,8 +203,11 @@ class IdentificarFragment : Fragment() {
 
                     val publicacion = hashMapOf(
                         "uidAutor" to uid,
+                        "emailAutor" to email,                     // 👈 AGREGAR
                         "imageUrl" to downloadUri.toString(),
                         "observacion" to observacion,
+                        "estado" to "pendiente",                   // 👈 CLAVE
+                        "prioridadEstado" to 1,                    // 👈 CLAVE
                         "fecha" to FieldValue.serverTimestamp()
                     )
 

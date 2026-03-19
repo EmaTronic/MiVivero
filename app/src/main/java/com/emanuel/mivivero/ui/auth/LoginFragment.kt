@@ -38,6 +38,24 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
 
                     if (task.isSuccessful) {
 
+                        val user = FirebaseAuth.getInstance().currentUser ?: return@addOnCompleteListener
+                        val uid = user.uid
+
+                        val sessionId = System.currentTimeMillis().toString()
+
+                        // 🔹 Guardar en Firestore
+                        com.google.firebase.firestore.FirebaseFirestore.getInstance()
+                            .collection("usuarios")
+                            .document(uid)
+                            .set(
+                                mapOf("sessionId" to sessionId),
+                                com.google.firebase.firestore.SetOptions.merge()
+                            )
+
+                        // 🔹 Guardar local
+                        val prefs = requireContext().getSharedPreferences("session", 0)
+                        prefs.edit().putString("sessionId", sessionId).apply()
+
                         Toast.makeText(
                             requireContext(),
                             "Sesión iniciada",
@@ -45,14 +63,6 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
                         ).show()
 
                         findNavController().popBackStack()
-
-                    } else {
-
-                        Toast.makeText(
-                            requireContext(),
-                            "Email o contraseña incorrectos",
-                            Toast.LENGTH_SHORT
-                        ).show()
                     }
                 }
         }

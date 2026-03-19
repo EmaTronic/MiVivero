@@ -32,7 +32,22 @@ class MainActivity : AppCompatActivity() {
         val navController = navHostFragment.navController
 
         // Bottom navigation
-        binding.bottomNav.setupWithNavController(navController)
+        binding.bottomNav.setOnItemSelectedListener { item ->
+
+            when (item.itemId) {
+
+                R.id.comunidadFragment -> {
+                    navController.popBackStack(R.id.comunidadFragment, false)
+                    navController.navigate(R.id.comunidadFragment)
+                    true
+                }
+
+                else -> {
+                    navController.navigate(item.itemId)
+                    true
+                }
+            }
+        }
 
         // botón usuario
         binding.btnUsuario.setOnClickListener {

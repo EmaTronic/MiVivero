@@ -19,6 +19,7 @@ import com.emanuel.mivivero.R
 
 class ComunidadFeedAdapter(
     private val onAlbumClick: (String) -> Unit,
+    private val onPublicacionClick: (String) -> Unit,
     private val onToggleSection: (FeedSection) -> Unit,
     private val onFiltroTodas: () -> Unit,
     private val onFiltroPendientes: () -> Unit,
@@ -120,7 +121,8 @@ class ComunidadFeedAdapter(
             recycler.setRecycledViewPool(sharedViewPool)
             val adapter =
                 recycler.adapter as? HorizontalContentAdapter
-                    ?: HorizontalContentAdapter(onAlbumClick).also { recycler.adapter = it }
+                    ?: HorizontalContentAdapter(onAlbumClick, onPublicacionClick)
+                        .also { recycler.adapter = it }
 
             adapter.submitList(item.items)
         }
@@ -173,8 +175,10 @@ private class FeedItemDiffCallback : DiffUtil.ItemCallback<FeedItem>() {
 }
 
 private class HorizontalContentAdapter(
-    private val onAlbumClick: (String) -> Unit
+    private val onAlbumClick: (String) -> Unit,
+    private val onPublicacionClick: (String) -> Unit
 ) :
+
     ListAdapter<HorizontalContentItem, RecyclerView.ViewHolder>(HorizontalContentDiffCallback()) {
 
     companion object {
@@ -208,9 +212,11 @@ private class HorizontalContentAdapter(
                 onAlbumClick
             )
 
-            else -> PublicacionViewHolder(
-                inflater.inflate(R.layout.item_publicacion_card, parent, false)
+            TYPE_PUBLICACION -> PublicacionViewHolder(
+                inflater.inflate(R.layout.item_publicacion_card, parent, false),
+                onPublicacionClick
             )
+            else -> throw IllegalArgumentException("Tipo desconocido: $viewType")
         }
     }
 
@@ -243,7 +249,10 @@ private class HorizontalContentAdapter(
         }
     }
 
-    class PublicacionViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    class PublicacionViewHolder(
+        view: View,
+        private val onPublicacionClick: (String) -> Unit
+    ) : RecyclerView.ViewHolder(view) {
 
         private val imgPlanta: ImageView = view.findViewById(R.id.imgPlanta)
         private val tvNombre: TextView = view.findViewById(R.id.tvNombreComun)
@@ -274,6 +283,11 @@ private class HorizontalContentAdapter(
                 .error(R.drawable.ic_planta_placeholder)
                 .diskCacheStrategy(com.bumptech.glide.load.engine.DiskCacheStrategy.ALL)
                 .into(imgPlanta)
+
+
+            itemView.setOnClickListener {
+                onPublicacionClick(publicacion.id)
+            }
         }
     }
 

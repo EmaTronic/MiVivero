@@ -112,7 +112,7 @@ class DetallePublicacionFragment :
         val btnProponer = view.findViewById<Button>(R.id.btnProponer)
 
         btnProponer.setOnClickListener {
-            println("BOTON PROPONER PRESIONADO")
+
             val nombreComun = etNombreComun.text.toString().trim()
             val nombreCientifico = etNombreCientifico.text.toString().trim()
 
@@ -120,23 +120,36 @@ class DetallePublicacionFragment :
 
             val user = FirebaseAuth.getInstance().currentUser ?: return@setOnClickListener
 
-            val propuesta = hashMapOf(
-                "uidAutor" to user.uid,
-                "emailAutor" to user.email,
-                "texto" to "Propuesta de identificación",
-                "fecha" to com.google.firebase.Timestamp.now(),
-                "tipo" to "propuesta",
-                "nombreComunPropuesto" to nombreComun,
-                "nombreCientificoPropuesto" to nombreCientifico
-            )
-
             db.collection("publicaciones")
                 .document(publicacionId)
-                .collection("comentarios")
-                .add(propuesta)
+                .get()
+                .addOnSuccessListener { doc ->
 
-            etNombreComun.text.clear()
-            etNombreCientifico.text.clear()
+                    val estado = doc.getString("estado")
+
+                    if (estado == "identificada") {
+                        Toast.makeText(requireContext(), "Esta planta ya fue identificada", Toast.LENGTH_SHORT).show()
+                        return@addOnSuccessListener
+                    }
+
+                    val propuesta = hashMapOf(
+                        "uidAutor" to user.uid,
+                        "emailAutor" to user.email,
+                        "texto" to "Propuesta de identificación",
+                        "fecha" to com.google.firebase.Timestamp.now(),
+                        "tipo" to "propuesta",
+                        "nombreComunPropuesto" to nombreComun,
+                        "nombreCientificoPropuesto" to nombreCientifico
+                    )
+
+                    db.collection("publicaciones")
+                        .document(publicacionId)
+                        .collection("comentarios")
+                        .add(propuesta)
+
+                    etNombreComun.text.clear()
+                    etNombreCientifico.text.clear()
+                }
         }
 
 
@@ -162,6 +175,10 @@ class DetallePublicacionFragment :
                     doc.getString("identificadaPorEmail")
 
                 if (estado == "identificada") {
+
+                    view?.findViewById<EditText>(R.id.etNombreComun)?.isEnabled = false
+                    view?.findViewById<EditText>(R.id.etNombreCientifico)?.isEnabled = false
+                    view?.findViewById<Button>(R.id.btnProponer)?.isEnabled = false
 
                     layoutIdentificada.visibility = View.VISIBLE
                     tvNombreComun.text = nombreComun ?: ""

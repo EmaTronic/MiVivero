@@ -24,7 +24,8 @@ class ComunidadFragment : Fragment(R.layout.fragment_comunidad) {
         FeedSection.DESTACADOS to false,
         FeedSection.MIS_PUBLICACIONES to false,
         FeedSection.ALBUMES to false,
-        FeedSection.COMUNIDAD to false
+        FeedSection.COMUNIDAD to false,
+        FeedSection.COMUNIDAD to true
     )
 
     private val destacados: List<HorizontalContentItem.Articulo> by lazy {
@@ -89,6 +90,16 @@ class ComunidadFragment : Fragment(R.layout.fragment_comunidad) {
                 )
             },
 
+            onPublicacionClick = { publicacionId ->
+
+                findNavController().navigate(
+                    R.id.detallePublicacionFragment,
+                    Bundle().apply {
+                        putString("publicacionId", publicacionId)
+                    }
+                )
+            },
+
             onToggleSection = { section ->
                 expandedSections[section] = !(expandedSections[section] ?: false)
                 reconstruirFeed()
@@ -143,19 +154,55 @@ class ComunidadFragment : Fragment(R.layout.fragment_comunidad) {
 
     private fun cargarComunidad() {
 
+        Log.d("COMUNIDAD_DEBUG", "🔥 INICIO cargarComunidad()")
+
         db.collection("publicaciones")
             .orderBy("prioridadEstado")
             .orderBy("fecha", Query.Direction.DESCENDING)
             .get()
             .addOnSuccessListener { result ->
 
-                android.util.Log.d("FIRESTORE", "docs: ${result.size()}")
+                Log.d("COMUNIDAD_DEBUG", "✅ Firestore SUCCESS")
+                Log.d("COMUNIDAD_DEBUG", "📦 Cantidad docs: ${result.size()}")
 
-                listaComunidadCompleta = result.map { doc ->
-                    doc.toObject(Publicacion::class.java).copy(id = doc.id)
+                if (result.isEmpty) {
+                    Log.w("COMUNIDAD_DEBUG", "⚠️ RESULT VACÍO (Firestore respondió pero no hay datos)")
                 }
 
+                result.documents.forEachIndexed { index, doc ->
+
+                    Log.d("COMUNIDAD_DEBUG", "📄 Doc[$index] ID: ${doc.id}")
+                    Log.d("COMUNIDAD_DEBUG", "📄 Data: ${doc.data}")
+
+                    val estado = doc.getString("estado")
+                    val nombre = doc.getString("nombreComun")
+                    val image = doc.getString("imageUrl")
+
+                    Log.d("COMUNIDAD_DEBUG", "   → estado=$estado | nombre=$nombre | image=$image")
+                }
+
+                listaComunidadCompleta = result.mapNotNull { doc ->
+                    try {
+                        val pub = doc.toObject(Publicacion::class.java)?.copy(id = doc.id)
+
+                        if (pub == null) {
+                            Log.e("COMUNIDAD_DEBUG", "❌ MAP NULL en doc ${doc.id}")
+                        }
+
+                        pub
+
+                    } catch (e: Exception) {
+                        Log.e("COMUNIDAD_DEBUG", "❌ ERROR MAP doc ${doc.id}", e)
+                        null
+                    }
+                }
+
+                Log.d("COMUNIDAD_DEBUG", "📊 Lista mapeada size: ${listaComunidadCompleta.size}")
+
                 aplicarFiltros()
+            }
+            .addOnFailureListener { e ->
+                Log.e("COMUNIDAD_DEBUG", "❌ FIRESTORE ERROR", e)
             }
     }
 
@@ -195,6 +242,9 @@ class ComunidadFragment : Fragment(R.layout.fragment_comunidad) {
 
     private fun aplicarFiltros() {
 
+        Log.d("COMUNIDAD_DEBUG", "🎯 aplicarFiltros() input size: ${listaComunidadCompleta.size}")
+        Log.d("COMUNIDAD_DEBUG", "🎯 filtroEstadoActual=$filtroEstadoActual textoBusqueda=$textoBusquedaActual")
+
         val listaFiltrada = listaComunidadCompleta
             .asSequence()
 
@@ -213,6 +263,9 @@ class ComunidadFragment : Fragment(R.layout.fragment_comunidad) {
             }
 
             .toList()
+
+
+        Log.d("COMUNIDAD_DEBUG", "🎯 listaFiltrada size: ${listaFiltrada.size}")
 
         reconstruirFeed(listaFiltrada)
     }
