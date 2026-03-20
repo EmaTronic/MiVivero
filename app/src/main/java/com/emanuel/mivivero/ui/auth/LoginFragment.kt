@@ -41,6 +41,13 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
 
                     val sessionId = System.currentTimeMillis().toString()
 
+
+                    val prefs = requireContext().getSharedPreferences("session", 0)
+                    prefs.edit()
+                        .putString("sessionId", sessionId)
+                        .putLong("loginTime", System.currentTimeMillis())
+                        .apply()
+
                     // 🔹 Firestore
                     com.google.firebase.firestore.FirebaseFirestore.getInstance()
                         .collection("usuarios")
@@ -53,8 +60,7 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
                         )
 
                     // 🔹 Local
-                    val prefs = requireContext().getSharedPreferences("session", 0)
-                    prefs.edit().putString("sessionId", sessionId).apply()
+
 
                     Toast.makeText(
                         requireContext(),

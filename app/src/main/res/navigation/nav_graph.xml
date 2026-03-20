@@ -174,7 +174,10 @@
 
 
 
-
+    <fragment
+        android:id="@+id/sesionCerradaFragment"
+        android:name="com.emanuel.mivivero.ui.auth.SesionCerradaFragment"
+        android:label="Sesión cerrada"/>
 
 
 
