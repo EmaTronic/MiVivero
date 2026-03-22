@@ -67,10 +67,12 @@ class DetallePublicacionFragment :
                 val imageUrl = doc.getString("imageUrl")
                 val observacion = doc.getString("observacion")
                 val emailAutor = doc.getString("emailAutor")
+                val nickAutor = doc.getString("nickAutor")
 
 
                 obs.text = observacion
-                autor.text = "Publicado por: $emailAutor"
+
+                autor.text = "Publicado por: ${nickAutor ?: "usuario"}"
 
                 Glide.with(requireContext())
                     .load(imageUrl)
@@ -91,19 +93,30 @@ class DetallePublicacionFragment :
             val user =
                 FirebaseAuth.getInstance().currentUser ?: return@setOnClickListener
 
-            val comentario = hashMapOf(
-                "uidAutor" to user.uid,
-                "emailAutor" to user.email,
-                "texto" to texto,
-                "fecha" to com.google.firebase.Timestamp.now()
-            )
+            val db = FirebaseFirestore.getInstance()
 
-            db.collection("publicaciones")
-                .document(publicacionId)
-                .collection("comentarios")
-                .add(comentario)
+            db.collection("usuarios")
+                .document(user.uid)
+                .get()
+                .addOnSuccessListener { userDoc ->
 
-            etComentario.text.clear()
+                    val nick = userDoc.getString("nick") ?: "usuario"
+
+                    val comentario = hashMapOf(
+                        "uidAutor" to user.uid,
+                        "emailAutor" to user.email, // mantener
+                        "nickAutor" to nick,        // 🔥 NUEVO
+                        "texto" to texto,
+                        "fecha" to com.google.firebase.Timestamp.now()
+                    )
+
+                    db.collection("publicaciones")
+                        .document(publicacionId)
+                        .collection("comentarios")
+                        .add(comentario)
+
+                    etComentario.text.clear()
+                }
         }
 
 
@@ -132,23 +145,33 @@ class DetallePublicacionFragment :
                         return@addOnSuccessListener
                     }
 
-                    val propuesta = hashMapOf(
-                        "uidAutor" to user.uid,
-                        "emailAutor" to user.email,
-                        "texto" to "Propuesta de identificación",
-                        "fecha" to com.google.firebase.Timestamp.now(),
-                        "tipo" to "propuesta",
-                        "nombreComunPropuesto" to nombreComun,
-                        "nombreCientificoPropuesto" to nombreCientifico
-                    )
+                    // 🔥 NUEVO: obtener nick del usuario
+                    db.collection("usuarios")
+                        .document(user.uid)
+                        .get()
+                        .addOnSuccessListener { userDoc ->
 
-                    db.collection("publicaciones")
-                        .document(publicacionId)
-                        .collection("comentarios")
-                        .add(propuesta)
+                            val nick = userDoc.getString("nick") ?: "usuario"
 
-                    etNombreComun.text.clear()
-                    etNombreCientifico.text.clear()
+                            val propuesta = hashMapOf(
+                                "uidAutor" to user.uid,
+                                "emailAutor" to user.email, // mantener
+                                "nickAutor" to nick,        // 🔥 CLAVE
+                                "texto" to "Propuesta de identificación",
+                                "fecha" to com.google.firebase.Timestamp.now(),
+                                "tipo" to "propuesta",
+                                "nombreComunPropuesto" to nombreComun,
+                                "nombreCientificoPropuesto" to nombreCientifico
+                            )
+
+                            db.collection("publicaciones")
+                                .document(publicacionId)
+                                .collection("comentarios")
+                                .add(propuesta)
+
+                            etNombreComun.text.clear()
+                            etNombreCientifico.text.clear()
+                        }
                 }
         }
 
@@ -171,8 +194,11 @@ class DetallePublicacionFragment :
                 val estado = doc.getString("estado")
                 val nombreComun = doc.getString("nombreComun")
                 val nombreCientifico = doc.getString("nombreCientifico")
-                val identificadaPor =
-                    doc.getString("identificadaPorEmail")
+                val identificadaPor = doc.getString("identificadaPorNick")
+                val identificadaPorEmail = doc.getString("identificadaPorEmail") // mantener
+
+                tvIdentificadaPor.text =
+                    "Identificada por: ${identificadaPor ?: "usuario"}"
 
                 if (estado == "identificada") {
 

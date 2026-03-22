@@ -272,7 +272,7 @@ private class HorizontalContentAdapter(
             tvAutor.text =
                 itemView.context.getString(
                     R.string.comunidad_autor,
-                    publicacion.emailAutor ?: "usuario"
+                    publicacion.nickAutor ?: "usuario"
                 )
 
             Log.d("GLIDE_URL", publicacion.imageUrl ?: "URL NULL")

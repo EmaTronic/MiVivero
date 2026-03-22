@@ -6,6 +6,7 @@ data class Publicacion(
     val observacion: String? = null,
     val emailAutor: String? = null,
     val uidAutor: String? = null,
+    val nickAutor: String? = null,
     val estado: String? = null,
     val nombreComun: String? = null,
     val nombreCientifico: String? = null,

@@ -31,7 +31,7 @@ class ComunidadAdapter(
         val publicacion = lista[position]
 
         holder.observacion.text = publicacion.observacion
-        holder.autor.text = "Publicado por: ${publicacion.emailAutor}"
+        holder.autor.text = "Publicado por: ${publicacion.nickAutor ?: "usuario"}"
 
         holder.itemView.setOnClickListener {
 

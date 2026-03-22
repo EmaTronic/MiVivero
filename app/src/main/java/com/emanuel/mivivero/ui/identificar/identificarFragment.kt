@@ -201,29 +201,37 @@ class IdentificarFragment : Fragment() {
 
                     val db = FirebaseFirestore.getInstance()
 
-                    val publicacion = hashMapOf(
-                        "uidAutor" to uid,
-                        "emailAutor" to email,                     // 👈 AGREGAR
-                        "imageUrl" to downloadUri.toString(),
-                        "observacion" to observacion,
-                        "estado" to "pendiente",                   // 👈 CLAVE
-                        "prioridadEstado" to 1,                    // 👈 CLAVE
-                        "fecha" to FieldValue.serverTimestamp()
-                    )
+                    db.collection("usuarios")
+                        .document(uid)
+                        .get()
+                        .addOnSuccessListener { userDoc ->
 
-                    db.collection("publicaciones")
-                        .add(publicacion)
-                        .addOnSuccessListener {
+                            val nick = userDoc.getString("nick") ?: "usuario"
 
-                            tvResultado.text = "PUBLICACIÓN CREADA"
+                            val publicacion = hashMapOf(
+                                "uidAutor" to uid,
+                                "nickAutor" to nick,
+                                "emailAutor" to email, // mantener temporal
+                                "imageUrl" to downloadUri.toString(),
+                                "observacion" to observacion,
+                                "estado" to "pendiente",
+                                "prioridadEstado" to 1,
+                                "fecha" to FieldValue.serverTimestamp()
+                            )
 
+                            db.collection("publicaciones")
+                                .add(publicacion)
+                                .addOnSuccessListener {
+
+                                    tvResultado.text = "PUBLICACIÓN CREADA"
+
+                                }
+                                .addOnFailureListener { e ->
+
+                                    tvResultado.text = "ERROR FIRESTORE: ${e.message}"
+
+                                }
                         }
-                        .addOnFailureListener { e ->
-
-                            tvResultado.text = "ERROR FIRESTORE: ${e.message}"
-
-                        }
-
                 }
 
             }

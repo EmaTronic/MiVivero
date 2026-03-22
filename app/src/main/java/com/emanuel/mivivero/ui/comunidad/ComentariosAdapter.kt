@@ -142,7 +142,8 @@ class ComentariosAdapter(
                         "nombreComun" to comentario.nombreComunPropuesto,
                         "nombreCientifico" to comentario.nombreCientificoPropuesto,
                         "identificadaPorUid" to comentario.uidAutor,
-                        "identificadaPorEmail" to comentario.emailAutor
+                        "identificadaPorEmail" to comentario.emailAutor,
+                        "identificadaPorNick" to comentario.nickAutor
                     )
                 )
 
