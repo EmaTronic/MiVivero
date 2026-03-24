@@ -18,6 +18,8 @@ class DetallePublicacionFragment :
 
     private val db = FirebaseFirestore.getInstance()
 
+
+
     private lateinit var recyclerComentarios: RecyclerView
 
     private var uidAutorPost: String?= null
@@ -26,6 +28,10 @@ class DetallePublicacionFragment :
     private lateinit var tvNombreComun: TextView
     private lateinit var tvNombreCientifico: TextView
     private lateinit var tvIdentificadaPor: TextView
+
+    private var ultimoComentarioTimestamp: Long = 0
+
+    private var ultimaPropuestaTimestamp: Long = 0
 
 
 
@@ -88,6 +94,14 @@ class DetallePublicacionFragment :
 
         btnEnviar.setOnClickListener {
 
+            val ahora = System.currentTimeMillis()
+
+            if (ahora - ultimoComentarioTimestamp < 3000) {
+                Toast.makeText(requireContext(), "Esperá unos segundos", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+
             val texto = etComentario.text.toString().trim()
             if (texto.isEmpty()) return@setOnClickListener
 
@@ -123,6 +137,8 @@ class DetallePublicacionFragment :
                         .collection("comentarios")
                         .add(comentario)
 
+                    ultimoComentarioTimestamp = System.currentTimeMillis()
+
                     etComentario.text.clear()
                 }
         }
@@ -134,6 +150,12 @@ class DetallePublicacionFragment :
 
         btnProponer.setOnClickListener {
 
+            val ahora = System.currentTimeMillis()
+
+            if (ahora - ultimaPropuestaTimestamp < 5000) {
+                Toast.makeText(requireContext(), "Esperá antes de proponer otra vez", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
 
 
             val nombreComun = etNombreComun.text.toString().trim()
@@ -193,6 +215,8 @@ class DetallePublicacionFragment :
                                 .document(publicacionId)
                                 .collection("comentarios")
                                 .add(propuesta)
+
+                            ultimaPropuestaTimestamp = System.currentTimeMillis()
 
                             etNombreComun.text.clear()
                             etNombreCientifico.text.clear()
