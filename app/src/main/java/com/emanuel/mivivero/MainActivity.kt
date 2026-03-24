@@ -24,6 +24,9 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+
+        //FirebaseAuth.getInstance().signOut()
+
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -68,16 +71,31 @@ class MainActivity : AppCompatActivity() {
             val usuarioActual = auth.currentUser
 
             if (usuarioActual == null) {
-                navController.navigate(R.id.loginFragment)
+
+                AlertDialog.Builder(this)
+                    .setTitle("Usuario")
+                    .setMessage("¿Qué querés hacer?")
+                    .setPositiveButton("Iniciar sesión") { _, _ ->
+                        navController.navigate(R.id.loginFragment)
+                    }
+                    .setNegativeButton("Registrarse") { _, _ ->
+                        navController.navigate(R.id.registroUsuarioFragment)
+                    }
+                    .setNeutralButton("Cancelar", null)
+                    .show()
+
             } else {
 
                 AlertDialog.Builder(this)
                     .setTitle("Usuario")
                     .setMessage("Sesión iniciada como:\n${usuarioActual.email}")
-                    .setPositiveButton("Cerrar sesión") { _, _ ->
-                        auth.signOut()
+                    .setPositiveButton("Editar perfil") { _, _ ->
+                        navController.navigate(R.id.registroUsuarioFragment)
                     }
-                    .setNegativeButton("Cancelar", null)
+                    .setNegativeButton("Cerrar sesión") { _, _ ->
+                        FirebaseAuth.getInstance().signOut()
+                    }
+                    .setNeutralButton("Cancelar", null)
                     .show()
             }
         }

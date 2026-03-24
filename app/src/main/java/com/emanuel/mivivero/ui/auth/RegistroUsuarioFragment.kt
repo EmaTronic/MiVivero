@@ -5,7 +5,9 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.util.Patterns
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
@@ -24,7 +26,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.gson.Gson
 import kotlinx.coroutines.launch
 
-class RegistroUsuarioFragment : Fragment(R.layout.fragment_registro_usuario) {
+class RegistroUsuarioFragment : Fragment() {
 
     private var _binding: FragmentRegistroUsuarioBinding? = null
     private val binding get() = _binding!!
@@ -33,10 +35,19 @@ class RegistroUsuarioFragment : Fragment(R.layout.fragment_registro_usuario) {
 
     private lateinit var rootData: Root
 
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentRegistroUsuarioBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        _binding = FragmentRegistroUsuarioBinding.bind(view)
 
         limpiarErrorAlEscribir(binding.etNombreReal, binding.tilNombreReal)
         limpiarErrorAlEscribir(binding.etNick, binding.tilNick)
@@ -64,19 +75,57 @@ class RegistroUsuarioFragment : Fragment(R.layout.fragment_registro_usuario) {
 
         viewLifecycleOwner.lifecycleScope.launch {
 
-            val usuario = viewModel.obtenerUsuario()
+            val auth = FirebaseAuth.getInstance()
+            val userActual = auth.currentUser
 
-            if (usuario != null) {
+            Log.d("USER_DEBUG", "AUTH USER: ${userActual?.uid} - ${userActual?.email}")
 
-                binding.txtTituloRegistro.text = "Editar datos de usuario"
-                binding.btnRegistrar.text = "Actualizar"
+            if (userActual != null) {
 
-                binding.etNombreReal.setText(usuario.nombreReal)
-                binding.etNick.setText(usuario.nick)
-                binding.etNombreVivero.setText(usuario.nombreVivero)
-                binding.etEmail.setText(usuario.email)
+                val uid = userActual.uid
 
-                seleccionarUbicacion(usuario.pais, usuario.provincia, usuario.ciudad)
+                FirebaseFirestore.getInstance()
+                    .collection("usuarios")
+                    .document(uid)
+                    .get()
+                    .addOnSuccessListener { doc ->
+
+                        Log.d("USER_DEBUG", "DOC EXISTS: ${doc.exists()}")
+                        Log.d("USER_DEBUG", "DATA: ${doc.data}")
+
+                        if (doc.exists()) {
+
+                            binding.txtTituloRegistro.text = "Editar datos de usuario"
+                            binding.btnRegistrar.text = "Actualizar"
+                            binding.btnCerrarSesion.visibility = View.VISIBLE
+                            binding.etEmail.isEnabled = false
+
+
+
+                            binding.etNombreReal.setText(doc.getString("nombreReal") ?: "")
+                            binding.etNick.setText(doc.getString("nick") ?: "")
+                            binding.etNombreVivero.setText(doc.getString("nombreVivero") ?: "")
+                            binding.etEmail.setText(doc.getString("email") ?: "")
+
+                            val pais = doc.getString("pais") ?: ""
+                            val provincia = doc.getString("provincia") ?: ""
+                            val ciudad = doc.getString("ciudad") ?: ""
+
+                            seleccionarUbicacion(pais, provincia, ciudad)
+
+                        } else {
+                            Log.e("USER_DEBUG", "DOCUMENTO NO EXISTE")
+                        }
+                    }
+                    .addOnFailureListener { e ->
+                        Log.e("USER_DEBUG", "ERROR FIRESTORE", e)
+                    }
+
+            } else {
+
+                Log.e("USER_DEBUG", "USER ES NULL")
+
+                binding.btnCerrarSesion.visibility = View.GONE
             }
         }
 
@@ -143,6 +192,53 @@ class RegistroUsuarioFragment : Fragment(R.layout.fragment_registro_usuario) {
 
             val auth = FirebaseAuth.getInstance()
 
+            val userActual = auth.currentUser
+
+            if (userActual != null) {
+
+                // 🔥 MODO EDICIÓN
+
+                val uid = userActual.uid
+
+                val usuarioFirestore: MutableMap<String, Any> = hashMapOf(
+                    "nombreReal" to nombreReal,
+                    "nick" to nick,
+                    "nombreVivero" to vivero,
+                    "pais" to pais,
+                    "provincia" to provincia,
+                    "ciudad" to ciudad,
+                    "email" to email
+                )
+
+                FirebaseFirestore.getInstance()
+                    .collection("usuarios")
+                    .document(uid)
+                    .update(usuarioFirestore)
+                    .addOnSuccessListener {
+
+                        viewLifecycleOwner.lifecycleScope.launch {
+                            viewModel.guardarUsuario(usuario)
+
+                            Toast.makeText(
+                                requireContext(),
+                                "Datos actualizados",
+                                Toast.LENGTH_SHORT
+                            ).show()
+
+                            findNavController().popBackStack()
+                        }
+                    }
+                    .addOnFailureListener {
+                        Toast.makeText(
+                            requireContext(),
+                            "Error actualizando datos",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+
+                return@setOnClickListener
+            }
+
             auth.createUserWithEmailAndPassword(email, password)
 
                 .addOnSuccessListener { result ->
@@ -173,15 +269,63 @@ class RegistroUsuarioFragment : Fragment(R.layout.fragment_registro_usuario) {
 
                             viewLifecycleOwner.lifecycleScope.launch {
 
-                                viewModel.guardarUsuarioSiNoExiste(usuario)
+                                val auth = FirebaseAuth.getInstance()
+                                val userActual = auth.currentUser
 
-                                Toast.makeText(
-                                    requireContext(),
-                                    "Cuenta creada. Revisá tu correo para verificar.",
-                                    Toast.LENGTH_LONG
-                                ).show()
+                                Log.d("USER_DEBUG", "AUTH USER: ${userActual?.uid} - ${userActual?.email}")
 
-                                findNavController().popBackStack()
+                                if (userActual != null) {
+
+                                    val uid = userActual.uid
+
+                                    FirebaseFirestore.getInstance()
+                                        .collection("usuarios")
+                                        .document(uid)
+                                        .get()
+                                        .addOnSuccessListener { doc ->
+
+                                            Log.d("USER_DEBUG", "DOC EXISTS: ${doc.exists()}")
+                                            Log.d("USER_DEBUG", "DATA: ${doc.data}")
+
+                                            if (doc.exists()) {
+
+                                                val nombreReal = doc.getString("nombreReal")
+                                                val nick = doc.getString("nick")
+                                                val vivero = doc.getString("nombreVivero")
+                                                val email = doc.getString("email")
+
+                                                Log.d("USER_DEBUG", "nombreReal: $nombreReal")
+                                                Log.d("USER_DEBUG", "nick: $nick")
+
+                                                binding.txtTituloRegistro.text = "Editar datos de usuario"
+                                                binding.btnRegistrar.text = "Actualizar"
+                                                binding.btnCerrarSesion.visibility = View.VISIBLE
+
+                                                binding.etNombreReal.setText(nombreReal ?: "")
+                                                binding.etNick.setText(nick ?: "")
+                                                binding.etNombreVivero.setText(vivero ?: "")
+                                                binding.etEmail.setText(email ?: "")
+
+                                                val pais = doc.getString("pais") ?: ""
+                                                val provincia = doc.getString("provincia") ?: ""
+                                                val ciudad = doc.getString("ciudad") ?: ""
+
+                                                seleccionarUbicacion(pais, provincia, ciudad)
+
+                                            } else {
+                                                Log.e("USER_DEBUG", "DOCUMENTO NO EXISTE")
+                                            }
+                                        }
+                                        .addOnFailureListener { e ->
+                                            Log.e("USER_DEBUG", "ERROR FIRESTORE", e)
+                                        }
+
+                                } else {
+
+                                    Log.e("USER_DEBUG", "USER ES NULL")
+
+                                    binding.btnCerrarSesion.visibility = View.GONE
+                                }
                             }
                         }
 
@@ -209,9 +353,9 @@ class RegistroUsuarioFragment : Fragment(R.layout.fragment_registro_usuario) {
                 }
         }
 
-        val btnCerrarSesion = view.findViewById<Button>(R.id.btnCerrarSesion)
 
-        btnCerrarSesion.setOnClickListener {
+
+        binding.btnCerrarSesion.setOnClickListener {
 
             FirebaseAuth.getInstance().signOut()
 
