@@ -131,6 +131,19 @@ class ComentariosAdapter(
         // Acción al aceptar propuesta
         holder.btnAceptar.setOnClickListener {
 
+            val currentUid = FirebaseAuth.getInstance().currentUser?.uid ?: return@setOnClickListener
+
+            FirebaseFirestore.getInstance()
+                .collection("usuarios")
+                .document(currentUid)
+                .get()
+                .addOnSuccessListener { userDoc ->
+
+                    val bloqueado = userDoc.getBoolean("bloqueado") == true
+
+                    if (bloqueado) return@addOnSuccessListener
+
+
             val db = FirebaseFirestore.getInstance()
 
             db.collection("publicaciones")
@@ -163,4 +176,5 @@ class ComentariosAdapter(
                 }
         }
     }
+}
 }

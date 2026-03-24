@@ -158,7 +158,8 @@ class RegistroUsuarioFragment : Fragment(R.layout.fragment_registro_usuario) {
                         "provincia" to provincia,
                         "ciudad" to ciudad,
                         "email" to email,
-                        "fechaRegistro" to System.currentTimeMillis()
+                        "fechaRegistro" to System.currentTimeMillis(),
+                        "bloqueado" to false
                     )
 
                     FirebaseFirestore.getInstance()

@@ -193,6 +193,8 @@ class IdentificarFragment : Fragment() {
 
             .addOnSuccessListener {
 
+
+
                 tvResultado.text = "Imagen subida correctamente"
 
                 fileRef.downloadUrl.addOnSuccessListener { downloadUri ->
@@ -205,6 +207,14 @@ class IdentificarFragment : Fragment() {
                         .document(uid)
                         .get()
                         .addOnSuccessListener { userDoc ->
+
+                            val bloqueado = userDoc.getBoolean("bloqueado") == true
+
+                            if (bloqueado) {
+                                tvResultado.text = "Usuario bloqueado"
+                                btnEnviar.isEnabled = true
+                                return@addOnSuccessListener
+                            }
 
                             val nick = userDoc.getString("nick") ?: "usuario"
 

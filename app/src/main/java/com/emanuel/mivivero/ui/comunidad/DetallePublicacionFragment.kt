@@ -1,6 +1,7 @@
 package com.emanuel.mivivero.ui.comunidad
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.fragment.app.Fragment
@@ -100,6 +101,13 @@ class DetallePublicacionFragment :
                 .get()
                 .addOnSuccessListener { userDoc ->
 
+                    val bloqueado = userDoc.getBoolean("bloqueado") == true
+
+                    if (bloqueado) {
+                        Toast.makeText(requireContext(), "Usuario bloqueado", Toast.LENGTH_SHORT).show()
+                        return@addOnSuccessListener
+                    }
+
                     val nick = userDoc.getString("nick") ?: "usuario"
 
                     val comentario = hashMapOf(
@@ -126,12 +134,21 @@ class DetallePublicacionFragment :
 
         btnProponer.setOnClickListener {
 
+
+
             val nombreComun = etNombreComun.text.toString().trim()
             val nombreCientifico = etNombreCientifico.text.toString().trim()
 
             if (nombreComun.isEmpty()) return@setOnClickListener
 
             val user = FirebaseAuth.getInstance().currentUser ?: return@setOnClickListener
+
+
+
+
+
+
+
 
             db.collection("publicaciones")
                 .document(publicacionId)
@@ -145,11 +162,19 @@ class DetallePublicacionFragment :
                         return@addOnSuccessListener
                     }
 
-                    // 🔥 NUEVO: obtener nick del usuario
+                    // Obtener nick del usuario
                     db.collection("usuarios")
                         .document(user.uid)
                         .get()
                         .addOnSuccessListener { userDoc ->
+
+                            //Verificar si el usuario está bloqueado
+                            val bloqueado = userDoc.getBoolean("bloqueado") == true
+
+                            if (bloqueado) {
+                                Toast.makeText(requireContext(), "Usuario bloqueado", Toast.LENGTH_SHORT).show()
+                                return@addOnSuccessListener
+                            }
 
                             val nick = userDoc.getString("nick") ?: "usuario"
 
@@ -171,6 +196,8 @@ class DetallePublicacionFragment :
 
                             etNombreComun.text.clear()
                             etNombreCientifico.text.clear()
+
+                            Log.d("DEBUG_UID", "UID ACTUAL: ${user.uid}")
                         }
                 }
         }
