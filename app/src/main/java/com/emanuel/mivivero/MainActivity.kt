@@ -132,42 +132,44 @@ class MainActivity : AppCompatActivity() {
                 .document(uid)
                 .addSnapshotListener { doc, _ ->
 
-                    if (doc == null || !doc.exists()) return@addSnapshotListener
+                    sessionListener = db.collection("usuarios")
+                        .document(uid)
+                        .addSnapshotListener { doc, _ ->
 
-                    val remoteSessionId = doc.getString("sessionId")
+                            if (doc == null || !doc.exists()) return@addSnapshotListener
 
+                            // 🔴 SOLUCIÓN
+                            if (!user.isEmailVerified) return@addSnapshotListener
 
-                    android.util.Log.d("SESSION_DEBUG", "REMOTE: $remoteSessionId")
+                            val remoteSessionId = doc.getString("sessionId")
 
-                    val prefs = getSharedPreferences("session", MODE_PRIVATE)
-                    val localSessionId = prefs.getString("sessionId", null)
+                            val prefs = getSharedPreferences("session", MODE_PRIVATE)
+                            val localSessionId = prefs.getString("sessionId", null)
 
-                    val loginTime = prefs.getLong("loginTime", 0)
-                    val ahora = System.currentTimeMillis()
+                            val loginTime = prefs.getLong("loginTime", 0)
+                            val ahora = System.currentTimeMillis()
 
-                    if (ahora - loginTime < 2000) {
-                        return@addSnapshotListener
-                    }
+                            if (ahora - loginTime < 2000) {
+                                return@addSnapshotListener
+                            }
 
-                    if (localSessionId != null && localSessionId != remoteSessionId) {
-                        android.util.Log.d("SESSION_DEBUG", "LOCAL: $localSessionId")
-                        if (primeraCarga) {
-                            primeraCarga = false
-                            return@addSnapshotListener
+                            if (localSessionId != null && localSessionId != remoteSessionId) {
+
+                                if (primeraCarga) {
+                                    primeraCarga = false
+                                    return@addSnapshotListener
+                                }
+
+                                val navHostFragment =
+                                    supportFragmentManager.findFragmentById(R.id.navHost) as NavHostFragment
+
+                                val navController = navHostFragment.navController
+
+                                navController.navigate(R.id.sesionCerradaFragment)
+
+                                FirebaseAuth.getInstance().signOut()
+                            }
                         }
-
-                        if (localSessionId != null && localSessionId != remoteSessionId) {
-
-                            val navHostFragment =
-                                supportFragmentManager.findFragmentById(R.id.navHost) as NavHostFragment
-
-                            val navController = navHostFragment.navController
-
-                            navController.navigate(R.id.sesionCerradaFragment)
-
-                            FirebaseAuth.getInstance().signOut()
-                        }
-                    }
                 }
         }
 

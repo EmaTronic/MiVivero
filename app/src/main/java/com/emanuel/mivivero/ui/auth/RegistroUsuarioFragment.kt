@@ -267,66 +267,16 @@ class RegistroUsuarioFragment : Fragment() {
 
                             auth.currentUser?.sendEmailVerification()
 
-                            viewLifecycleOwner.lifecycleScope.launch {
+                            Toast.makeText(
+                                requireContext(),
+                                "Revisá tu correo para verificar la cuenta",
+                                Toast.LENGTH_LONG
+                            ).show()
 
-                                val auth = FirebaseAuth.getInstance()
-                                val userActual = auth.currentUser
+                            findNavController().navigate(R.id.verificarEmailFragment)
 
-                                Log.d("USER_DEBUG", "AUTH USER: ${userActual?.uid} - ${userActual?.email}")
+                            return@addOnSuccessListener
 
-                                if (userActual != null) {
-
-                                    val uid = userActual.uid
-
-                                    FirebaseFirestore.getInstance()
-                                        .collection("usuarios")
-                                        .document(uid)
-                                        .get()
-                                        .addOnSuccessListener { doc ->
-
-                                            Log.d("USER_DEBUG", "DOC EXISTS: ${doc.exists()}")
-                                            Log.d("USER_DEBUG", "DATA: ${doc.data}")
-
-                                            if (doc.exists()) {
-
-                                                val nombreReal = doc.getString("nombreReal")
-                                                val nick = doc.getString("nick")
-                                                val vivero = doc.getString("nombreVivero")
-                                                val email = doc.getString("email")
-
-                                                Log.d("USER_DEBUG", "nombreReal: $nombreReal")
-                                                Log.d("USER_DEBUG", "nick: $nick")
-
-                                                binding.txtTituloRegistro.text = "Editar datos de usuario"
-                                                binding.btnRegistrar.text = "Actualizar"
-                                                binding.btnCerrarSesion.visibility = View.VISIBLE
-
-                                                binding.etNombreReal.setText(nombreReal ?: "")
-                                                binding.etNick.setText(nick ?: "")
-                                                binding.etNombreVivero.setText(vivero ?: "")
-                                                binding.etEmail.setText(email ?: "")
-
-                                                val pais = doc.getString("pais") ?: ""
-                                                val provincia = doc.getString("provincia") ?: ""
-                                                val ciudad = doc.getString("ciudad") ?: ""
-
-                                                seleccionarUbicacion(pais, provincia, ciudad)
-
-                                            } else {
-                                                Log.e("USER_DEBUG", "DOCUMENTO NO EXISTE")
-                                            }
-                                        }
-                                        .addOnFailureListener { e ->
-                                            Log.e("USER_DEBUG", "ERROR FIRESTORE", e)
-                                        }
-
-                                } else {
-
-                                    Log.e("USER_DEBUG", "USER ES NULL")
-
-                                    binding.btnCerrarSesion.visibility = View.GONE
-                                }
-                            }
                         }
 
                         .addOnFailureListener { e ->

@@ -182,7 +182,10 @@
 
 
 
-
+    <fragment
+        android:id="@+id/verificarEmailFragment"
+        android:name="com.emanuel.mivivero.ui.auth.VerificarEmailFragment"
+        android:label="Verificar Email"/>
 
 
 

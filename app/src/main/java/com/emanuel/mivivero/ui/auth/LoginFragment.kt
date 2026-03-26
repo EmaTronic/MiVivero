@@ -9,6 +9,8 @@ import androidx.navigation.fragment.findNavController
 import com.emanuel.mivivero.R
 import com.emanuel.mivivero.databinding.FragmentLoginBinding
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
 
 class LoginFragment : Fragment(R.layout.fragment_login) {
 
@@ -37,38 +39,43 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
                 .addOnSuccessListener {
 
                     val user = FirebaseAuth.getInstance().currentUser ?: return@addOnSuccessListener
-                    val uid = user.uid
 
-                    val sessionId = System.currentTimeMillis().toString()
+                    user.reload().addOnSuccessListener {
 
+                        if (!user.isEmailVerified) {
 
-                    val prefs = requireContext().getSharedPreferences("session", 0)
-                    prefs.edit()
-                        .putString("sessionId", sessionId)
-                        .putLong("loginTime", System.currentTimeMillis())
-                        .apply()
+                            FirebaseAuth.getInstance().signOut()
 
-                    // 🔹 Firestore
-                    com.google.firebase.firestore.FirebaseFirestore.getInstance()
-                        .collection("usuarios")
-                        .document(uid)
-                        .set(
-                            mapOf(
-                                "sessionId" to sessionId
-                            ),
-                            com.google.firebase.firestore.SetOptions.merge()
-                        )
+                            Toast.makeText(
+                                requireContext(),
+                                "Debes verificar tu correo",
+                                Toast.LENGTH_LONG
+                            ).show()
 
-                    // 🔹 Local
+                            findNavController().navigate(R.id.verificarEmailFragment)
 
+                            return@addOnSuccessListener
+                        }
 
-                    Toast.makeText(
-                        requireContext(),
-                        "Sesión iniciada",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                        // ✔ continuar flujo normal
+                        val uid = user.uid
+                        val sessionId = System.currentTimeMillis().toString()
 
-                    findNavController().popBackStack()
+                        val prefs = requireContext().getSharedPreferences("session", 0)
+                        prefs.edit()
+                            .putString("sessionId", sessionId)
+                            .putLong("loginTime", System.currentTimeMillis())
+                            .apply()
+
+                        FirebaseFirestore.getInstance()
+                            .collection("usuarios")
+                            .document(uid)
+                            .set(mapOf("sessionId" to sessionId), SetOptions.merge())
+
+                        Toast.makeText(requireContext(), "Sesión iniciada", Toast.LENGTH_SHORT).show()
+
+                        findNavController().popBackStack()
+                    }
                 }
                 .addOnFailureListener {
                     Toast.makeText(
