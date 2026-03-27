@@ -68,15 +68,51 @@ class CrearAlbumesFragment : Fragment(R.layout.fragment_crear_albumes) {
         // BOTÓN CONTINUAR
         // =====================
         binding.btnContinuar.setOnClickListener {
-            val nombre = binding.etNombreAlbum.text.toString().trim()
-            val obs = binding.etObservacionesAlbum.text.toString().trim()
+            val auth = com.google.firebase.auth.FirebaseAuth.getInstance()
+            val user = auth.currentUser
 
-            if (nombre.isEmpty()) {
-                binding.etNombreAlbum.error = "El nombre es obligatorio"
+// 🔴 NO LOGUEADO
+            if (user == null) {
+
+                com.google.android.material.snackbar.Snackbar.make(
+                    requireActivity().findViewById(android.R.id.content),
+                    "Tenés que iniciar sesión para crear un álbum",
+                    com.google.android.material.snackbar.Snackbar.LENGTH_LONG
+                ).setAction("Ingresar") {
+                    findNavController().navigate(R.id.loginFragment)
+                }.show()
+
                 return@setOnClickListener
             }
 
-            viewModel.crearAlbum(nombre, obs)
+// 🔴 NO VERIFICADO
+            user.reload().addOnSuccessListener {
+
+                if (!user.isEmailVerified) {
+
+                    com.google.android.material.snackbar.Snackbar.make(
+                        requireActivity().findViewById(android.R.id.content),
+                        "Tenés que verificar tu correo antes de crear un álbum",
+                        com.google.android.material.snackbar.Snackbar.LENGTH_LONG
+                    ).setAction("Verificar") {
+                        findNavController().navigate(R.id.verificarEmailFragment)
+                    }.show()
+
+                    return@addOnSuccessListener
+                }
+
+                // ✅ VALIDACIONES NORMALES
+                val nombre = binding.etNombreAlbum.text.toString().trim()
+                val obs = binding.etObservacionesAlbum.text.toString().trim()
+
+                if (nombre.isEmpty()) {
+                    binding.etNombreAlbum.error = "El nombre es obligatorio"
+                    return@addOnSuccessListener
+                }
+
+                // ✅ RECIÉN ACÁ CREÁS
+                viewModel.crearAlbum(nombre, obs)
+            }
         }
     }
 

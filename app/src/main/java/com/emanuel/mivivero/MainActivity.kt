@@ -117,10 +117,18 @@ class MainActivity : AppCompatActivity() {
 
             val user = auth.currentUser
 
+
+
             // limpiar listener anterior
             sessionListener?.remove()
 
             if (user == null) return@AuthStateListener
+
+
+
+
+
+
 
             val uid = user.uid
 
@@ -128,9 +136,7 @@ class MainActivity : AppCompatActivity() {
 
             primeraCarga = true
 
-            sessionListener = db.collection("usuarios")
-                .document(uid)
-                .addSnapshotListener { doc, _ ->
+
 
                     sessionListener = db.collection("usuarios")
                         .document(uid)
@@ -170,10 +176,32 @@ class MainActivity : AppCompatActivity() {
                                 FirebaseAuth.getInstance().signOut()
                             }
                         }
-                }
+
         }
 
         FirebaseAuth.getInstance().addAuthStateListener(authListener!!)
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        val user = FirebaseAuth.getInstance().currentUser ?: return
+
+        if (!user.isEmailVerified) {
+
+            binding.root.postDelayed({
+
+                val navController = (supportFragmentManager
+                    .findFragmentById(R.id.navHost) as NavHostFragment)
+                    .navController
+
+                if (navController.currentDestination?.id != R.id.verificarEmailFragment) {
+
+                    navController.navigate(R.id.verificarEmailFragment)
+                }
+
+            }, 300) // 🔴 clave: delay real
+        }
     }
 
     override fun onStop() {
