@@ -140,33 +140,7 @@ class ComunidadFragment : Fragment(R.layout.fragment_comunidad) {
 
         val uid = user.uid
 
-        FirebaseFirestore.getInstance()
-            .collection("usuarios")
-            .document(uid)
-            .addSnapshotListener { doc, _ ->
 
-                if (doc == null || !doc.exists()) return@addSnapshotListener
-
-                val remoteSessionId = doc.getString("sessionId") ?: return@addSnapshotListener
-
-                val prefs = requireContext().getSharedPreferences("session", 0)
-                val localSessionId = prefs.getString("sessionId", null)
-
-                if (localSessionId != null && localSessionId != remoteSessionId) {
-
-                    // 🔥 SESIÓN INVALIDADA
-
-                    FirebaseAuth.getInstance().signOut()
-
-                    Toast.makeText(
-                        requireContext(),
-                        "Tu sesión fue iniciada en otro dispositivo",
-                        Toast.LENGTH_LONG
-                    ).show()
-
-                    findNavController().navigate(R.id.loginFragment)
-                }
-            }
 
 
     }

@@ -104,11 +104,11 @@ class IdentificarFragment : Fragment() {
             if (user == null) {
 
                 Snackbar.make(
-                    requireView(),
                     requireActivity().findViewById(android.R.id.content),
+                    "Tenés que iniciar sesión para publicar",
                     Snackbar.LENGTH_LONG
                 ).setAction("Ingresar") {
-                    findNavController().navigate(R.id.authFragment)
+                    findNavController().navigate(R.id.loginFragment)
                 }.show()
 
                 return@setOnClickListener

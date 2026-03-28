@@ -75,12 +75,12 @@ class CrearAlbumesFragment : Fragment(R.layout.fragment_crear_albumes) {
             if (user == null) {
 
                 com.google.android.material.snackbar.Snackbar.make(
-                    requireActivity().findViewById(android.R.id.content),
+                    requireView(),
                     "Tenés que iniciar sesión para crear un álbum",
-                    com.google.android.material.snackbar.Snackbar.LENGTH_LONG
-                ).setAction("Ingresar") {
-                    findNavController().navigate(R.id.loginFragment)
-                }.show()
+                    com.google.android.material.snackbar.Snackbar.LENGTH_SHORT
+                ).show()
+
+                findNavController().navigate(R.id.loginFragment)
 
                 return@setOnClickListener
             }

@@ -118,16 +118,10 @@ class MainActivity : AppCompatActivity() {
             val user = auth.currentUser
 
 
-
             // limpiar listener anterior
             sessionListener?.remove()
 
             if (user == null) return@AuthStateListener
-
-
-
-
-
 
 
             val uid = user.uid
@@ -195,8 +189,9 @@ class MainActivity : AppCompatActivity() {
                     .findFragmentById(R.id.navHost) as NavHostFragment)
                     .navController
 
-                if (navController.currentDestination?.id != R.id.verificarEmailFragment) {
+                val destinoActual = navController.currentDestination?.id
 
+                if (!user.isEmailVerified && destinoActual != R.id.verificarEmailFragment) {
                     navController.navigate(R.id.verificarEmailFragment)
                 }
 
