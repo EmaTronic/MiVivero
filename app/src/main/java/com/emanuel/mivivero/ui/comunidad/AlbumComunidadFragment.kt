@@ -42,6 +42,8 @@ class AlbumComunidadFragment : Fragment(R.layout.fragment_album_comunidad) {
 
         albumId = arguments?.getString("albumId") ?: ""
 
+        Log.d("RESERVA_TEST", "albumId=$albumId")
+
         Log.d("RESERVAS_DEBUG", "albumId FRAGMENT = $albumId")
 
         // =========================
@@ -86,9 +88,28 @@ class AlbumComunidadFragment : Fragment(R.layout.fragment_album_comunidad) {
         // ACCIONES
         // =========================
 
-        btnReservar.setOnClickListener { reservar() }
+        val user = FirebaseAuth.getInstance().currentUser
+        val uidActual = user?.uid
+
+        db.collection("albumsFeed")
+            .document(albumId)
+            .get()
+            .addOnSuccessListener { doc ->
+
+                val uidAutor = doc.getString("uidAutor")
+
+                if (uidActual == uidAutor) {
+                    btnReservar.visibility = View.GONE
+                } else {
+                    btnReservar.setOnClickListener { reservar() }
+                }
+            }
+
+
         btnComentar.setOnClickListener { comentar() }
 
+
+        Log.d("COMENTARIO_TEST", "CLICK COMENTAR")
         // =========================
         // CARGAS
         // =========================
@@ -183,15 +204,28 @@ class AlbumComunidadFragment : Fragment(R.layout.fragment_album_comunidad) {
 
     private fun comentar() {
 
+        // 🔴 LOG 1 (ARRIBA DE TODO)
+        Log.d("COMENTARIO_TEST", "CLICK COMENTAR")
+
         val texto = etComentario.text.toString()
+
+        // 🔴 LOG 2 (ABAJO DE TEXTO)
+        Log.d("COMENTARIO_TEST", "texto=$texto")
 
         if (texto.isBlank()) {
             Toast.makeText(requireContext(), "Escribí un comentario", Toast.LENGTH_SHORT).show()
             return
         }
 
-        val user = FirebaseAuth.getInstance().currentUser ?: return
-        val uid = user.uid
+        val user = FirebaseAuth.getInstance().currentUser
+
+        // 🔴 LOG 3 (ABAJO DE USER)
+        Log.d("COMENTARIO_TEST", "user=${user?.uid}")
+
+        val uid = user?.uid ?: return
+
+        // 🔴 LOG 4 (ANTES DE IR A USUARIOS)
+        Log.d("COMENTARIO_TEST", "buscando nick...")
 
         db.collection("usuarios")
             .document(uid)
@@ -199,6 +233,9 @@ class AlbumComunidadFragment : Fragment(R.layout.fragment_album_comunidad) {
             .addOnSuccessListener { doc ->
 
                 val nick = doc.getString("nick") ?: "usuario"
+
+                // 🔴 LOG 5 (NICK)
+                Log.d("COMENTARIO_TEST", "nick=$nick")
 
                 val comentario = hashMapOf(
                     "uidAutor" to uid,
@@ -208,10 +245,19 @@ class AlbumComunidadFragment : Fragment(R.layout.fragment_album_comunidad) {
                     "tipo" to "comentario"
                 )
 
+                // 🔴 LOG 6 (ANTES DE GUARDAR)
+                Log.d("COMENTARIO_TEST", "VOY A GUARDAR comentario en albumId=$albumId")
+
                 db.collection("albumsFeed")
                     .document(albumId)
                     .collection("comentarios")
                     .add(comentario)
+                    .addOnSuccessListener {
+                        Log.d("COMENTARIO_TEST", "GUARDADO OK")
+                    }
+                    .addOnFailureListener {
+                        Log.e("COMENTARIO_TEST", "ERROR", it)
+                    }
 
                 etComentario.setText("")
             }
@@ -256,8 +302,11 @@ class AlbumComunidadFragment : Fragment(R.layout.fragment_album_comunidad) {
 
     private fun reservar() {
 
+        Log.d("RESERVA_TEST", "CLICK RESERVAR")
         val planta = etPlanta.text.toString().toIntOrNull()
         val cantidad = etCantidad.text.toString().toIntOrNull()
+
+        Log.d("RESERVA_TEST", "planta=$planta cantidad=$cantidad")
 
         if (planta == null || cantidad == null) {
             Toast.makeText(requireContext(), "Valores inválidos", Toast.LENGTH_SHORT).show()
@@ -266,6 +315,8 @@ class AlbumComunidadFragment : Fragment(R.layout.fragment_album_comunidad) {
 
         val user = FirebaseAuth.getInstance().currentUser ?: return
         val uid = user.uid
+
+
 
         db.collection("usuarios")
             .document(uid)
@@ -282,10 +333,18 @@ class AlbumComunidadFragment : Fragment(R.layout.fragment_album_comunidad) {
                     "fechaReserva" to FieldValue.serverTimestamp()
                 )
 
+                Log.d("RESERVA_TEST", "VOY A GUARDAR")
+
                 db.collection("albumsFeed")
                     .document(albumId)
                     .collection("reservas")
                     .add(reserva)
+                    .addOnSuccessListener {
+                        Log.d("RESERVA_TEST", "GUARDADO OK")
+                    }
+                    .addOnFailureListener {
+                        Log.e("RESERVA_TEST", "ERROR", it)
+                    }
 
                 etPlanta.setText("")
                 etCantidad.setText("")
