@@ -1,275 +1,132 @@
 package com.emanuel.mivivero.ui.comunidad
 
-import android.os.Bundle
-import android.util.Log
+import android.app.AlertDialog
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
-import android.widget.Toast
-import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.LinearLayoutManager
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.emanuel.mivivero.R
-import com.emanuel.mivivero.data.model.Comentario
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.storage.FirebaseStorage
 
-class AlbumComunidadFragment : Fragment(R.layout.fragment_album_comunidad) {
+class ReservasAdapter(
+    private val lista: MutableList<Map<String, Any>>, // 🔥 AHORA MUTABLE
+    private val albumId: String
+) : RecyclerView.Adapter<ReservasAdapter.ViewHolder>() {
 
     private val db = FirebaseFirestore.getInstance()
 
-    private lateinit var recyclerCarrusel1: RecyclerView
-    private lateinit var recyclerCarrusel2: RecyclerView
-    private lateinit var recyclerComentarios: RecyclerView
-    private lateinit var recyclerReservas: RecyclerView
-
-    private lateinit var etPlanta: EditText
-    private lateinit var etCantidad: EditText
-    private lateinit var btnReservar: Button
-
-    private lateinit var etComentario: EditText
-    private lateinit var btnComentar: Button
-
-    private val listaReservas = mutableListOf<Map<String, Any>>()
-    private lateinit var adapterReservas: ReservasAdapter
-
-    private var albumId: String = ""
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        albumId = arguments?.getString("albumId") ?: ""
-
-        Log.d("RESERVAS_DEBUG", "albumId FRAGMENT = $albumId")
-
-        // =========================
-        // VISTAS
-        // =========================
-        recyclerCarrusel1 = view.findViewById(R.id.recyclerCarrusel1)
-        recyclerCarrusel2 = view.findViewById(R.id.recyclerCarrusel2)
-        recyclerComentarios = view.findViewById(R.id.recyclerComentarios)
-        recyclerReservas = view.findViewById(R.id.recyclerReservas)
-
-        etPlanta = view.findViewById(R.id.etPlantaNumero)
-        etCantidad = view.findViewById(R.id.etCantidad)
-        btnReservar = view.findViewById(R.id.btnReservar)
-
-        etComentario = view.findViewById(R.id.etComentario)
-        btnComentar = view.findViewById(R.id.btnComentar)
-
-        // =========================
-        // RECYCLERS
-        // =========================
-
-        recyclerCarrusel1.layoutManager =
-            LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-
-        recyclerCarrusel2.layoutManager =
-            LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-
-        recyclerComentarios.layoutManager =
-            LinearLayoutManager(requireContext())
-        recyclerComentarios.setHasFixedSize(false)
-        recyclerComentarios.isNestedScrollingEnabled = false
-
-        recyclerReservas.layoutManager =
-            LinearLayoutManager(requireContext())
-        recyclerReservas.setHasFixedSize(false)
-        recyclerReservas.isNestedScrollingEnabled = false
-
-        adapterReservas = ReservasAdapter(listaReservas, albumId)
-        recyclerReservas.adapter = adapterReservas
-
-        // =========================
-        // ACCIONES
-        // =========================
-
-        btnReservar.setOnClickListener { reservar() }
-        btnComentar.setOnClickListener { comentar() }
-
-        // =========================
-        // CARGAS
-        // =========================
-
-        cargarFotosAlbum()
-        escucharComentarios()
-        escucharReservas()
+    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val texto: TextView = view.findViewById(R.id.tvReserva)
+        val btnEditar: Button = view.findViewById(R.id.btnEditar)
+        val btnEliminar: Button = view.findViewById(R.id.btnEliminar)
     }
 
-    // =====================================
-    // CARGAR FOTOS
-    // =====================================
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val view = LayoutInflater.from(parent.context)
+            .inflate(R.layout.item_reserva, parent, false)
+        return ViewHolder(view)
+    }
 
-    private fun cargarFotosAlbum() {
+    override fun getItemCount(): Int = lista.size
 
-        val storage = FirebaseStorage.getInstance()
-        val ref = storage.reference.child("albums/$albumId")
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
-        ref.listAll().addOnSuccessListener { result ->
+        val reserva = lista[position]
 
-            val urls = mutableListOf<String>()
+        val planta = (reserva["plantaNumero"] as? Long)?.toInt() ?: 0
+        val cantidad = (reserva["cantidad"] as? Long)?.toInt() ?: 0
+        val usuario = reserva["nickUsuario"] ?: "usuario"
 
-            result.items.forEach { item ->
-                item.downloadUrl.addOnSuccessListener { uri ->
-                    urls.add(uri.toString())
+        val uidActual = FirebaseAuth.getInstance().currentUser?.uid
+        val uidReserva = reserva["uidUsuario"]
 
-                    if (urls.size == result.items.size) {
-                        mostrarCarruseles(urls)
+        val unidadTexto = if (cantidad == 1) "unidad" else "unidades"
+
+        holder.texto.text = "Planta $planta\n$cantidad $unidadTexto - $usuario"
+
+        // ======================
+        // VISIBILIDAD BOTONES
+        // ======================
+        if (uidActual == uidReserva) {
+            holder.btnEditar.visibility = View.VISIBLE
+            holder.btnEliminar.visibility = View.VISIBLE
+        } else {
+            holder.btnEditar.visibility = View.GONE
+            holder.btnEliminar.visibility = View.GONE
+        }
+
+        val id = reserva["id"] as String
+
+        // ======================
+        // ELIMINAR
+        // ======================
+        holder.btnEliminar.setOnClickListener {
+            db.collection("albumsFeed")
+                .document(albumId)
+                .collection("reservas")
+                .document(id)
+                .delete()
+        }
+
+        // ======================
+        // EDITAR
+        // ======================
+        holder.btnEditar.setOnClickListener {
+
+            val context = holder.itemView.context
+
+            val layout = LinearLayout(context)
+            layout.orientation = LinearLayout.VERTICAL
+
+            val etPlanta = EditText(context)
+            etPlanta.hint = "Planta"
+            etPlanta.setText(planta.toString())
+
+            val etCantidad = EditText(context)
+            etCantidad.hint = "Cantidad"
+            etCantidad.setText(cantidad.toString())
+
+            layout.addView(etPlanta)
+            layout.addView(etCantidad)
+
+            AlertDialog.Builder(context)
+                .setTitle("Editar reserva")
+                .setView(layout)
+                .setPositiveButton("Guardar") { _, _ ->
+
+                    val nuevaPlanta = etPlanta.text.toString().toIntOrNull()
+                    val nuevaCantidad = etCantidad.text.toString().toIntOrNull()
+
+                    if (nuevaPlanta != null && nuevaCantidad != null) {
+
+                        db.collection("albumsFeed")
+                            .document(albumId)
+                            .collection("reservas")
+                            .document(id)
+                            .update(
+                                mapOf(
+                                    "plantaNumero" to nuevaPlanta,
+                                    "cantidad" to nuevaCantidad
+                                )
+                            )
                     }
                 }
-            }
-        }
-    }
-
-    private fun mostrarCarruseles(urls: List<String>) {
-
-        val carrusel1 = urls.take(10)
-        val carrusel2 = urls.drop(10).take(10)
-
-        recyclerCarrusel1.adapter = AlbumFotoAdapter(carrusel1)
-
-        if (carrusel2.isNotEmpty()) {
-            recyclerCarrusel2.visibility = View.VISIBLE
-            recyclerCarrusel2.adapter = AlbumFotoAdapter(carrusel2)
-        } else {
-            recyclerCarrusel2.visibility = View.GONE
+                .setNegativeButton("Cancelar", null)
+                .show()
         }
     }
 
     // =====================================
-    // COMENTARIOS
+    // 🔥 ACTUALIZAR LISTA (CLAVE)
     // =====================================
-
-    private fun escucharComentarios() {
-
-        db.collection("albumsFeed")
-            .document(albumId)
-            .collection("comentarios")
-            .orderBy("fecha")
-            .addSnapshotListener { snapshot, _ ->
-
-                if (snapshot == null) return@addSnapshotListener
-
-                val lista = snapshot.documents.map { doc ->
-                    val comentario = doc.toObject(Comentario::class.java)!!
-                    comentario.copy(id = doc.id)
-                }
-
-                recyclerComentarios.adapter =
-                    ComentariosAdapter(lista, albumId, "")
-            }
-    }
-
-    private fun comentar() {
-
-        val texto = etComentario.text.toString()
-
-        if (texto.isBlank()) {
-            Toast.makeText(requireContext(), "Escribí un comentario", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        val user = FirebaseAuth.getInstance().currentUser ?: return
-        val uid = user.uid
-
-        db.collection("usuarios")
-            .document(uid)
-            .get()
-            .addOnSuccessListener { doc ->
-
-                val nick = doc.getString("nick") ?: "usuario"
-
-                val comentario = hashMapOf(
-                    "uidAutor" to uid,
-                    "nickAutor" to nick,
-                    "texto" to texto,
-                    "fecha" to FieldValue.serverTimestamp(),
-                    "tipo" to "comentario"
-                )
-
-                db.collection("albumsFeed")
-                    .document(albumId)
-                    .collection("comentarios")
-                    .add(comentario)
-
-                etComentario.setText("")
-            }
-    }
-
-    // =====================================
-    // RESERVAS
-    // =====================================
-
-    private fun escucharReservas() {
-
-        db.collection("albumsFeed")
-            .document(albumId)
-            .collection("reservas")
-            .addSnapshotListener { snapshot, e ->
-
-                if (e != null) {
-                    Log.e("RESERVAS_DEBUG", "ERROR", e)
-                    return@addSnapshotListener
-                }
-
-                if (snapshot == null) return@addSnapshotListener
-
-                Log.d("RESERVAS_DEBUG", "Docs recibidos: ${snapshot.size()}")
-
-                val nuevaLista = mutableListOf<Map<String, Any>>()
-
-                for (doc in snapshot.documents) {
-                    val data = doc.data ?: continue
-
-                    val mapa = HashMap<String, Any>(data)
-                    mapa["id"] = doc.id
-
-                    nuevaLista.add(mapa)
-                }
-
-                Log.d("RESERVAS_DEBUG", "Lista final: ${nuevaLista.size}")
-
-                adapterReservas.actualizarLista(nuevaLista)
-            }
-    }
-
-    private fun reservar() {
-
-        val planta = etPlanta.text.toString().toIntOrNull()
-        val cantidad = etCantidad.text.toString().toIntOrNull()
-
-        if (planta == null || cantidad == null) {
-            Toast.makeText(requireContext(), "Valores inválidos", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        val user = FirebaseAuth.getInstance().currentUser ?: return
-        val uid = user.uid
-
-        db.collection("usuarios")
-            .document(uid)
-            .get()
-            .addOnSuccessListener { doc ->
-
-                val nick = doc.getString("nick") ?: "usuario"
-
-                val reserva = hashMapOf(
-                    "uidUsuario" to uid,
-                    "nickUsuario" to nick,
-                    "plantaNumero" to planta,
-                    "cantidad" to cantidad,
-                    "fechaReserva" to FieldValue.serverTimestamp()
-                )
-
-                db.collection("albumsFeed")
-                    .document(albumId)
-                    .collection("reservas")
-                    .add(reserva)
-
-                etPlanta.setText("")
-                etCantidad.setText("")
-            }
+    fun actualizarLista(nuevaLista: List<Map<String, Any>>) {
+        lista.clear()
+        lista.addAll(nuevaLista)
+        notifyDataSetChanged()
     }
 }

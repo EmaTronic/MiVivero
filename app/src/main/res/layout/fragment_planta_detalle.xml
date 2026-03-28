@@ -260,8 +260,6 @@
 
         <!-- BOTONES -->
 
-
-        <!--
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnEliminar"
             android:layout_width="match_parent"
@@ -270,7 +268,7 @@
             android:backgroundTint="#C62828"
             android:textColor="@android:color/white"
             app:cornerRadius="28dp"
-            android:elevation="2dp"/>-->
+            android:elevation="2dp"/>
 
     </LinearLayout>
 

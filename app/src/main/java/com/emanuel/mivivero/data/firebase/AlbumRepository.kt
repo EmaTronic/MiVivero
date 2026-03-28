@@ -8,6 +8,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 import kotlinx.coroutines.tasks.await
 import java.util.*
 
@@ -44,27 +45,39 @@ object AlbumRepository {
 
         val urls = mutableListOf<String>()
 
-
+        val uploadedRefs = mutableListOf<StorageReference>()
 
         imagenes.forEachIndexed { index, uri ->
 
             val ref = storage
                 .child("albumsFeed")
-                .child(uid)                 // 🔴 CLAVE
+                .child(uid)
                 .child(albumId)
-                .child("img_$index.jpg")
-
+                .child("${System.currentTimeMillis()}_$index.jpg")
 
             Log.d("STORAGE_PATH", ref.path)
 
             val bytes = ImageUtils.compressImage(context, uri)
 
-            ref.putBytes(bytes).await()
+            try {
+                ref.putBytes(bytes).await()
+            } catch (e: Exception) {
+                Log.e("UPLOAD", "Error subiendo imagen $index", e)
+                throw Exception("Falló la subida de imágenes")
+            }
+
+            uploadedRefs.add(ref)
 
             val url = ref.downloadUrl.await().toString()
-
             urls.add(url)
         }
+
+
+        if (urls.isEmpty()) {
+            throw Exception("No se pudo subir ninguna imagen")
+        }
+
+        Log.d("ALBUM_UPLOAD", "imagenes subidas=${urls.size}")
 
         val portada = urls.first()
 
@@ -119,14 +132,26 @@ object AlbumRepository {
         )
 
 
-        val batch = db.batch()
-
         val feedRef = db.collection("albumsFeed").document(albumId)
         val detalleRef = db.collection("albumsDetalle").document(albumId)
+
+        val batch = db.batch()
 
         batch.set(feedRef, feed)
         batch.set(detalleRef, detalle)
 
-        batch.commit().await()
+        try {
+            batch.commit().await()
+        } catch (e: Exception) {
+
+            Log.e("FIRESTORE", "Error guardando álbum", e)
+
+            // 🔴 rollback
+            uploadedRefs.forEach {
+                try { it.delete() } catch (_: Exception) {}
+            }
+
+            throw Exception("Error guardando álbum")
+        }
     }
 }

@@ -207,7 +207,7 @@ class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
     private fun configurarSpinnerLugares() {
         viewModel.lugares.observe(viewLifecycleOwner) { lugares ->
             lugaresDisponibles = lugares
-            val opciones = mutableListOf("Sin lugar")
+            val opciones = mutableListOf("Eligir lugar")
             opciones.addAll(lugares.map { "${it.icono} ${it.nombre}" })
 
             val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, opciones)

@@ -225,7 +225,7 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
         }
 
 
-        /*
+
         binding.btnEliminar.setOnClickListener {
             AlertDialog.Builder(requireContext())
                 .setTitle("Eliminar planta")
@@ -236,7 +236,7 @@ class PlantaDetalleFragment : Fragment(R.layout.fragment_planta_detalle) {
                 }
                 .setNegativeButton("Cancelar", null)
                 .show()
-        }*/
+        }
 
     }
 

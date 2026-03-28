@@ -27,9 +27,16 @@ class AlbumFotoAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
-        Glide.with(holder.itemView)
-            .load(urls[position])
-            .into(holder.img)
+
+        val url = urls[position]
+
+        if (url.isNullOrEmpty()) {
+            holder.img.setImageResource(R.drawable.ic_planta_placeholder) // o lo que tengas
+        } else {
+            Glide.with(holder.itemView)
+                .load(url)
+                .into(holder.img)
+        }
     }
 
     override fun getItemCount() = urls.size
