@@ -33,6 +33,11 @@ object AlbumRepository {
 
         val albumId = db.collection("albumsFeed").document().id
 
+        if (imagenes.isEmpty()) {
+            throw Exception("Sin imágenes")
+        }
+
+
         // =========================
         // 1. Subir imágenes
         // =========================
@@ -44,7 +49,13 @@ object AlbumRepository {
         imagenes.forEachIndexed { index, uri ->
 
             val ref = storage
-                .child("albums/$albumId/img_$index.jpg")
+                .child("albumsFeed")
+                .child(uid)                 // 🔴 CLAVE
+                .child(albumId)
+                .child("img_$index.jpg")
+
+
+            Log.d("STORAGE_PATH", ref.path)
 
             val bytes = ImageUtils.compressImage(context, uri)
 
@@ -106,6 +117,7 @@ object AlbumRepository {
             "uidAutor" to uid,
             "fotos" to fotos
         )
+
 
         val batch = db.batch()
 
