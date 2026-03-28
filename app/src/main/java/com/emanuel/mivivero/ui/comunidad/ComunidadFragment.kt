@@ -3,6 +3,7 @@ package com.emanuel.mivivero.ui.comunidad
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Button
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -10,9 +11,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.emanuel.mivivero.R
 import com.emanuel.mivivero.data.model.Publicacion
+import com.emanuel.mivivero.utils.AdminFunctions
+import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import com.google.firebase.functions.FirebaseFunctions
 
 class ComunidadFragment : Fragment(R.layout.fragment_comunidad) {
 
@@ -72,6 +76,8 @@ class ComunidadFragment : Fragment(R.layout.fragment_comunidad) {
     private var textoBusquedaActual: String = ""
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
+
         super.onViewCreated(view, savedInstanceState)
 
         recyclerFeed = view.findViewById(R.id.recyclerFeedComunidad)
@@ -136,11 +142,65 @@ class ComunidadFragment : Fragment(R.layout.fragment_comunidad) {
         cargarAlbumes()
 
 
-        val user = FirebaseAuth.getInstance().currentUser ?: return
 
+
+
+        val user = FirebaseAuth.getInstance().currentUser ?: return
         val uid = user.uid
 
+// 🔥 PEGAR ACÁ ↓↓↓
+        FirebaseAuth.getInstance().currentUser?.getIdToken(true)
+            ?.addOnSuccessListener {
+                Log.d("AUTH", "TOKEN OK")
+            }
+            ?.addOnFailureListener {
+                Log.e("AUTH", "TOKEN FAIL", it)
+            }
 
+
+
+
+        val btn = view.findViewById<Button>(R.id.btnTestFunction)
+
+        Log.d("AUTH", "USER = ${FirebaseAuth.getInstance().currentUser}")
+
+
+
+        btn.setOnClickListener {
+
+            Log.d("PROJECT", FirebaseApp.getInstance().options.projectId ?: "null")
+
+            val user = FirebaseAuth.getInstance().currentUser
+
+            if (user == null) {
+                Log.e("FUNCTION", "NO AUTH USER")
+                return@setOnClickListener
+            }
+
+            user.getIdToken(true)
+                .addOnSuccessListener {
+
+                    val functions = FirebaseFunctions.getInstance("us-central1")
+
+                    val data = hashMapOf(
+                        "uid" to user.uid,
+                        "bloqueado" to false
+                    )
+
+                    functions
+                        .getHttpsCallable("setBloqueado")
+                        .call(data)
+                        .addOnSuccessListener {
+                            Log.d("FUNCTION", "OK")
+                        }
+                        .addOnFailureListener {
+                            Log.e("FUNCTION", "ERROR", it)
+                        }
+                }
+                .addOnFailureListener {
+                    Log.e("FUNCTION", "TOKEN FAIL", it)
+                }
+        }
 
 
     }
