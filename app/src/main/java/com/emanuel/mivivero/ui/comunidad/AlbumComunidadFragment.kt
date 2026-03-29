@@ -37,6 +37,8 @@ class AlbumComunidadFragment : Fragment(R.layout.fragment_album_comunidad) {
 
     private var albumId: String = ""
 
+    private var uidAutor: String = ""
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -81,7 +83,7 @@ class AlbumComunidadFragment : Fragment(R.layout.fragment_album_comunidad) {
         recyclerReservas.setHasFixedSize(false)
         recyclerReservas.isNestedScrollingEnabled = false
 
-        adapterReservas = ReservasAdapter(listaReservas, albumId)
+        adapterReservas = ReservasAdapter(listaReservas, albumId, uidAutor)
         recyclerReservas.adapter = adapterReservas
 
         // =========================
@@ -96,13 +98,21 @@ class AlbumComunidadFragment : Fragment(R.layout.fragment_album_comunidad) {
             .get()
             .addOnSuccessListener { doc ->
 
-                val uidAutor = doc.getString("uidAutor")
+                // 🔴 GUARDAR EN VARIABLE GLOBAL
+                uidAutor = doc.getString("uidAutor") ?: ""
 
+                val uidActual = FirebaseAuth.getInstance().currentUser?.uid
+
+                // 🔴 CONTROL BOTÓN RESERVAR
                 if (uidActual == uidAutor) {
                     btnReservar.visibility = View.GONE
                 } else {
                     btnReservar.setOnClickListener { reservar() }
                 }
+
+                // 🔴 CREAR ADAPTER ACÁ (LUGAR CORRECTO)
+                adapterReservas = ReservasAdapter(listaReservas, albumId, uidAutor)
+                recyclerReservas.adapter = adapterReservas
             }
 
 
@@ -330,6 +340,7 @@ class AlbumComunidadFragment : Fragment(R.layout.fragment_album_comunidad) {
                     "nickUsuario" to nick,
                     "plantaNumero" to planta,
                     "cantidad" to cantidad,
+                    "estado" to "activa",
                     "fechaReserva" to FieldValue.serverTimestamp()
                 )
 
@@ -340,7 +351,30 @@ class AlbumComunidadFragment : Fragment(R.layout.fragment_album_comunidad) {
                     .collection("reservas")
                     .add(reserva)
                     .addOnSuccessListener {
+
                         Log.d("RESERVA_TEST", "GUARDADO OK")
+
+                        Log.d("NOTIF_DEBUG", "uidAutor=$uidAutor")
+
+                        // 🔴 CREAR NOTIFICACIÓN
+                        val notif = hashMapOf(
+                            "tipo" to "reserva",
+                            "mensaje" to "Te reservaron planta $planta ($cantidad)",
+                            "albumId" to albumId,
+                            "fecha" to FieldValue.serverTimestamp(),
+                            "leido" to false
+                        )
+
+                        db.collection("usuarios")
+                            .document(uidAutor)
+                            .collection("notificaciones")
+                            .add(notif)
+                            .addOnSuccessListener {
+                                Log.d("NOTIF_DEBUG", "NOTIFICACION GUARDADA")
+                            }
+                            .addOnFailureListener {
+                                Log.e("NOTIF_DEBUG", "ERROR NOTIF", it)
+                            }
                     }
                     .addOnFailureListener {
                         Log.e("RESERVA_TEST", "ERROR", it)

@@ -76,9 +76,15 @@ class ComunidadFragment : Fragment(R.layout.fragment_comunidad) {
     private var textoBusquedaActual: String = ""
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-
-
         super.onViewCreated(view, savedInstanceState)
+
+        val btnNotif = view.findViewById<Button>(R.id.btnNotificaciones)
+
+        btnNotif.setOnClickListener {
+            findNavController().navigate(R.id.notificacionesFragment)
+        }
+
+
 
         recyclerFeed = view.findViewById(R.id.recyclerFeedComunidad)
         recyclerFeed.layoutManager = LinearLayoutManager(requireContext())

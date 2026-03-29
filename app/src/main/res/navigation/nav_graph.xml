@@ -196,6 +196,11 @@
         android:name="com.emanuel.mivivero.ui.auth.VerificarEmailFragment"
         android:label="Verificar Email"/>
 
+    <fragment
+        android:id="@+id/notificacionesFragment"
+        android:name="com.emanuel.mivivero.ui.notificaciones.NotificacionesFragment"
+        android:label="Notificaciones"/>
+
 
 
 </navigation>

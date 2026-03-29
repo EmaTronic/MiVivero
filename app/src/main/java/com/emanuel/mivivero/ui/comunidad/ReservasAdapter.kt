@@ -15,7 +15,10 @@ import com.google.firebase.firestore.FirebaseFirestore
 
 class ReservasAdapter(
     private val lista: MutableList<Map<String, Any>>, // 🔥 AHORA MUTABLE
-    private val albumId: String
+    private val albumId: String,
+    private val uidAutor: String
+
+
 ) : RecyclerView.Adapter<ReservasAdapter.ViewHolder>() {
 
     private val db = FirebaseFirestore.getInstance()
@@ -24,6 +27,8 @@ class ReservasAdapter(
         val texto: TextView = view.findViewById(R.id.tvReserva)
         val btnEditar: Button = view.findViewById(R.id.btnEditar)
         val btnEliminar: Button = view.findViewById(R.id.btnEliminar)
+
+        val btnConfirmar: Button = view.findViewById(R.id.btnConfirmar)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -47,12 +52,32 @@ class ReservasAdapter(
 
         val unidadTexto = if (cantidad == 1) "unidad" else "unidades"
 
-        holder.texto.text = "Planta $planta\n$cantidad $unidadTexto - $usuario"
+        val estado = reserva["estado"] ?: "activa"
 
+        val estadoTexto = when (estado) {
+            "completada" -> "✅ VENDIDO"
+            else -> "⏳ pendiente"
+        }
+
+        holder.texto.text = "Planta $planta\n$cantidad $unidadTexto - $usuario\n$estadoTexto"
+
+
+        if (estado == "completada") {
+            holder.btnEditar.visibility = View.GONE
+            holder.btnEliminar.visibility = View.GONE
+        }
         // ======================
         // VISIBILIDAD BOTONES
         // ======================
         if (uidActual == uidReserva) {
+
+            // 🔴 CONFIRMAR SOLO AUTOR
+            if (uidActual == uidAutor) {
+                holder.btnConfirmar.visibility = View.VISIBLE
+            } else {
+                holder.btnConfirmar.visibility = View.GONE
+            }
+
             holder.btnEditar.visibility = View.VISIBLE
             holder.btnEliminar.visibility = View.VISIBLE
         } else {
@@ -118,6 +143,15 @@ class ReservasAdapter(
                 }
                 .setNegativeButton("Cancelar", null)
                 .show()
+        }
+
+        holder.btnConfirmar.setOnClickListener {
+
+            db.collection("albumsFeed")
+                .document(albumId)
+                .collection("reservas")
+                .document(id)
+                .update("estado", "completada")
         }
     }
 
