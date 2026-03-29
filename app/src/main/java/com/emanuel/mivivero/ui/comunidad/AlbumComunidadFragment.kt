@@ -15,6 +15,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.Timestamp
 
 class AlbumComunidadFragment : Fragment(R.layout.fragment_album_comunidad) {
 
@@ -36,8 +37,8 @@ class AlbumComunidadFragment : Fragment(R.layout.fragment_album_comunidad) {
     private lateinit var adapterReservas: ReservasAdapter
 
     private var albumId: String = ""
-
     private var uidAutor: String = ""
+    private var albumTitulo: String = ""
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -100,6 +101,8 @@ class AlbumComunidadFragment : Fragment(R.layout.fragment_album_comunidad) {
 
                 // 🔴 GUARDAR EN VARIABLE GLOBAL
                 uidAutor = doc.getString("uidAutor") ?: ""
+
+                albumTitulo = doc.getString("titulo") ?: "Álbum"
 
                 val uidActual = FirebaseAuth.getInstance().currentUser?.uid
 
@@ -326,8 +329,6 @@ class AlbumComunidadFragment : Fragment(R.layout.fragment_album_comunidad) {
         val user = FirebaseAuth.getInstance().currentUser ?: return
         val uid = user.uid
 
-
-
         db.collection("usuarios")
             .document(uid)
             .get()
@@ -353,16 +354,19 @@ class AlbumComunidadFragment : Fragment(R.layout.fragment_album_comunidad) {
                     .addOnSuccessListener {
 
                         Log.d("RESERVA_TEST", "GUARDADO OK")
-
                         Log.d("NOTIF_DEBUG", "uidAutor=$uidAutor")
 
-                        // 🔴 CREAR NOTIFICACIÓN
+                        // 🔴 CREAR NOTIFICACIÓN (SIN QUERY EXTRA)
+                        val mensaje = "$nick te reservó $cantidad unidades de la planta $planta del álbum $albumTitulo"
+
                         val notif = hashMapOf(
                             "tipo" to "reserva",
-                            "mensaje" to "Te reservaron planta $planta ($cantidad)",
+                            "mensaje" to mensaje,
                             "albumId" to albumId,
                             "fecha" to FieldValue.serverTimestamp(),
-                            "leido" to false
+                            "leido" to false,
+                            "nick" to nick,
+                            "albumTitulo" to albumTitulo
                         )
 
                         db.collection("usuarios")

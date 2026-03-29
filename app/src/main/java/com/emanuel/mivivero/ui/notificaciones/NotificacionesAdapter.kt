@@ -12,11 +12,13 @@ import com.google.firebase.firestore.FirebaseFirestore
 
 class NotificacionesAdapter(
     private val lista: List<Notificacion>,
-    private val uid: String
+    private val uid: String,
+    private val onClick: (Notificacion) -> Unit
 ) : RecyclerView.Adapter<NotificacionesAdapter.ViewHolder>() {
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvMensaje: TextView = view.findViewById(R.id.tvMensaje)
+        val tvFecha: TextView = view.findViewById(R.id.tvFecha)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -35,16 +37,28 @@ class NotificacionesAdapter(
         val notif = lista[position]
 
         holder.tvMensaje.text = notif.mensaje
+        holder.tvFecha.text = formatearFecha(notif.fecha)
 
         holder.itemView.setOnClickListener {
 
+            // 1. marcar como leído
             FirebaseFirestore.getInstance()
                 .collection("usuarios")
                 .document(uid)
                 .collection("notificaciones")
                 .document(notif.id)
                 .update("leido", true)
+
+            // 2. navegar
+            onClick(notif)
         }
 
+    }
+
+    private fun formatearFecha(timestamp: com.google.firebase.Timestamp?): String {
+        if (timestamp == null) return ""
+
+        val sdf = java.text.SimpleDateFormat("dd MMM - HH:mm", java.util.Locale.getDefault())
+        return sdf.format(timestamp.toDate())
     }
 }

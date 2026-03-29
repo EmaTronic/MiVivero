@@ -44,6 +44,35 @@
                 android:textStyle="bold"
                 android:textColor="#222222"/>
 
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="12dp">
+
+                <!-- 🔔 CAMPANA -->
+                <ImageView
+                    android:id="@+id/btnNotificaciones"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:src="@drawable/ic_notificaciones"
+                    app:tint="#444444" />
+
+                <!-- 🔴 BADGE -->
+                <TextView
+                    android:id="@+id/txtBadge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end|top"
+                    android:background="@drawable/bg_badge"
+                    android:minWidth="18dp"
+                    android:minHeight="18dp"
+                    android:padding="2dp"
+                    android:text="3"
+                    android:textColor="@android:color/white"
+                    android:textSize="10sp"
+                    android:gravity="center"/>
+            </FrameLayout>
+
             <!-- Icono usuario -->
             <ImageView
                 android:id="@+id/btnUsuario"

@@ -12,6 +12,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import kotlin.jvm.java
+import androidx.navigation.fragment.findNavController
 
 class NotificacionesFragment : Fragment(R.layout.fragment_notificaciones) {
 
@@ -33,12 +34,26 @@ class NotificacionesFragment : Fragment(R.layout.fragment_notificaciones) {
 
         val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
 
-        adapter = NotificacionesAdapter(lista, uid)
+        adapter = NotificacionesAdapter(lista, uid) { notif ->
+
+            val bundle = Bundle().apply {
+                putString("albumId", notif.albumId)
+            }
+
+            findNavController().navigate(R.id.albumComunidadFragment, bundle)
+        }
+
+
         recycler.adapter = adapter
 
         cargarNotificaciones()
 
 
+    }
+
+    override fun onResume() {
+        super.onResume()
+        cargarNotificaciones()
     }
 
     private fun cargarNotificaciones() {
@@ -51,6 +66,7 @@ class NotificacionesFragment : Fragment(R.layout.fragment_notificaciones) {
             .document(uid)
             .collection("notificaciones")
             .orderBy("fecha", Query.Direction.DESCENDING)
+            .limit(30)
             .get()
             .addOnSuccessListener { snapshot ->
 

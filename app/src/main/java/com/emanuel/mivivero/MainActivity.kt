@@ -1,12 +1,18 @@
 package com.emanuel.mivivero
 
 import android.os.Bundle
+import android.view.Menu
+import android.view.View
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.emanuel.mivivero.databinding.ActivityMainBinding
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 class MainActivity : AppCompatActivity() {
 
@@ -29,6 +35,39 @@ class MainActivity : AppCompatActivity() {
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        val btnNotif = findViewById<ImageView>(R.id.btnNotificaciones)
+        val txtBadge = findViewById<TextView>(R.id.txtBadge)
+
+        btnNotif.setOnClickListener {
+            findNavController(R.id.navHost).navigate(R.id.notificacionesFragment)
+        }
+
+        val uid = FirebaseAuth.getInstance().currentUser?.uid
+
+        if (uid != null) {
+
+            FirebaseFirestore.getInstance()
+                .collection("usuarios")
+                .document(uid)
+                .collection("notificaciones")
+                .whereEqualTo("leido", false)
+                .get()
+                .addOnSuccessListener { snapshot ->
+
+                    val count = snapshot.size()
+
+                    if (count > 0) {
+                        txtBadge.visibility = View.VISIBLE
+                        txtBadge.text = count.toString()
+                    } else {
+                        txtBadge.visibility = View.GONE
+                    }
+                }
+        }
+
+
+
 
         // inicializar FirebaseAuth
         auth = FirebaseAuth.getInstance()
@@ -109,6 +148,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_main, menu)
+        return true
+    }
 
     override fun onStart() {
         super.onStart()

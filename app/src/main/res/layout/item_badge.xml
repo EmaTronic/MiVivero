@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <!-- 🔔 ICONO CAMPANA -->
+        <ImageView
+            android:id="@+id/icono"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_notificaciones"
+            android:contentDescription="Notificaciones" />
+
+        <!-- 🔴 BADGE -->
+        <TextView
+            android:id="@+id/badge_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|top"
+            android:minWidth="16dp"
+            android:minHeight="16dp"
+            android:gravity="center"
+            android:padding="2dp"
+            android:textColor="@android:color/white"
+            android:textSize="10sp"
+            android:textStyle="bold"
+            android:background="@drawable/bg_badge"
+            android:visibility="gone" />
+
+    </FrameLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -7,4 +7,11 @@
         android:orderInCategory="100"
         android:title="@string/action_settings"
         app:showAsAction="never" />
+
+    <!-- 🔔 CAMPANA -->
+    <item
+        android:id="@+id/action_notificaciones"
+        android:title="Notificaciones"
+        app:showAsAction="always"
+        app:actionLayout="@layout/item_badge"/>
 </menu>
