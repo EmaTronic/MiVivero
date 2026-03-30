@@ -51,6 +51,9 @@ sealed class HorizontalContentItem {
         override val stableId: String,
         val titulo: String,
         val descripcion: String,
-        val previewFotos: List<String>
+        val previewFotos: List<String>,
+        val nickAutor: String?,        // 🔴 necesario
+        val cantidadPlantas: Int,      // 🔴 necesario
+        val fechaPublicacion: Long
     ) : HorizontalContentItem()
 }

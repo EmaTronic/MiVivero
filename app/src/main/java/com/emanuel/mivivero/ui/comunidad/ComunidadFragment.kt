@@ -30,7 +30,6 @@ class ComunidadFragment : Fragment(R.layout.fragment_comunidad) {
         FeedSection.DESTACADOS to false,
         FeedSection.MIS_PUBLICACIONES to false,
         FeedSection.ALBUMES to false,
-        FeedSection.COMUNIDAD to false,
         FeedSection.COMUNIDAD to true
     )
 
@@ -79,6 +78,7 @@ class ComunidadFragment : Fragment(R.layout.fragment_comunidad) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        //migrarFechasAlbumes()
 
 
 
@@ -280,7 +280,6 @@ class ComunidadFragment : Fragment(R.layout.fragment_comunidad) {
 
     private fun cargarAlbumes() {
 
-
         db.collection("albumsFeed")
             .orderBy("fechaPublicacion", Query.Direction.DESCENDING)
             .limit(20)
@@ -301,17 +300,54 @@ class ComunidadFragment : Fragment(R.layout.fragment_comunidad) {
 
                     Log.d("ALBUM_DOC", "previewFotos parsed = $preview")
 
+                    // ✅ USO CORRECTO DE TIMESTAMP
+                    val timestamp = doc.getTimestamp("fechaPublicacion")
+                    val fechaLong = timestamp?.toDate()?.time ?: 0L
+
                     HorizontalContentItem.AlbumCard(
                         stableId = doc.id,
                         titulo = doc.getString("titulo") ?: "Álbum ${index + 1}",
                         descripcion = "${doc.getLong("cantidadPlantas") ?: 0} plantas",
-                        previewFotos = preview
+                        previewFotos = preview,
+                        nickAutor = doc.getString("nickAutor"),
+                        cantidadPlantas = (doc.getLong("cantidadPlantas") ?: 0).toInt(),
+                        fechaPublicacion = fechaLong
                     )
                 }
+
                 reconstruirFeed()
+            }
+            .addOnFailureListener { e ->
+                Log.e("ALBUMES_FEED", "ERROR", e)
             }
     }
 
+    private fun migrarFechasAlbumes() {
+
+        db.collection("albumsFeed")
+            .get()
+            .addOnSuccessListener { result ->
+
+                result.documents.forEach { doc ->
+
+                    val fechaRaw = doc.get("fechaPublicacion")
+
+                    if (fechaRaw is com.google.firebase.Timestamp) return@forEach
+
+                    val nuevaFecha = when (fechaRaw) {
+                        is Long -> com.google.firebase.Timestamp(java.util.Date(fechaRaw))
+                        is Number -> com.google.firebase.Timestamp(java.util.Date(fechaRaw.toLong()))
+                        else -> null
+                    }
+
+                    if (nuevaFecha != null) {
+                        db.collection("albumsFeed")
+                            .document(doc.id)
+                            .update("fechaPublicacion", nuevaFecha)
+                    }
+                }
+            }
+    }
     private fun aplicarFiltros() {
 
         Log.d("COMUNIDAD_DEBUG", "🎯 aplicarFiltros() input size: ${listaComunidadCompleta.size}")

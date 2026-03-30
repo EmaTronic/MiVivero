@@ -24,7 +24,8 @@ class ComunidadFeedAdapter(
     private val onFiltroTodas: () -> Unit,
     private val onFiltroPendientes: () -> Unit,
     private val onFiltroIdentificadas: () -> Unit,
-    private val onBuscar: (String) -> Unit
+    private val onBuscar: (String) -> Unit,
+
 ) : ListAdapter<FeedItem, RecyclerView.ViewHolder>(FeedItemDiffCallback()) {
 
     private val sharedViewPool = RecyclerView.RecycledViewPool()
@@ -294,7 +295,18 @@ private class HorizontalContentAdapter(
     class AlbumViewHolder(
         view: View,
         private val onAlbumClick: (String) -> Unit
+
+
+
     ) : RecyclerView.ViewHolder(view) {
+
+        private fun formatearFecha(timestamp: Long?): String {
+
+            if (timestamp == null) return ""
+
+            val sdf = java.text.SimpleDateFormat("dd MMM - HH:mm", java.util.Locale.getDefault())
+            return sdf.format(java.util.Date(timestamp))
+        }
 
         private val img1: ImageView = view.findViewById(R.id.img1)
         private val img2: ImageView = view.findViewById(R.id.img2)
@@ -310,6 +322,12 @@ private class HorizontalContentAdapter(
         fun bind(item: HorizontalContentItem.AlbumCard) {
 
             tvTitulo.text = item.titulo
+
+            tvUsuario.text = "por ${item.nickAutor ?: "usuario"}"
+
+            tvCantidad.text = "${item.cantidadPlantas} plantas"
+
+            tvFecha.text = formatearFecha(item.fechaPublicacion)
 
             val imgs = listOf(img1, img2, img3, img4)
 
