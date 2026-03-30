@@ -49,6 +49,7 @@ class NotificacionesFragment : Fragment(R.layout.fragment_notificaciones) {
         cargarNotificaciones()
 
 
+
     }
 
     override fun onResume() {
@@ -84,4 +85,29 @@ class NotificacionesFragment : Fragment(R.layout.fragment_notificaciones) {
                 Log.e("NOTIF_DEBUG", "ERROR", it)
             }
     }
+    private fun marcarComoLeidas() {
+
+        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
+
+        db.collection("usuarios")
+            .document(uid)
+            .collection("notificaciones")
+            .whereEqualTo("leido", false)
+            .get()
+            .addOnSuccessListener { snapshot ->
+
+                val batch = db.batch()
+
+                for (doc in snapshot.documents) {
+                    batch.update(doc.reference, "leido", true)
+                }
+
+                batch.commit().addOnSuccessListener {
+                    Log.d("NOTIF_DEBUG", "TODAS MARCADAS COMO LEIDAS")
+                }
+            }
+    }
+
+
+
 }

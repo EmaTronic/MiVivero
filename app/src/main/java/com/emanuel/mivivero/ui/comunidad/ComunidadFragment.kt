@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -78,11 +79,6 @@ class ComunidadFragment : Fragment(R.layout.fragment_comunidad) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val btnNotif = view.findViewById<Button>(R.id.btnNotificaciones)
-
-        btnNotif.setOnClickListener {
-            findNavController().navigate(R.id.notificacionesFragment)
-        }
 
 
 

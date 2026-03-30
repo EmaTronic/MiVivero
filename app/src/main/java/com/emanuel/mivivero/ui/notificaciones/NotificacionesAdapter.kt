@@ -11,7 +11,7 @@ import com.emanuel.mivivero.data.model.Notificacion
 import com.google.firebase.firestore.FirebaseFirestore
 
 class NotificacionesAdapter(
-    private val lista: List<Notificacion>,
+    private val lista: MutableList<Notificacion>,
     private val uid: String,
     private val onClick: (Notificacion) -> Unit
 ) : RecyclerView.Adapter<NotificacionesAdapter.ViewHolder>() {
@@ -41,7 +41,11 @@ class NotificacionesAdapter(
 
         holder.itemView.setOnClickListener {
 
-            // 1. marcar como leído
+            Log.d("CLICK_TEST", "CLICK OK")
+
+            val notif = lista[position]
+
+            // 🔴 marcar SOLO esta como leída
             FirebaseFirestore.getInstance()
                 .collection("usuarios")
                 .document(uid)
@@ -49,7 +53,10 @@ class NotificacionesAdapter(
                 .document(notif.id)
                 .update("leido", true)
 
-            // 2. navegar
+            // 🔴 opcional: feedback inmediato UI
+            lista[position].leido = true
+            notifyItemChanged(position)
+
             onClick(notif)
         }
 

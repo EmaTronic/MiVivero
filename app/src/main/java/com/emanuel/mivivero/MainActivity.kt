@@ -74,9 +74,6 @@ class MainActivity : AppCompatActivity() {
 
 
 
-
-
-
         // Toolbar
         setSupportActionBar(binding.topAppBar)
 
@@ -85,6 +82,10 @@ class MainActivity : AppCompatActivity() {
             supportFragmentManager.findFragmentById(R.id.navHost) as NavHostFragment
 
         val navController = navHostFragment.navController
+
+        navController.addOnDestinationChangedListener { _, _, _ ->
+            actualizarBadge()
+        }
 
         // Bottom navigation
         binding.bottomNav.setOnItemSelectedListener { item ->
@@ -148,6 +149,31 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+
+
+    private fun actualizarBadge() {
+
+        val txtBadge = findViewById<TextView>(R.id.txtBadge)
+        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
+
+        FirebaseFirestore.getInstance()
+            .collection("usuarios")
+            .document(uid)
+            .collection("notificaciones")
+            .whereEqualTo("leido", false)
+            .get()
+            .addOnSuccessListener { snapshot ->
+
+                val count = snapshot.size()
+
+                if (count > 0) {
+                    txtBadge.visibility = View.VISIBLE
+                    txtBadge.text = count.toString()
+                } else {
+                    txtBadge.visibility = View.GONE
+                }
+            }
+    }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)

@@ -8,5 +8,5 @@ data class Notificacion(
     val albumTitulo: String = "",
     val albumId: String = "",
     val fecha: com.google.firebase.Timestamp? = null,
-    val leido: Boolean = false
+    var leido: Boolean = false
 )
