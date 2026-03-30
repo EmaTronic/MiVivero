@@ -43,7 +43,7 @@ object AlbumRepository {
         // 1. Subir imágenes
         // =========================
 
-        val urls = mutableListOf<String>()
+        val urls = mutableListOf<Pair<Int, String>>()
 
         val uploadedRefs = mutableListOf<StorageReference>()
 
@@ -69,7 +69,7 @@ object AlbumRepository {
             uploadedRefs.add(ref)
 
             val url = ref.downloadUrl.await().toString()
-            urls.add(url)
+            urls.add(index to url)
         }
 
 
@@ -79,10 +79,21 @@ object AlbumRepository {
 
         Log.d("ALBUM_UPLOAD", "imagenes subidas=${urls.size}")
 
-        val portada = urls.first()
+        val portada = urls
+            .sortedBy { it.first }
+            .first()
+            .second
 
 
         Log.d("ALBUM_UPLOAD", "urls = $urls")
+
+        val userDoc = db.collection("usuarios")
+            .document(uid)
+            .get()
+            .await()
+
+        val nickAutor = userDoc.getString("nick") ?: "usuario"
+
         // =========================
         // 2. albumsFeed (liviano)
         // =========================
@@ -90,6 +101,7 @@ object AlbumRepository {
         val feed = hashMapOf(
             "albumId" to albumId,
             "uidAutor" to uid,
+            "nickAutor" to nickAutor,
             "titulo" to titulo,
             "categoria" to categoria,
 
@@ -106,9 +118,12 @@ object AlbumRepository {
 
             "portadaUrl" to portada,
 
-            "previewFotos" to urls.take(4),
+            "previewFotos" to urls
+                .sortedBy { it.first }
+                .map { it.second }
+                .take(4),
 
-            "cantidadPlantas" to (urls.size - 1),
+            "cantidadPlantas" to urls.size,
             "comentariosCount" to 0,
 
             "fechaPublicacion" to FieldValue.serverTimestamp()
@@ -118,7 +133,10 @@ object AlbumRepository {
         // 3. albumsDetalle (fotos)
         // =========================
 
-        val fotos = urls.drop(1).mapIndexed { index, url ->
+        val fotos = urls
+            .sortedBy { it.first }
+            .drop(1)
+            .mapIndexed { index, (_, url) ->
             hashMapOf(
                 "url" to url,
                 "plantaIndex" to index + 1

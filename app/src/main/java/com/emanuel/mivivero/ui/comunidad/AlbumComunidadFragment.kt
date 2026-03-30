@@ -153,20 +153,23 @@ class AlbumComunidadFragment : Fragment(R.layout.fragment_album_comunidad) {
 
                 ref.listAll().addOnSuccessListener { result ->
 
-                    val urls = mutableListOf<String>()
-
+                    // 🔴 CASO: SIN IMÁGENES
                     if (result.items.isEmpty()) {
                         Log.e("FOTOS", "NO HAY IMAGENES EN STORAGE")
+
+                        mostrarCarruseles(emptyList()) // ✅ estado consistente
                         return@addOnSuccessListener
                     }
 
-                    result.items.forEach { item ->
+                    val urls = MutableList(result.items.size) { "" }
+
+                    result.items.forEachIndexed { index, item ->
 
                         item.downloadUrl.addOnSuccessListener { uri ->
 
-                            urls.add(uri.toString())
+                            urls[index] = uri.toString()
 
-                            if (urls.size == result.items.size) {
+                            if (urls.none { it.isEmpty() }) {
                                 mostrarCarruseles(urls)
                             }
                         }
