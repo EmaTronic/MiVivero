@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.emanuel.mivivero.R
+import com.google.firebase.Timestamp
 
 
 class ComunidadFeedAdapter(
@@ -65,6 +66,8 @@ class ComunidadFeedAdapter(
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+
+        Log.d("ADAPTER_TEST", "item=${getItem(position)}")
 
         when (val item = getItem(position)) {
 
@@ -120,11 +123,10 @@ class ComunidadFeedAdapter(
             layoutManager.initialPrefetchItemCount = 4
 
             recycler.setRecycledViewPool(sharedViewPool)
-            val adapter =
-                recycler.adapter as? HorizontalContentAdapter
-                    ?: HorizontalContentAdapter(onAlbumClick, onPublicacionClick)
-                        .also { recycler.adapter = it }
+            // 📂 ComunidadFeedAdapter.kt → HorizontalCarouselViewHolder.bind()
 
+            val adapter = HorizontalContentAdapter(onAlbumClick, onPublicacionClick)
+            recycler.adapter = adapter
             adapter.submitList(item.items)
         }
     }
@@ -231,8 +233,11 @@ private class HorizontalContentAdapter(
             is HorizontalContentItem.PublicacionCard ->
                 (holder as PublicacionViewHolder).bind(item)
 
-            is HorizontalContentItem.AlbumCard ->
-                (holder as AlbumViewHolder).bind(item)
+            is HorizontalContentItem.AlbumCard ->{
+
+                Log.e("ALBUM_TYPE", "Binding ALBUM ${item.stableId}")
+
+                (holder as AlbumViewHolder).bind(item)}
         }
     }
 
@@ -243,6 +248,8 @@ private class HorizontalContentAdapter(
         private val tvDescripcion: TextView = view.findViewById(R.id.tvArticuloDescripcion)
 
         fun bind(item: HorizontalContentItem.Articulo) {
+
+
 
             img.setImageResource(item.imageResId)
             tvTitulo.text = item.titulo
@@ -261,6 +268,8 @@ private class HorizontalContentAdapter(
         private val tvAutor: TextView = view.findViewById(R.id.tvAutor)
 
         fun bind(item: HorizontalContentItem.PublicacionCard) {
+
+
 
             val publicacion = item.publicacion
 
@@ -296,17 +305,13 @@ private class HorizontalContentAdapter(
         view: View,
         private val onAlbumClick: (String) -> Unit
 
-
-
     ) : RecyclerView.ViewHolder(view) {
 
-        private fun formatearFecha(timestamp: Long?): String {
+        // 📂 NotificacionesAdapter.kt → formatearFecha()
+        // 📂 Adapter → formatearFecha()
+        // 📂 NotificacionesAdapter.kt → formatearFecha()
+        // 📂 ComunidadFeedAdapter.kt → AlbumViewHolder
 
-            if (timestamp == null) return ""
-
-            val sdf = java.text.SimpleDateFormat("dd MMM - HH:mm", java.util.Locale.getDefault())
-            return sdf.format(java.util.Date(timestamp))
-        }
 
         private val img1: ImageView = view.findViewById(R.id.img1)
         private val img2: ImageView = view.findViewById(R.id.img2)
@@ -321,13 +326,16 @@ private class HorizontalContentAdapter(
 
         fun bind(item: HorizontalContentItem.AlbumCard) {
 
+            // 📂 HorizontalContentAdapter.kt → AlbumViewHolder.bind()
+
             tvTitulo.text = item.titulo
 
             tvUsuario.text = "por ${item.nickAutor ?: "usuario"}"
 
             tvCantidad.text = "${item.cantidadPlantas} plantas"
 
-            tvFecha.text = formatearFecha(item.fechaPublicacion)
+            // 📂 AlbumViewHolder.bind()
+            tvFecha.text = "VALOR: ${item.fechaPublicacion}"
 
             val imgs = listOf(img1, img2, img3, img4)
 

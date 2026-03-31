@@ -78,6 +78,9 @@ class ComunidadFragment : Fragment(R.layout.fragment_comunidad) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
+        // 📂 ComunidadFragment.kt → onViewCreated()
+        Log.e("PRUEBA_REAL", "APP NUEVA CORRIENDO")
         //migrarFechasAlbumes()
 
 
@@ -136,6 +139,8 @@ class ComunidadFragment : Fragment(R.layout.fragment_comunidad) {
         )
 
         recyclerFeed.adapter = feedAdapter
+        // 📂 ComunidadFragment.kt
+        Log.e("ADAPTER_REAL", "Adapter seteado = ${feedAdapter::class.java.name}")
 
         reconstruirFeed()
 

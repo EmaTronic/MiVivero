@@ -100,10 +100,30 @@ class NotificacionesAdapter(
 
     }
 
+    // 📂 NotificacionesAdapter.kt → formatearFecha()
     private fun formatearFecha(timestamp: com.google.firebase.Timestamp?): String {
-        if (timestamp == null) return ""
 
-        val sdf = java.text.SimpleDateFormat("dd MMM - HH:mm", java.util.Locale.getDefault())
-        return sdf.format(timestamp.toDate())
+        if (timestamp == null) return "sin fecha"
+
+        val ahora = System.currentTimeMillis()
+        val fecha = timestamp.toDate().time
+
+        val diff = ahora - fecha
+
+        val minutos = diff / (1000 * 60)
+        val horas = diff / (1000 * 60 * 60)
+        val dias = diff / (1000 * 60 * 60 * 24)
+
+        return when {
+            minutos < 1 -> "recién"
+            minutos < 60 -> "hace $minutos min"
+            horas < 24 -> "hace $horas h"
+            dias == 1L -> "ayer"
+            dias < 7 -> "hace $dias días"
+            else -> {
+                val sdf = java.text.SimpleDateFormat("dd MMM", java.util.Locale.getDefault())
+                sdf.format(timestamp.toDate())
+            }
+        }
     }
 }
