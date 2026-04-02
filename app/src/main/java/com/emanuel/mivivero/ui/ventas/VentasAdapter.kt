@@ -133,4 +133,9 @@ class VentasAdapter(
     fun obtenerVentas(): Map<Long, Pair<Int, Double>> {
         return ventasMap
     }
+
+    fun limpiarVentas() {
+        ventasMap.clear()
+        notifyDataSetChanged()
+    }
 }

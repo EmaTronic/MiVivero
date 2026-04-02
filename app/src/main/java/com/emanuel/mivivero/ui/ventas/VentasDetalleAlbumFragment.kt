@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -22,11 +23,6 @@ class VentasDetalleAlbumFragment :
     private lateinit var tvTotal: TextView
 
 
-
-
-
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -43,36 +39,56 @@ class VentasDetalleAlbumFragment :
 
         recycler.layoutManager = LinearLayoutManager(requireContext())
 
-        // 🔴 Adapter se arma en el siguiente paso
         val adapter = VentasAdapter { total ->
             tvTotal.text = "Total: $ $total"
         }
 
         recycler.adapter = adapter
 
-        btnGuardar.setOnClickListener {
-
-            adapter.obtenerVentas().forEach { (plantaId, data) ->
-
-                val cantidad = data.first
-                val precio = data.second
-
-                viewModel.registrarVenta(
-                    plantaId,
-                    albumId,
-                    cantidad,
-                    precio
-                )
-            }
-        }
-
-
-        // 🔴 Cargar plantas del álbum
+        // 🔴 OBSERVER VA AFUERA (una sola vez)
         viewModel.obtenerPlantasDelAlbumRaw(albumId)
-
             .observe(viewLifecycleOwner) { lista ->
                 android.util.Log.e("VENTAS_PLANTAS", "size = ${lista.size}")
                 adapter.submitList(lista)
             }
+
+        // 🔴 BOTÓN SOLO GUARDA
+        btnGuardar.setOnClickListener {
+
+            android.util.Log.e("VENTAS_DEBUG", "CLICK GUARDAR")
+
+            val ventas = adapter.obtenerVentas()
+
+            android.util.Log.e("VENTAS_DEBUG", "MAP SIZE = ${ventas.size}")
+
+            ventas.forEach { (plantaId, data) ->
+
+                val cantidad = data.first
+                val precio = data.second
+
+                if (cantidad > 0) {
+
+                    android.util.Log.e("VENTAS_DEBUG", "GUARDANDO $cantidad")
+
+                    viewModel.registrarVenta(
+                        plantaId,
+                        albumId,
+                        cantidad,
+                        precio
+                    )
+                }
+            }
+
+            adapter.limpiarVentas()
+            adapter.submitList(emptyList())
+            // 🔴 FEEDBACK
+            Toast.makeText(
+                requireContext(),
+                "Ventas guardadas",
+                Toast.LENGTH_SHORT
+            ).show()
+
+        }
     }
+
 }

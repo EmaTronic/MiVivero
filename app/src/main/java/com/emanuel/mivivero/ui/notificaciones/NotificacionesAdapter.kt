@@ -56,7 +56,7 @@ class NotificacionesAdapter(
             holder.itemView.setBackgroundColor(0xFFFFFFFF.toInt()) // blanco
         }
 
-        holder.tvMensaje.text = notif.mensaje
+        holder.tvMensaje.text = notif.mensaje ?: ""
         holder.tvFecha.text = formatearFecha(notif.fecha)
 
         holder.itemView.setOnClickListener {

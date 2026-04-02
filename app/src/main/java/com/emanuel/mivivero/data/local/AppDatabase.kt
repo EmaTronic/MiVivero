@@ -36,7 +36,7 @@ import com.emanuel.mivivero.data.local.entity.PublicacionAlbumEntity
         Lugar::class,
         VentaEntity::class
     ],
-    version = 5,
+    version = 6,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
