@@ -162,6 +162,9 @@ class AlbumesViewModel(application: Application)
     fun obtenerPlantasDelAlbumRaw(albumId: Long): LiveData<List<PlantaAlbum>> {
         return albumPlantaDao.obtenerPlantasDelAlbum(albumId)
     }
+    fun getAlbumesPublicados() =
+        albumDao.getAlbumesPublicadosConCantidad()
+
 
     fun publicarAlbumLocal(albumId: Long) {
         viewModelScope.launch {

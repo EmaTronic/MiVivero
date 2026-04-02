@@ -206,6 +206,11 @@
         android:name="com.emanuel.mivivero.ui.ventas.VentasFragment"
         android:label="Ventas" />
 
+    <fragment
+        android:id="@+id/ventasDetalleAlbumFragment"
+        android:name="com.emanuel.mivivero.ui.ventas.VentasDetalleAlbumFragment"
+        android:label="Ventas Detalle" />
+
 
 
 </navigation>
