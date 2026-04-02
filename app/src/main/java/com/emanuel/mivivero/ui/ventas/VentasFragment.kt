@@ -2,6 +2,7 @@ package com.emanuel.mivivero.ui.ventas
 
 import android.os.Bundle
 import android.view.View
+import android.widget.Button
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -20,6 +21,9 @@ class VentasFragment : Fragment(R.layout.fragment_ventas) {
 
     private lateinit var adapter: AlbumesAdapter
 
+
+
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -28,6 +32,15 @@ class VentasFragment : Fragment(R.layout.fragment_ventas) {
 
 
         configurarRecycler()
+
+        // 🔴 BOTÓN ANALISIS
+        val btnAnalisis = view.findViewById<Button>(R.id.btnIrAnalisis)
+
+        btnAnalisis.setOnClickListener {
+            android.util.Log.e("NAV", "CLICK ANALISIS")
+            findNavController().navigate(R.id.ventasAnalisisFragment)
+        }
+
 
         viewModel.getAlbumesPublicados()
             .observe(viewLifecycleOwner) { lista ->

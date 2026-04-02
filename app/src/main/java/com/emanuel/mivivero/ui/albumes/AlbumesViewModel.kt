@@ -197,20 +197,29 @@ class AlbumesViewModel(application: Application)
 
         viewModelScope.launch {
 
-            // 1. guardar venta
+            if (cantidad <= 0) return@launch
+
+            val planta = db.plantaDao()
+                .obtenerEntityPorId(plantaId)
+                ?: return@launch
+
+            // 🔴 VALIDAR STOCK
+            if (planta.cantidad < cantidad) return@launch
+
+
+            Log.e("DB_CHECK", "INSERTANDO venta cantidad=$cantidad planta=$plantaId")
+            // 🆕 SIEMPRE INSERTAR (histórico)
             db.ventaDao().insert(
                 VentaEntity(
                     plantaId = plantaId,
                     albumId = albumId,
                     cantidad = cantidad,
-                    precioUnitario = precio
+                    precioUnitario = precio,
+                    fecha = System.currentTimeMillis()
                 )
             )
 
-            // 2. descontar stock
-            val planta = db.plantaDao().obtenerEntityPorId(plantaId)
-                ?: return@launch
-
+            // 🔻 descontar stock
             val nuevoStock = planta.cantidad - cantidad
 
             db.plantaDao().update(
