@@ -8,6 +8,7 @@ import androidx.room.Query
 import androidx.room.Update
 import com.emanuel.mivivero.data.db.entity.VentaDetalle
 import com.emanuel.mivivero.data.db.entity.VentaEntity
+import com.emanuel.mivivero.data.model.AlbumResumen
 import com.emanuel.mivivero.data.model.RankingPlanta
 import com.emanuel.mivivero.data.model.TotalPorAlbum
 
@@ -59,7 +60,12 @@ LIMIT 1
     """)
     fun rankingPlantas(): LiveData<List<RankingPlanta>>
 
-
+    @Query("""
+SELECT SUM(cantidad * precioUnitario)
+FROM ventas
+WHERE albumId = :albumId
+""")
+    fun totalPorAlbum(albumId: Long): LiveData<Double>
 
     // 🔹 ventas filtradas por mes/año
     @Query("""
@@ -70,6 +76,10 @@ AND strftime('%Y', fecha / 1000, 'unixepoch') = :anio
     fun obtenerVentasPorMes(mes: String, anio: String): LiveData<List<VentaEntity>>
 
 
+    @Query("""
+SELECT SUM(cantidad * precioUnitario) FROM ventas
+""")
+    fun obtenerTotalGeneral(): LiveData<Double>
 
     @Query("""
 SELECT 
@@ -86,6 +96,34 @@ ORDER BY v.fecha DESC
     suspend fun obtenerVentasDetalleDirecto(): List<VentaDetalle>
 
 
+
+
+    @Query("""
+SELECT v.id, v.plantaId,
+       (p.familia || ' ' || IFNULL(p.especie, '')) as nombrePlanta,
+       v.cantidad, v.precioUnitario, v.fecha,
+       v.albumId
+FROM ventas v
+LEFT JOIN plantas p ON p.id = v.plantaId
+WHERE v.albumId = :albumId
+ORDER BY v.fecha DESC
+""")
+    fun obtenerVentasPorAlbum(albumId: Long): LiveData<List<VentaDetalle>>
+
+
+
+    @Query("""
+SELECT 
+    a.id as albumId,
+    a.nombre as nombre,
+    IFNULL(SUM(v.cantidad * v.precioUnitario), 0) as totalGanado,
+    IFNULL(SUM(v.cantidad), 0) as totalVendidas
+FROM albumes a
+LEFT JOIN ventas v ON v.albumId = a.id
+GROUP BY a.id
+ORDER BY a.fechaCreacion DESC
+""")
+    fun obtenerResumenAlbumes(): LiveData<List<AlbumResumen>>
 
     @Query("SELECT * FROM ventas ORDER BY fecha DESC")
     suspend fun debugVentas(): List<VentaEntity>

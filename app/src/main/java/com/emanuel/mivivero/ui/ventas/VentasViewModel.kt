@@ -12,15 +12,15 @@ class VentasViewModel(application: Application)
     private val db = AppDatabase.getInstance(application)
 
     val ventasDetalle = db.ventaDao().obtenerVentasDetalle()
-    val ventas = db.ventaDao().obtenerVentas()
     val ranking = db.ventaDao().rankingPlantas()
     val totalPorAlbum = db.ventaDao().obtenerTotalPorAlbum()
+    val resumenAlbumes = db.ventaDao().obtenerResumenAlbumes()
+    val ventas = db.ventaDao().obtenerVentas()
+
+    fun totalPorAlbum(albumId: Long) =
+        db.ventaDao().totalPorAlbum(albumId)
 
 
-    suspend fun obtenerVentasManual(): List<VentaDetalle> {
-        return db.ventaDao().obtenerVentasDetalleDirecto()
-    }
-    suspend fun debugVentas(): List<VentaEntity> {
-        return db.ventaDao().debugVentas()
-    }
+    fun ventasPorAlbum(albumId: Long) =
+        db.ventaDao().obtenerVentasPorAlbum(albumId)
 }

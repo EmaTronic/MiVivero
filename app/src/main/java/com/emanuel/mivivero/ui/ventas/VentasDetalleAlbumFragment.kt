@@ -15,7 +15,7 @@ import com.emanuel.mivivero.ui.albumes.AlbumesViewModel
 class VentasDetalleAlbumFragment :
     Fragment(R.layout.fragment_ventas_detalle_album) {
 
-    private val viewModel: AlbumesViewModel by viewModels()
+    private val viewModel: VentasViewModel by viewModels()
 
     private var albumId: Long = -1
 
@@ -32,63 +32,39 @@ class VentasDetalleAlbumFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val btnGuardar = view.findViewById<Button>(R.id.btnGuardarVentas)
+
 
         recycler = view.findViewById(R.id.recyclerVentas)
         tvTotal = view.findViewById(R.id.tvTotalGanancia)
 
+        viewModel.totalPorAlbum(albumId)
+            .observe(viewLifecycleOwner) {
+
+                tvTotal.text = "Total: $ $it"
+            }
+
         recycler.layoutManager = LinearLayoutManager(requireContext())
 
-        val adapter = VentasAdapter { total ->
-            tvTotal.text = "Total: $ $total"
-        }
+        val adapter = VentasTablaAdapter(
+
+            onEditar = { venta ->
+                // editar después
+            },
+
+            onEliminar = { venta ->
+                // eliminar después
+            }
+        )
 
         recycler.adapter = adapter
 
         // 🔴 OBSERVER VA AFUERA (una sola vez)
-        viewModel.obtenerPlantasDelAlbumRaw(albumId)
-            .observe(viewLifecycleOwner) { lista ->
-                android.util.Log.e("VENTAS_PLANTAS", "size = ${lista.size}")
-                adapter.submitList(lista)
+        viewModel.ventasPorAlbum(albumId)
+            .observe(viewLifecycleOwner) {
+
+                adapter.submitList(it)
             }
 
-        // 🔴 BOTÓN SOLO GUARDA
-        btnGuardar.setOnClickListener {
-
-            android.util.Log.e("VENTAS_DEBUG", "CLICK GUARDAR")
-
-            val ventas = adapter.obtenerVentas()
-
-            android.util.Log.e("VENTAS_DEBUG", "MAP SIZE = ${ventas.size}")
-
-            ventas.forEach { (plantaId, data) ->
-
-                val cantidad = data.first
-                val precio = data.second
-
-                if (cantidad > 0) {
-
-                    android.util.Log.e("VENTAS_DEBUG", "GUARDANDO $cantidad")
-
-                    viewModel.registrarVenta(
-                        plantaId,
-                        albumId,
-                        cantidad,
-                        precio
-                    )
-                }
-            }
-
-            adapter.limpiarVentas()
-            adapter.submitList(emptyList())
-            // 🔴 FEEDBACK
-            Toast.makeText(
-                requireContext(),
-                "Ventas guardadas",
-                Toast.LENGTH_SHORT
-            ).show()
-
-        }
     }
 
 }
