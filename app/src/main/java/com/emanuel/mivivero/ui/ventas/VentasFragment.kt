@@ -66,6 +66,7 @@ class VentasFragment : Fragment(R.layout.fragment_ventas) {
         binding.recyclerVentas.adapter = adapter
     }
 
+
     // ================================
     // DATOS
     // ================================

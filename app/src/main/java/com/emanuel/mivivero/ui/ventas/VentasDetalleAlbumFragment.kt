@@ -2,6 +2,7 @@ package com.emanuel.mivivero.ui.ventas
 
 import android.os.Bundle
 import android.view.View
+import android.widget.Button
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -20,6 +21,12 @@ class VentasDetalleAlbumFragment :
     private lateinit var recycler: RecyclerView
     private lateinit var tvTotal: TextView
 
+
+
+
+
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -28,6 +35,8 @@ class VentasDetalleAlbumFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val btnGuardar = view.findViewById<Button>(R.id.btnGuardarVentas)
 
         recycler = view.findViewById(R.id.recyclerVentas)
         tvTotal = view.findViewById(R.id.tvTotalGanancia)
@@ -40,6 +49,23 @@ class VentasDetalleAlbumFragment :
         }
 
         recycler.adapter = adapter
+
+        btnGuardar.setOnClickListener {
+
+            adapter.obtenerVentas().forEach { (plantaId, data) ->
+
+                val cantidad = data.first
+                val precio = data.second
+
+                viewModel.registrarVenta(
+                    plantaId,
+                    albumId,
+                    cantidad,
+                    precio
+                )
+            }
+        }
+
 
         // 🔴 Cargar plantas del álbum
         viewModel.obtenerPlantasDelAlbumRaw(albumId)

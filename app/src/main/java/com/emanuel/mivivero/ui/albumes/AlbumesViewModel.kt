@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
+import com.emanuel.mivivero.data.db.entity.VentaEntity
 import com.emanuel.mivivero.data.local.AppDatabase
 import com.emanuel.mivivero.data.local.entity.AlbumEntity
 import com.emanuel.mivivero.data.local.entity.AlbumPlantaEntity
@@ -171,6 +172,53 @@ class AlbumesViewModel(application: Application)
             albumDao.actualizarEstado(albumId, EstadoAlbum.PUBLICADO.name)
         }
     }
+
+    fun descontarStock(plantaId: Long, cantidadVendida: Int) {
+
+        viewModelScope.launch {
+
+            val planta = db.plantaDao().obtenerEntityPorId(plantaId)
+                ?: return@launch
+
+            val nuevoStock = planta.cantidad - cantidadVendida
+
+            db.plantaDao().update(
+                planta.copy(cantidad = nuevoStock)
+            )
+        }
+    }
+
+    fun registrarVenta(
+        plantaId: Long,
+        albumId: Long,
+        cantidad: Int,
+        precio: Double
+    ) {
+
+        viewModelScope.launch {
+
+            // 1. guardar venta
+            db.ventaDao().insert(
+                VentaEntity(
+                    plantaId = plantaId,
+                    albumId = albumId,
+                    cantidad = cantidad,
+                    precioUnitario = precio
+                )
+            )
+
+            // 2. descontar stock
+            val planta = db.plantaDao().obtenerEntityPorId(plantaId)
+                ?: return@launch
+
+            val nuevoStock = planta.cantidad - cantidad
+
+            db.plantaDao().update(
+                planta.copy(cantidad = nuevoStock)
+            )
+        }
+    }
+
 
 
 

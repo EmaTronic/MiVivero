@@ -5,9 +5,12 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.emanuel.mivivero.R
 import com.emanuel.mivivero.data.model.PlantaAlbum
 
@@ -16,7 +19,8 @@ class VentasAdapter(
 ) : RecyclerView.Adapter<VentasAdapter.VH>() {
 
     private var lista: List<PlantaAlbum> = emptyList()
-    private val ventasMap = mutableMapOf<Long, Int>()
+
+    private val ventasMap = mutableMapOf<Long, Pair<Int, Double>>()
 
     inner class VH(view: View) : RecyclerView.ViewHolder(view) {
         val tvNombre: TextView = view.findViewById(R.id.tvNombre)
@@ -26,6 +30,14 @@ class VentasAdapter(
         val tvGanancia: TextView = view.findViewById(R.id.tvGanancia)
 
         var textWatcher: TextWatcher? = null
+
+        val imgPlanta: ImageView = view.findViewById(R.id.imgPlanta)
+
+        val btnGuardar = view.findViewById<Button>(R.id.btnGuardarVentas)
+
+
+
+
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
@@ -39,22 +51,33 @@ class VentasAdapter(
     override fun onBindViewHolder(holder: VH, position: Int) {
         val item = lista[position]
 
+
+
         holder.tvNombre.text = item.nombreCompleto
         holder.tvStock.text = "Stock: ${item.cantidad}"
         holder.tvPrecio.text = "$ ${item.precio}"
+
+        if (!item.fotoRuta.isNullOrEmpty()) {
+            Glide.with(holder.itemView.context)
+                .load(item.fotoRuta)
+                .into(holder.imgPlanta)
+        } else {
+            holder.imgPlanta.setImageResource(R.drawable.ic_planta_placeholder)
+        }
 
         // 🔴 LIMPIAR watcher previo
         holder.textWatcher?.let {
             holder.etVendida.removeTextChangedListener(it)
         }
 
-        // 🔴 SETEAR valor actual
-        val vendidaActual = ventasMap[item.plantaId] ?: 0
+        val data = ventasMap[item.plantaId]
+
+        val vendidaActual = data?.first ?: 0
+
         holder.etVendida.setText(
             if (vendidaActual == 0) "" else vendidaActual.toString()
         )
 
-        // 🔴 SETEAR GANANCIA SIEMPRE
         val ganancia = vendidaActual * item.precio
         holder.tvGanancia.text = "$ $ganancia"
 
@@ -70,7 +93,7 @@ class VentasAdapter(
                 val validada =
                     if (vendida > item.cantidad) item.cantidad else vendida
 
-                ventasMap[item.plantaId] = validada
+                ventasMap[item.plantaId] = Pair(validada, item.precio)
 
                 val nuevaGanancia = validada * item.precio
                 holder.tvGanancia.text = "$ $nuevaGanancia"
@@ -83,6 +106,9 @@ class VentasAdapter(
 
         holder.etVendida.addTextChangedListener(watcher)
         holder.textWatcher = watcher
+
+
+
     }
 
     fun submitList(nueva: List<PlantaAlbum>) {
@@ -92,9 +118,19 @@ class VentasAdapter(
 
     private fun recalcularTotal() {
         val total = lista.sumOf {
-            val vendida = ventasMap[it.plantaId] ?: 0
-            vendida * it.precio
+
+            val data = ventasMap[it.plantaId]
+
+            val vendida = data?.first ?: 0
+            val precio = data?.second ?: it.precio
+
+            vendida.toDouble() * precio
         }
         onTotalChanged(total)
+    }
+
+
+    fun obtenerVentas(): Map<Long, Pair<Int, Double>> {
+        return ventasMap
     }
 }

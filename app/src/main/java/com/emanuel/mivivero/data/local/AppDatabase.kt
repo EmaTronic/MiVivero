@@ -7,25 +7,34 @@ import androidx.room.RoomDatabase
 import com.emanuel.mivivero.data.db.dao.AlbumDao
 import com.emanuel.mivivero.data.db.dao.PublicacionAlbumDao
 import com.emanuel.mivivero.data.db.dao.UsuarioDao
+import com.emanuel.mivivero.data.db.dao.VentaDao
+
 import com.emanuel.mivivero.data.db.entity.UsuarioEntity
+import com.emanuel.mivivero.data.db.entity.VentaEntity
+
 import com.emanuel.mivivero.data.local.dao.AlbumPlantaDao
 import com.emanuel.mivivero.data.local.dao.FotoDao
 import com.emanuel.mivivero.data.local.dao.PlantaDao
+
 import com.emanuel.mivivero.data.local.entity.AlbumEntity
 import com.emanuel.mivivero.data.local.entity.AlbumPlantaEntity
 import com.emanuel.mivivero.data.local.entity.FotoEntity
 import com.emanuel.mivivero.data.local.entity.PlantaEntity
 import com.emanuel.mivivero.data.local.entity.PublicacionAlbumEntity
 
+
+
 @Database(
     entities = [
+
         PlantaEntity::class,
         AlbumEntity::class,
         AlbumPlantaEntity::class,
         FotoEntity::class,
         UsuarioEntity::class,
         PublicacionAlbumEntity::class,
-        Lugar::class
+        Lugar::class,
+        VentaEntity::class
     ],
     version = 5,
     exportSchema = false
@@ -39,6 +48,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun usuarioDao(): UsuarioDao
     abstract fun publicacionAlbumDao(): PublicacionAlbumDao
     abstract fun lugarDao(): LugarDao
+    abstract fun ventaDao(): VentaDao
 
     companion object {
 
@@ -58,4 +68,6 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
     }
+
+
 }
