@@ -43,8 +43,9 @@ class VentasDetalleAlbumFragment :
 
         // 🔴 Cargar plantas del álbum
         viewModel.obtenerPlantasDelAlbumRaw(albumId)
-            .observe(viewLifecycleOwner) { lista ->
 
+            .observe(viewLifecycleOwner) { lista ->
+                android.util.Log.e("VENTAS_PLANTAS", "size = ${lista.size}")
                 adapter.submitList(lista)
             }
     }

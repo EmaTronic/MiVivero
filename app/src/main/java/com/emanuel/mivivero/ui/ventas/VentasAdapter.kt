@@ -1,5 +1,7 @@
 package com.emanuel.mivivero.ui.ventas
 
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,6 +24,8 @@ class VentasAdapter(
         val tvPrecio: TextView = view.findViewById(R.id.tvPrecio)
         val etVendida: EditText = view.findViewById(R.id.etVendida)
         val tvGanancia: TextView = view.findViewById(R.id.tvGanancia)
+
+        var textWatcher: TextWatcher? = null
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
@@ -39,25 +43,46 @@ class VentasAdapter(
         holder.tvStock.text = "Stock: ${item.cantidad}"
         holder.tvPrecio.text = "$ ${item.precio}"
 
+        // 🔴 LIMPIAR watcher previo
+        holder.textWatcher?.let {
+            holder.etVendida.removeTextChangedListener(it)
+        }
+
+        // 🔴 SETEAR valor actual
+        val vendidaActual = ventasMap[item.plantaId] ?: 0
         holder.etVendida.setText(
-            ventasMap[item.plantaId]?.toString() ?: ""
+            if (vendidaActual == 0) "" else vendidaActual.toString()
         )
 
-        holder.etVendida.setOnFocusChangeListener { _, hasFocus ->
-            if (!hasFocus) {
+        // 🔴 SETEAR GANANCIA SIEMPRE
+        val ganancia = vendidaActual * item.precio
+        holder.tvGanancia.text = "$ $ganancia"
 
-                val vendida = holder.etVendida.text.toString().toIntOrNull() ?: 0
+        // 🔴 NUEVO watcher limpio
+        val watcher = object : TextWatcher {
 
-                val validada = if (vendida > item.cantidad) item.cantidad else vendida
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+                val vendida = s.toString().toIntOrNull() ?: 0
+
+                val validada =
+                    if (vendida > item.cantidad) item.cantidad else vendida
 
                 ventasMap[item.plantaId] = validada
 
-                val ganancia = validada * item.precio
-                holder.tvGanancia.text = "$ $ganancia"
+                val nuevaGanancia = validada * item.precio
+                holder.tvGanancia.text = "$ $nuevaGanancia"
 
                 recalcularTotal()
             }
+
+            override fun afterTextChanged(s: Editable?) {}
         }
+
+        holder.etVendida.addTextChangedListener(watcher)
+        holder.textWatcher = watcher
     }
 
     fun submitList(nueva: List<PlantaAlbum>) {
