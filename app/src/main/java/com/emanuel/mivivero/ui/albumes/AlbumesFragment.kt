@@ -229,6 +229,8 @@ class AlbumesFragment : Fragment(R.layout.fragment_albumes) {
                                             Toast.LENGTH_LONG
                                         ).show()
 
+
+
                                     } catch (e: Exception) {
 
                                         Log.e("ALBUM", "Error publicando", e)
@@ -241,6 +243,11 @@ class AlbumesFragment : Fragment(R.layout.fragment_albumes) {
                                     }
                                 }
                             }
+
+                            viewLifecycleOwner.lifecycleScope.launch {
+                                viewModel.publicarAlbumLocal(album.id)
+                            }
+
                         }
                         .show()
 

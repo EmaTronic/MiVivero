@@ -48,6 +48,23 @@ interface AlbumDao {
     fun getAlbumesConCantidad(): LiveData<List<AlbumConCantidad>>
 
 
+    // 📂 AlbumDao.kt
+    @Query("""
+SELECT a.id,
+       a.nombre,
+       a.observaciones,
+       a.estado,
+       a.fechaCreacion,
+       COUNT(ap.plantaid) as cantidadPlantas
+FROM albumes a
+LEFT JOIN album_planta ap ON a.id = ap.albumId
+WHERE a.estado = 'PUBLICADO'
+GROUP BY a.id
+ORDER BY a.fechaCreacion DESC
+""")
+    fun getAlbumesPublicadosConCantidad(): LiveData<List<AlbumConCantidad>>
+
+
     @Query("DELETE FROM albumes WHERE id = :albumId")
     suspend fun deleteById(albumId: Long)
 

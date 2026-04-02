@@ -163,6 +163,13 @@ class AlbumesViewModel(application: Application)
         return albumPlantaDao.obtenerPlantasDelAlbum(albumId)
     }
 
+    fun publicarAlbumLocal(albumId: Long) {
+        viewModelScope.launch {
+            albumDao.actualizarEstado(albumId, EstadoAlbum.PUBLICADO.name)
+        }
+    }
+
+
 
 
 

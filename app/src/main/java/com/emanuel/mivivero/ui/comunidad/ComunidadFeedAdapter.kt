@@ -335,6 +335,9 @@ private class HorizontalContentAdapter(
             tvCantidad.text = "${item.cantidadPlantas} plantas"
 
             // 📂 AlbumViewHolder.bind()
+
+            /*CORREGIR ESTO UQE TIRA UN VALOR NUMERICO DE 15 CIFRAS*/
+
             tvFecha.text = "VALOR: ${item.fechaPublicacion}"
 
             val imgs = listOf(img1, img2, img3, img4)

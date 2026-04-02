@@ -201,6 +201,11 @@
         android:name="com.emanuel.mivivero.ui.notificaciones.NotificacionesFragment"
         android:label="Notificaciones"/>
 
+    <fragment
+        android:id="@+id/ventasFragment"
+        android:name="com.emanuel.mivivero.ui.ventas.VentasFragment"
+        android:label="Ventas" />
+
 
 
 </navigation>

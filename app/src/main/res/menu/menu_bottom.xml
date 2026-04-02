@@ -10,6 +10,12 @@
         android:icon="@drawable/ic_photo_library"
         android:title="Álbumes"/>
 
+    <!-- 📂 menu.xml -->
+    <item
+        android:id="@+id/ventasFragment"
+        android:icon="@drawable/outline_finance"
+        android:title="Ventas"/>
+
     <item
         android:id="@+id/identificarFragment"
         android:icon="@drawable/ic_search"

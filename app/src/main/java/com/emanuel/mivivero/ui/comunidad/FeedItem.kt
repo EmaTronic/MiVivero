@@ -22,6 +22,7 @@ sealed class FeedItem {
 enum class FeedSection(val title: String) {
     DESTACADOS("Destacados"),
     MIS_PUBLICACIONES("Mis publicaciones"),
+
     ALBUMES("Álbumes"),
     COMUNIDAD("Comunidad")
 }
