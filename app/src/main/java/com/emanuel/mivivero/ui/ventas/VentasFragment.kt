@@ -27,6 +27,7 @@ class VentasFragment : Fragment(R.layout.fragment_ventas) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
         _binding = FragmentVentasBinding.bind(view)
 
 

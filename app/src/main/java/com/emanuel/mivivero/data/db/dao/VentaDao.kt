@@ -9,6 +9,7 @@ import androidx.room.Update
 import com.emanuel.mivivero.data.db.entity.VentaDetalle
 import com.emanuel.mivivero.data.db.entity.VentaEntity
 import com.emanuel.mivivero.data.model.AlbumResumen
+import com.emanuel.mivivero.data.model.PlantaSimple
 import com.emanuel.mivivero.data.model.RankingPlanta
 import com.emanuel.mivivero.data.model.TotalPorAlbum
 
@@ -99,36 +100,68 @@ ORDER BY v.fecha DESC
 
 
     @Query("""
-SELECT v.id, v.plantaId,
-       (p.familia || ' ' || IFNULL(p.especie, '')) as nombrePlanta,
-       v.cantidad, v.precioUnitario, v.fecha,
-       v.albumId
-FROM ventas v
-LEFT JOIN plantas p ON p.id = v.plantaId
-WHERE v.albumId = :albumId
-ORDER BY v.fecha DESC
-""")
+    SELECT v.id, v.plantaId,
+           (p.familia || ' ' || IFNULL(p.especie, '')) as nombrePlanta,
+           v.cantidad, v.precioUnitario, v.fecha,
+           v.albumId
+    FROM ventas v
+    LEFT JOIN plantas p ON p.id = v.plantaId
+    WHERE v.albumId = :albumId
+    ORDER BY v.fecha DESC
+    """)
     fun obtenerVentasPorAlbum(albumId: Long): LiveData<List<VentaDetalle>>
 
 
 
     @Query("""
-SELECT 
-    a.id as albumId,
-    a.nombre as nombre,
-    IFNULL(SUM(v.cantidad * v.precioUnitario), 0) as totalGanado,
-    IFNULL(SUM(v.cantidad), 0) as totalVendidas
-FROM albumes a
-LEFT JOIN ventas v ON v.albumId = a.id
-GROUP BY a.id
-ORDER BY a.fechaCreacion DESC
-""")
+    SELECT 
+        a.id as albumId,
+        a.nombre as nombre,
+        IFNULL(SUM(v.cantidad * v.precioUnitario), 0) as totalGanado,
+        IFNULL(SUM(v.cantidad), 0) as totalVendidas
+    FROM albumes a
+    LEFT JOIN ventas v ON v.albumId = a.id
+    GROUP BY a.id
+    ORDER BY a.fechaCreacion DESC
+    """)
     fun obtenerResumenAlbumes(): LiveData<List<AlbumResumen>>
 
     @Query("SELECT * FROM ventas ORDER BY fecha DESC")
     suspend fun debugVentas(): List<VentaEntity>
 
 
+    //BORRAR VENTA DE DETALLE ALBUM
+    @Query("DELETE FROM ventas WHERE id = :id")
+    suspend fun deleteById(id: Long)
+
+    //EDITAR VENTA DE DETALLE ALBUM
+    @Query("""
+    UPDATE ventas 
+    SET cantidad = :cantidad,
+        precioUnitario = :precio,
+        fecha = :fecha
+    WHERE id = :id
+    """)
+
+    suspend fun updateVentaCompleta(
+        id: Long,
+        cantidad: Int,
+        precio: Double,
+        fecha: Long
+    )
+
+
+ //TRAER LA LISTA DE PLANTAS QUE NO HAN SIDO VENDIDAS
+    @Query("""
+SELECT p.id, p.familia || ' ' || IFNULL(p.especie, '') as nombre
+FROM plantas p
+INNER JOIN album_planta ap ON ap.plantaId = p.id
+WHERE ap.albumId = :albumId
+AND p.id NOT IN (
+    SELECT plantaId FROM ventas WHERE albumId = :albumId
+)
+""")
+    suspend fun plantasDisponiblesParaVenta(albumId: Long): List<PlantaSimple>
     // 🔹 eliminar
     @Delete
     suspend fun delete(venta: VentaEntity)

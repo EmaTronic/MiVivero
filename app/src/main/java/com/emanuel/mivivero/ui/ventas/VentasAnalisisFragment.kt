@@ -17,6 +17,8 @@ class VentasAnalisisFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        android.util.Log.e("FRAGMENT_ANALISIS", "ENTRO")
+
         // 🔴 Recycler
         val recycler = view.findViewById<RecyclerView>(R.id.recyclerVentas)
 
@@ -24,6 +26,8 @@ class VentasAnalisisFragment :
 
         // 🔴 Adapter con navegación
         val adapter = VentasAlbumAdapter { albumId ->
+
+            android.util.Log.e("NAV", "ENVIANDO albumId = $albumId")
 
             findNavController().navigate(
                 R.id.ventasDetalleAlbumFragment,
@@ -37,6 +41,19 @@ class VentasAnalisisFragment :
 
         // 🔴 OBSERVE (datos reales)
         viewModel.resumenAlbumes.observe(viewLifecycleOwner) {
+
+            android.util.Log.e("ALBUM_LIST", "LLEGO OBSERVE")
+
+            if (it.isEmpty()) {
+                android.util.Log.e("ALBUM_LIST", "LISTA VACIA")
+            }
+
+            it.forEach { item ->
+                android.util.Log.e(
+                    "ALBUM_LIST",
+                    "albumId=${item.albumId} nombre=${item.nombre}"
+                )
+            }
 
             adapter.submitList(it)
         }
