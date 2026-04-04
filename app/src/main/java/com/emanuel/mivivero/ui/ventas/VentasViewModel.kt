@@ -149,6 +149,9 @@ class VentasViewModel(application: Application)
         }
     }
 
+    fun plantasPorAlbum(albumId: Long) =
+        db.ventaDao().obtenerPlantasDelAlbum(albumId)
+
    suspend fun obtenerPlantasDisponibles(albumId: Long) =
         db.ventaDao().plantasDisponiblesParaVenta(albumId)
 

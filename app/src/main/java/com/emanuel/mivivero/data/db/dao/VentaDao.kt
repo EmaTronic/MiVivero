@@ -9,6 +9,7 @@ import androidx.room.Update
 import com.emanuel.mivivero.data.db.entity.VentaDetalle
 import com.emanuel.mivivero.data.db.entity.VentaEntity
 import com.emanuel.mivivero.data.model.AlbumResumen
+import com.emanuel.mivivero.data.model.PlantaAlbum
 import com.emanuel.mivivero.data.model.PlantaSimple
 import com.emanuel.mivivero.data.model.RankingPlanta
 import com.emanuel.mivivero.data.model.TotalPorAlbum
@@ -113,6 +114,8 @@ ORDER BY v.fecha DESC
 
 
 
+
+
     @Query("""
     SELECT 
         a.id as albumId,
@@ -150,16 +153,29 @@ ORDER BY v.fecha DESC
         fecha: Long
     )
 
+    @Query("""
+SELECT 
+    p.id as plantaId,
+    p.familia as familia,
+    p.especie as especie,
+    (p.familia || ' ' || IFNULL(p.especie, '')) as nombreCompleto,
+    ap.cantidad as cantidad,
+    ap.precio as precio,
+    p.fotoRuta as fotoRuta
+FROM plantas p
+INNER JOIN album_planta ap ON ap.plantaId = p.id
+WHERE ap.albumId = :albumId
+""")
+    fun obtenerPlantasDelAlbum(albumId: Long): LiveData<List<PlantaAlbum>>
 
- //TRAER LA LISTA DE PLANTAS QUE NO HAN SIDO VENDIDAS
+
+    //TRAER LA LISTA DE PLANTAS QUE NO HAN SIDO VENDIDAS
     @Query("""
 SELECT p.id, p.familia || ' ' || IFNULL(p.especie, '') as nombre
 FROM plantas p
 INNER JOIN album_planta ap ON ap.plantaId = p.id
 WHERE ap.albumId = :albumId
-AND p.id NOT IN (
-    SELECT plantaId FROM ventas WHERE albumId = :albumId
-)
+ORDER BY p.familia, p.especie
 """)
     suspend fun plantasDisponiblesParaVenta(albumId: Long): List<PlantaSimple>
     // 🔹 eliminar
