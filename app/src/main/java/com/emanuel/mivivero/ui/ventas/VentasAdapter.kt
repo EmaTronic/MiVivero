@@ -15,7 +15,9 @@ import com.emanuel.mivivero.R
 import com.emanuel.mivivero.data.model.PlantaAlbum
 
 class VentasAdapter(
-    private val onTotalChanged: (Double) -> Unit
+    private val onTotalChanged: (Double) -> Unit,
+
+
 ) : RecyclerView.Adapter<VentasAdapter.VH>() {
 
     private var lista: List<PlantaAlbum> = emptyList()
@@ -32,8 +34,6 @@ class VentasAdapter(
         var textWatcher: TextWatcher? = null
 
         val imgPlanta: ImageView = view.findViewById(R.id.imgPlanta)
-
-        val btnGuardar = view.findViewById<Button>(R.id.btnGuardarVentas)
 
 
 
@@ -106,6 +106,8 @@ class VentasAdapter(
 
         holder.etVendida.addTextChangedListener(watcher)
         holder.textWatcher = watcher
+
+
 
 
 

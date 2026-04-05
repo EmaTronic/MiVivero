@@ -6,6 +6,7 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.emanuel.mivivero.R
@@ -37,10 +38,28 @@ class VentasDetalleAlbumFragment :
 
         recycler.layoutManager = LinearLayoutManager(requireContext())
 
-        // 🔴 ADAPTER DE PLANTAS (NO ventas)
-        adapter = VentasAdapter { total ->
-            tvTotal.text = "Total: $ $total"
+
+        val btnVerVentas = view.findViewById<Button>(R.id.btnVerVentas)
+
+        btnVerVentas.setOnClickListener {
+
+            findNavController().navigate(
+                R.id.ventasTablaFragment,
+                Bundle().apply {
+                    putLong("albumId", albumId)
+                }
+            )
         }
+
+        // 🔴 ADAPTER DE PLANTAS (NO ventas)
+        adapter = VentasAdapter(
+
+            onTotalChanged = { total ->
+                tvTotal.text = "Total: $ $total"
+            },
+
+
+        )
 
         recycler.adapter = adapter
 
@@ -84,5 +103,8 @@ class VentasDetalleAlbumFragment :
 
             adapter.limpiarVentas()
         }
+
+
+
     }
 }

@@ -38,6 +38,12 @@
             android:text="Guardar"
             android:layout_marginTop="8dp" />
 
+        <Button
+            android:id="@+id/btnVerVentas"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Ver ventas del álbum"/>
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

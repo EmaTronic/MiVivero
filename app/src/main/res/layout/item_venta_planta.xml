@@ -52,6 +52,7 @@
             android:layout_height="wrap_content"
             android:text="Ganancia: $0"/>
 
+
     </LinearLayout>
 
 </LinearLayout>
