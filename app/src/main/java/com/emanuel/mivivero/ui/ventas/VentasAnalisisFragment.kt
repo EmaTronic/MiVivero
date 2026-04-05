@@ -17,6 +17,7 @@ class VentasAnalisisFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        viewModel.debugAlbumes()
         android.util.Log.e("FRAGMENT_ANALISIS", "ENTRO")
 
         // 🔴 Recycler
@@ -43,6 +44,7 @@ class VentasAnalisisFragment :
         viewModel.resumenAlbumes.observe(viewLifecycleOwner) {
 
             android.util.Log.e("ALBUM_LIST", "LLEGO OBSERVE")
+            android.util.Log.e("RESUMEN_DEBUG", "SIZE = ${it.size}")
 
             if (it.isEmpty()) {
                 android.util.Log.e("ALBUM_LIST", "LISTA VACIA")
@@ -51,6 +53,13 @@ class VentasAnalisisFragment :
             it.forEach { item ->
                 android.util.Log.e(
                     "ALBUM_LIST",
+                    "albumId=${item.albumId} nombre=${item.nombre}"
+                )
+            }
+
+            it.forEach { item ->
+                android.util.Log.e(
+                    "RESUMEN_DEBUG",
                     "albumId=${item.albumId} nombre=${item.nombre}"
                 )
             }

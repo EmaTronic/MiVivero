@@ -80,6 +80,8 @@ WHERE id = :albumId
     suspend fun actualizarNombre(albumId: Long, nuevoNombre: String)
 
 
+    @Query("SELECT * FROM albumes")
+    suspend fun debugAlbumes(): List<AlbumEntity>
 
 }
 

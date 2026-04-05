@@ -42,6 +42,9 @@ class VentasAlbumAdapter(
     }
 
     fun submitList(nueva: List<AlbumResumen>) {
+
+        android.util.Log.e("ADAPTER_DEBUG", "RECIBE = ${nueva.size}")
+
         lista = nueva
         notifyDataSetChanged()
     }

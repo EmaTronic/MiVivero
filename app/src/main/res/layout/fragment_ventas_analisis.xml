@@ -1,41 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
     <LinearLayout
         android:orientation="vertical"
+        android:padding="16dp"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <TextView
+            android:text="Totales por álbum"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Totales por álbum"/>
+            android:layout_height="wrap_content"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerTotales"
-            android:layout_height="100dp"
-            android:layout_width="match_parent"/>
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
 
         <TextView
+            android:text="Ranking por plantas"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Ranking por plantas"/>
+            android:layout_height="wrap_content"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerRanking"
-            android:layout_height="100dp"
-            android:layout_width="match_parent"/>
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
 
         <TextView
+            android:text="Ventas"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Ventas"/>
+            android:layout_height="wrap_content"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerVentas"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="wrap_content"/>
 
     </LinearLayout>
-</androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>

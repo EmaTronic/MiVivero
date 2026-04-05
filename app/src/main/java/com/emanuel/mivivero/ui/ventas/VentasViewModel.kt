@@ -149,6 +149,24 @@ class VentasViewModel(application: Application)
         }
     }
 
+    fun debugAlbumes() {
+
+        viewModelScope.launch {
+
+            val lista = db.albumDao().debugAlbumes()
+
+            android.util.Log.e("ALBUM_DEBUG", "TOTAL = ${lista.size}")
+
+            lista.forEach {
+                android.util.Log.e(
+                    "ALBUM_DEBUG",
+                    "ID=${it.id} NOMBRE=${it.nombre}"
+                )
+            }
+        }
+    }
+
+
     fun plantasPorAlbum(albumId: Long) =
         db.ventaDao().obtenerPlantasDelAlbum(albumId)
 
