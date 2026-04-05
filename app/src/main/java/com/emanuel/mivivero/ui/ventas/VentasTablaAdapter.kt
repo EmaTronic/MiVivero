@@ -1,5 +1,6 @@
 package com.emanuel.mivivero.ui.ventas
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -70,7 +71,12 @@ class VentasTablaAdapter(
 
             holder.tvTotal.text = "$ ${item.total}"
 
-            holder.btnEditar.setOnClickListener { onEditar(item) }
+            holder.btnEditar.setOnClickListener {
+                Log.e("EDITAR_CLICK", "CLICK EN ${item.nombrePlanta}")
+                onEditar(item)
+            }
+
+
             holder.btnEliminar.setOnClickListener { onEliminar(item) }
         }
     }
