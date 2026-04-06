@@ -20,6 +20,7 @@ class VentasDetalleAlbumFragment :
 
     private lateinit var recycler: RecyclerView
     private lateinit var tvTotal: TextView
+    private lateinit var tvSubtotal: TextView
     private lateinit var btnGuardar: Button
 
     private lateinit var adapter: VentasAdapter
@@ -34,9 +35,17 @@ class VentasDetalleAlbumFragment :
 
         recycler = view.findViewById(R.id.recyclerVentas)
         tvTotal = view.findViewById(R.id.tvTotalGanancia)
+        tvSubtotal = view.findViewById(R.id.tvSubtotal)
         btnGuardar = view.findViewById(R.id.btnGuardarVentas)
 
         recycler.layoutManager = LinearLayoutManager(requireContext())
+
+        viewModel.totalPorAlbum(albumId)
+            .observe(viewLifecycleOwner) { total ->
+
+                val totalSeguro = total ?: 0.0
+                tvTotal.text = "Total: $ $totalSeguro"
+            }
 
 
         val btnVerVentas = view.findViewById<Button>(R.id.btnVerVentas)
@@ -54,11 +63,9 @@ class VentasDetalleAlbumFragment :
         // 🔴 ADAPTER DE PLANTAS (NO ventas)
         adapter = VentasAdapter(
 
-            onTotalChanged = { total ->
-                tvTotal.text = "Total: $ $total"
+            onTotalChanged = { subtotal ->
+                tvSubtotal.text = "Subtotal: $ $subtotal"
             },
-
-
         )
 
         recycler.adapter = adapter
