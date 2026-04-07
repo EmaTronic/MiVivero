@@ -90,8 +90,7 @@ class VentasAdapter(
 
                 val vendida = s.toString().toIntOrNull() ?: 0
 
-                val validada =
-                    if (vendida > item.cantidad) item.cantidad else vendida
+                val validada = if (vendida < 0) 0 else vendida
 
                 ventasMap[item.plantaId] = Pair(validada, item.precio)
 
@@ -106,9 +105,6 @@ class VentasAdapter(
 
         holder.etVendida.addTextChangedListener(watcher)
         holder.textWatcher = watcher
-
-
-
 
 
     }

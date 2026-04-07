@@ -100,10 +100,10 @@ class VentasViewModel(application: Application)
                 android.util.Log.e("VENTA_DEBUG", "cantidad = $cantidad")
                 android.util.Log.e("VENTA_DEBUG", "nuevoStock = $nuevoStock")
 
-                if (nuevoStock < 0) {
+               /* if (nuevoStock < 0) {
                     android.util.Log.e("VENTA_DEBUG", "SIN STOCK")
                     return@launch
-                }
+                }*/
 
                 db.plantaDao().update(
                     planta.copy(cantidad = nuevoStock)
