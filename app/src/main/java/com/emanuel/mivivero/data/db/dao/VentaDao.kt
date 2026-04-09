@@ -9,9 +9,11 @@ import androidx.room.Update
 import com.emanuel.mivivero.data.db.entity.VentaDetalle
 import com.emanuel.mivivero.data.db.entity.VentaEntity
 import com.emanuel.mivivero.data.model.AlbumResumen
+import com.emanuel.mivivero.data.model.ControlStock
 import com.emanuel.mivivero.data.model.PlantaAlbum
 import com.emanuel.mivivero.data.model.PlantaSimple
 import com.emanuel.mivivero.data.model.RankingPlanta
+import com.emanuel.mivivero.data.model.ResumenPlanta
 import com.emanuel.mivivero.data.model.TotalPorAlbum
 
 @Dao
@@ -178,6 +180,36 @@ WHERE ap.albumId = :albumId
 ORDER BY p.familia, p.especie
 """)
     suspend fun plantasDisponiblesParaVenta(albumId: Long): List<PlantaSimple>
+
+//TOTAL DE PLANTAS VENDIDAS
+
+    @Query("""
+SELECT 
+    p.familia || ' ' || IFNULL(p.especie, '') AS nombrePlanta,
+    SUM(v.cantidad) as totalVendidas
+FROM ventas v
+INNER JOIN plantas p ON p.id = v.plantaId
+WHERE v.albumId = :albumId
+GROUP BY v.plantaId
+ORDER BY totalVendidas DESC
+""")
+    fun resumenPorPlanta(albumId: Long): LiveData<List<ResumenPlanta>>
+
+    //AVISO DE STOCK NEGATIVO
+
+    @Query("""
+SELECT 
+    p.id as plantaId,
+    p.familia || ' ' || IFNULL(p.especie, '') AS nombrePlanta,
+    p.cantidad as stockActual,
+    IFNULL(SUM(v.cantidad), 0) as vendidas
+FROM plantas p
+LEFT JOIN ventas v ON v.plantaId = p.id AND v.albumId = :albumId
+GROUP BY p.id
+""")
+    fun controlStock(albumId: Long): LiveData<List<ControlStock>>
+
+
     // 🔹 eliminar
     @Delete
     suspend fun delete(venta: VentaEntity)

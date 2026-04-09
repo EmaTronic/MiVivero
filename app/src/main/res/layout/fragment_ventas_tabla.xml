@@ -5,6 +5,39 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+
+    <TextView
+        android:id="@+id/tvTituloTabla"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Tabla de Ventas"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:padding="12dp"
+        android:gravity="center"
+        android:background="#DDDDDD" />
+
+    <!-- 🔵 RESUMEN -->
+    <TextView
+        android:id="@+id/tvResumenVentas"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Resumen..."
+        android:textStyle="bold"
+        android:padding="8dp"
+        android:background="#E8F5E9"/>
+
+    <!-- 🔴 ALERTA -->
+    <TextView
+        android:id="@+id/tvAlertaStock"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#D32F2F"
+        android:textStyle="bold"
+        android:padding="8dp"
+        android:visibility="gone"/>
+
+
     <!-- 🔴 ENCABEZADO -->
     <LinearLayout
         android:orientation="horizontal"

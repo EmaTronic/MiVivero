@@ -167,8 +167,14 @@ class VentasViewModel(application: Application)
     }
 
 
+    fun resumenPorPlanta(albumId: Long) =
+        db.ventaDao().resumenPorPlanta(albumId)
+
     fun plantasPorAlbum(albumId: Long) =
         db.ventaDao().obtenerPlantasDelAlbum(albumId)
+
+    fun controlStock(albumId: Long) =
+        db.ventaDao().controlStock(albumId)
 
    suspend fun obtenerPlantasDisponibles(albumId: Long) =
         db.ventaDao().plantasDisponiblesParaVenta(albumId)
