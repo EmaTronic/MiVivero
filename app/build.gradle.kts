@@ -55,6 +55,7 @@ dependencies {
     implementation("com.google.firebase:firebase-storage-ktx")
     implementation("com.google.firebase:firebase-functions-ktx")
 
+    implementation ("com.github.PhilJay:MPAndroidChart:v3.1.0")
 
     // ANDROIDX
     implementation(libs.androidx.core.ktx)

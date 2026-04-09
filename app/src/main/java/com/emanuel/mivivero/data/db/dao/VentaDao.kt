@@ -28,13 +28,13 @@ interface VentaDao {
 
     // 🔹 detalle de ventas con nombre de planta
     @Query("""
-SELECT v.id, v.plantaId,
-       p.familia || ' ' || IFNULL(p.especie, '') as nombrePlanta,
-       v.cantidad, v.precioUnitario, v.fecha
-FROM ventas v
-LEFT JOIN plantas p ON p.id = v.plantaId
-ORDER BY v.fecha DESC
-""")
+    SELECT v.id, v.plantaId,
+           p.familia || ' ' || IFNULL(p.especie, '') as nombrePlanta,
+           v.cantidad, v.precioUnitario, v.fecha
+    FROM ventas v
+    LEFT JOIN plantas p ON p.id = v.plantaId
+    ORDER BY v.fecha DESC
+    """)
     fun obtenerVentasDetalle(): LiveData<List<VentaDetalle>>
 
     // 🔹 total por álbum
@@ -47,56 +47,59 @@ ORDER BY v.fecha DESC
 
 
     @Query("""
-SELECT * FROM ventas 
-WHERE plantaId = :plantaId 
-AND albumId = :albumId
-LIMIT 1
-""")
+    SELECT * FROM ventas 
+    WHERE plantaId = :plantaId 
+    AND albumId = :albumId
+    LIMIT 1
+    """)
     suspend fun obtenerVenta(plantaId: Long, albumId: Long): VentaEntity?
 
 
     // 🔹 ranking plantas
     @Query("""
-        SELECT plantaId, SUM(cantidad) as totalVendidas
-        FROM ventas
-        GROUP BY plantaId
-        ORDER BY totalVendidas DESC
+    SELECT 
+        p.familia || ' ' || IFNULL(p.especie, '') as nombrePlanta,
+        SUM(v.cantidad) as totalVendidas
+    FROM ventas v
+    INNER JOIN plantas p ON p.id = v.plantaId
+    GROUP BY v.plantaId
+    ORDER BY totalVendidas DESC
     """)
     fun rankingPlantas(): LiveData<List<RankingPlanta>>
 
     @Query("""
-SELECT SUM(cantidad * precioUnitario)
-FROM ventas
-WHERE albumId = :albumId
-""")
+    SELECT SUM(cantidad * precioUnitario)
+    FROM ventas
+    WHERE albumId = :albumId
+    """)
     fun totalPorAlbum(albumId: Long): LiveData<Double>
 
     // 🔹 ventas filtradas por mes/año
     @Query("""
-SELECT * FROM ventas
-WHERE strftime('%m', fecha / 1000, 'unixepoch') = :mes
-AND strftime('%Y', fecha / 1000, 'unixepoch') = :anio
-""")
+    SELECT * FROM ventas
+    WHERE strftime('%m', fecha / 1000, 'unixepoch') = :mes
+    AND strftime('%Y', fecha / 1000, 'unixepoch') = :anio
+    """)
     fun obtenerVentasPorMes(mes: String, anio: String): LiveData<List<VentaEntity>>
 
 
     @Query("""
-SELECT SUM(cantidad * precioUnitario) FROM ventas
-""")
+    SELECT SUM(cantidad * precioUnitario) FROM ventas
+    """)
     fun obtenerTotalGeneral(): LiveData<Double>
 
     @Query("""
-SELECT 
-    v.id AS id,
-    v.plantaId AS plantaId,
-    (p.familia || ' ' || IFNULL(p.especie, '')) AS nombrePlanta,
-    v.cantidad AS cantidad,
-    v.precioUnitario AS precioUnitario,
-    v.fecha AS fecha
-FROM ventas v
-LEFT JOIN plantas p ON p.id = v.plantaId
-ORDER BY v.fecha DESC
-""")
+    SELECT 
+        v.id AS id,
+        v.plantaId AS plantaId,
+        (p.familia || ' ' || IFNULL(p.especie, '')) AS nombrePlanta,
+        v.cantidad AS cantidad,
+        v.precioUnitario AS precioUnitario,
+        v.fecha AS fecha
+    FROM ventas v
+    LEFT JOIN plantas p ON p.id = v.plantaId
+    ORDER BY v.fecha DESC
+    """)
     suspend fun obtenerVentasDetalleDirecto(): List<VentaDetalle>
 
 
@@ -156,57 +159,57 @@ ORDER BY v.fecha DESC
     )
 
     @Query("""
-SELECT 
-    p.id as plantaId,
-    p.familia as familia,
-    p.especie as especie,
-    (p.familia || ' ' || IFNULL(p.especie, '')) as nombreCompleto,
-    ap.cantidad as cantidad,
-    ap.precio as precio,
-    p.fotoRuta as fotoRuta
-FROM plantas p
-INNER JOIN album_planta ap ON ap.plantaId = p.id
-WHERE ap.albumId = :albumId
-""")
+    SELECT 
+        p.id as plantaId,
+        p.familia as familia,
+        p.especie as especie,
+        (p.familia || ' ' || IFNULL(p.especie, '')) as nombreCompleto,
+        ap.cantidad as cantidad,
+        ap.precio as precio,
+        p.fotoRuta as fotoRuta
+    FROM plantas p
+    INNER JOIN album_planta ap ON ap.plantaId = p.id
+    WHERE ap.albumId = :albumId
+    """)
     fun obtenerPlantasDelAlbum(albumId: Long): LiveData<List<PlantaAlbum>>
 
 
     //TRAER LA LISTA DE PLANTAS QUE NO HAN SIDO VENDIDAS
     @Query("""
-SELECT p.id, p.familia || ' ' || IFNULL(p.especie, '') as nombre
-FROM plantas p
-INNER JOIN album_planta ap ON ap.plantaId = p.id
-WHERE ap.albumId = :albumId
-ORDER BY p.familia, p.especie
-""")
+    SELECT p.id, p.familia || ' ' || IFNULL(p.especie, '') as nombre
+    FROM plantas p
+    INNER JOIN album_planta ap ON ap.plantaId = p.id
+    WHERE ap.albumId = :albumId
+    ORDER BY p.familia, p.especie
+    """)
     suspend fun plantasDisponiblesParaVenta(albumId: Long): List<PlantaSimple>
 
 //TOTAL DE PLANTAS VENDIDAS
 
     @Query("""
-SELECT 
-    p.familia || ' ' || IFNULL(p.especie, '') AS nombrePlanta,
-    SUM(v.cantidad) as totalVendidas
-FROM ventas v
-INNER JOIN plantas p ON p.id = v.plantaId
-WHERE v.albumId = :albumId
-GROUP BY v.plantaId
-ORDER BY totalVendidas DESC
-""")
+    SELECT 
+        p.familia || ' ' || IFNULL(p.especie, '') AS nombrePlanta,
+        SUM(v.cantidad) as totalVendidas
+    FROM ventas v
+    INNER JOIN plantas p ON p.id = v.plantaId
+    WHERE v.albumId = :albumId
+    GROUP BY v.plantaId
+    ORDER BY totalVendidas DESC
+    """)
     fun resumenPorPlanta(albumId: Long): LiveData<List<ResumenPlanta>>
 
     //AVISO DE STOCK NEGATIVO
 
     @Query("""
-SELECT 
-    p.id as plantaId,
-    p.familia || ' ' || IFNULL(p.especie, '') AS nombrePlanta,
-    p.cantidad as stockActual,
-    IFNULL(SUM(v.cantidad), 0) as vendidas
-FROM plantas p
-LEFT JOIN ventas v ON v.plantaId = p.id AND v.albumId = :albumId
-GROUP BY p.id
-""")
+    SELECT 
+        p.id as plantaId,
+        p.familia || ' ' || IFNULL(p.especie, '') AS nombrePlanta,
+        p.cantidad as stockActual,
+        IFNULL(SUM(v.cantidad), 0) as vendidas
+    FROM plantas p
+    LEFT JOIN ventas v ON v.plantaId = p.id AND v.albumId = :albumId
+    GROUP BY p.id
+    """)
     fun controlStock(albumId: Long): LiveData<List<ControlStock>>
 
 

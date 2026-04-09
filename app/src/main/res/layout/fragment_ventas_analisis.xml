@@ -21,14 +21,24 @@
             android:layout_height="wrap_content"/>
 
         <TextView
-            android:text="Ranking por plantas"
+            android:id="@+id/tvRankingTitulo"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:text="Ranking de plantas"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:padding="8dp" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerRanking"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="200dp"/>
+
+        <com.github.mikephil.charting.charts.BarChart
+            android:id="@+id/chartRanking"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:layout_marginTop="12dp"/>
 
         <TextView
             android:text="Ventas"
