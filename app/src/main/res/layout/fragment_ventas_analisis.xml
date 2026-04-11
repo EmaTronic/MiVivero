@@ -32,13 +32,13 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerRanking"
             android:layout_width="match_parent"
-            android:layout_height="200dp"/>
+            android:layout_height="wrap_content"/>
 
         <com.github.mikephil.charting.charts.BarChart
             android:id="@+id/chartRanking"
             android:layout_width="match_parent"
-            android:layout_height="250dp"
-            android:layout_marginTop="12dp"/>
+            android:layout_height="350dp"
+            android:layout_marginTop="15dp"/>
 
         <TextView
             android:text="Ventas"

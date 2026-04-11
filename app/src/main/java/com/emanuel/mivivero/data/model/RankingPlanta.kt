@@ -2,5 +2,6 @@ package com.emanuel.mivivero.data.model
 
 data class RankingPlanta(
     val nombrePlanta: String,
-    val totalVendidas: Int
+    val totalVendidas: Int,
+    val plantaId: Long
 )

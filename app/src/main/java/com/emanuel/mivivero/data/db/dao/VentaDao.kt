@@ -58,6 +58,7 @@ interface VentaDao {
     // 🔹 ranking plantas
     @Query("""
     SELECT 
+        p.id as plantaId,
         p.familia || ' ' || IFNULL(p.especie, '') as nombrePlanta,
         SUM(v.cantidad) as totalVendidas
     FROM ventas v
