@@ -107,11 +107,11 @@
             android:textSize="18sp"
             android:paddingTop="12dp"/>
 
-        <TextView
-            android:id="@+id/tvInsights"
+        <LinearLayout
+            android:id="@+id/containerInsights"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Sin datos"
+            android:orientation="vertical"
             android:padding="8dp"/>
 
         <!-- 🔵 VENTAS -->

@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Button
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -48,6 +49,8 @@ class VentasAnalisisFragment :
 
     private lateinit var tvInsights: TextView
 
+    private lateinit var containerInsights: LinearLayout
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -65,9 +68,10 @@ class VentasAnalisisFragment :
 
 
 
-        //ANALISIS COMPARATIVOS
-        tvInsights = view.findViewById(R.id.tvInsights)
 
+        //ANALISIS COMPARATIVOS
+
+        containerInsights = view.findViewById(R.id.containerInsights)
 
 
         btnSemana.isEnabled = false   // 🔥 activo por defecto
@@ -530,22 +534,62 @@ class VentasAnalisisFragment :
 
             val diferencia = ratioGanancia - ratioVentas
 
-            // 🔴 vende más de lo que gana
-            if (diferencia < -0.2f) {
+            if (diferencia < -0.15f) {
                 insights.add("⚠ ${it.nombre} vende bien pero deja poca ganancia")
             }
 
-            // 🟢 gana más de lo que vende
-            if (diferencia > 0.2f) {
+            if (diferencia > 0.15f) {
                 insights.add("💰 ${it.nombre} muy rentable, potenciar")
+            }
+            if (insights.isEmpty() && resultado.isNotEmpty()) {
+
+                val mejor = resultado.maxByOrNull { it.ganancia }
+
+                mejor?.let {
+                    insights.add("💰 ${it.nombre} es la planta más rentable")
+                }
             }
         }
 
-        tvInsights.text =
-            if (insights.isEmpty())
-                "Sin insights relevantes"
-            else
-                insights.joinToString("\n\n")
+        containerInsights.removeAllViews()
+
+        if (insights.isEmpty()) {
+
+            val textView = TextView(requireContext())
+            textView.text = "Sin insights relevantes"
+            containerInsights.addView(textView)
+
+            return
+        }
+
+
+        insights.forEach { texto ->
+
+            val item = layoutInflater.inflate(R.layout.item_insight, containerInsights, false)
+
+            val tvTitulo = item.findViewById<TextView>(R.id.tvTitulo)
+            val tvNombre = item.findViewById<TextView>(R.id.tvNombre)
+            val tvDescripcion = item.findViewById<TextView>(R.id.tvDescripcion)
+
+            when {
+                texto.contains("⚠") -> {
+                    tvTitulo.text = "⚠ Revisar"
+                    item.setBackgroundColor(Color.parseColor("#FFCDD2"))
+                }
+                texto.contains("💰") -> {
+                    tvTitulo.text = "💰 Oportunidad"
+                    item.setBackgroundColor(Color.parseColor("#C8E6C9"))
+                }
+            }
+
+            // dividir texto
+            val partes = texto.split(" ", limit = 2)
+
+            tvNombre.text = partes.getOrNull(0) ?: ""
+            tvDescripcion.text = partes.getOrNull(1) ?: texto
+
+            containerInsights.addView(item)
+        }
     }
 
 }
