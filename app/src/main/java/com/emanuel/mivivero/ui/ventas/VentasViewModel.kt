@@ -29,6 +29,8 @@ class VentasViewModel(application: Application)
     val ventasMes = db.ventaDao().ventasMes()
     val ventasAnio = db.ventaDao().ventasAnio()
 
+    val rentabilidad = db.ventaDao().topRentabilidad()
+
     fun totalPorAlbum(albumId: Long) =
         db.ventaDao().totalPorAlbum(albumId)
 
@@ -142,39 +144,7 @@ class VentasViewModel(application: Application)
 
     }
 
-    fun debugVentas() {
 
-        viewModelScope.launch {
-
-            val lista = db.ventaDao().debugVentas()
-
-            android.util.Log.e("DB_REAL", "TOTAL = ${lista.size}")
-
-            lista.forEach {
-                android.util.Log.e(
-                    "DB_REAL",
-                    "VENTA id=${it.id} album=${it.albumId} planta=${it.plantaId}"
-                )
-            }
-        }
-    }
-
-    fun debugAlbumes() {
-
-        viewModelScope.launch {
-
-            val lista = db.albumDao().debugAlbumes()
-
-            android.util.Log.e("ALBUM_DEBUG", "TOTAL = ${lista.size}")
-
-            lista.forEach {
-                android.util.Log.e(
-                    "ALBUM_DEBUG",
-                    "ID=${it.id} NOMBRE=${it.nombre}"
-                )
-            }
-        }
-    }
 
 
     fun resumenPorPlanta(albumId: Long) =

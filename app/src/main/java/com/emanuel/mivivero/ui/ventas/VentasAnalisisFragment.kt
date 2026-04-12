@@ -38,8 +38,9 @@ class VentasAnalisisFragment :
 
     private var modoActual = "SEMANA"
 
-
     private lateinit var chartTiempo: LineChart
+
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -49,6 +50,10 @@ class VentasAnalisisFragment :
         val btnSemana = view.findViewById<Button>(R.id.btnSemana)
         val btnMes = view.findViewById<Button>(R.id.btnMes)
         val btnAnio = view.findViewById<Button>(R.id.btnAnio)
+
+
+        val chartRanking = view.findViewById<BarChart>(R.id.chartRanking)
+        val chartRentabilidad = view.findViewById<BarChart>(R.id.chartRentabilidad)
 
 
         btnSemana.isEnabled = false   // 🔥 activo por defecto
@@ -213,21 +218,22 @@ class VentasAnalisisFragment :
             val data = BarData(dataSet)
 
             chart.data = data
+            chartRanking.data=data
 
-            chart.axisRight.isEnabled = false
-            chart.axisLeft.gridColor = Color.LTGRAY
-            chart.xAxis.setDrawGridLines(false)
+            chartRanking.axisRight.isEnabled = false
+            chartRanking.axisLeft.gridColor = Color.LTGRAY
+            chartRanking.xAxis.setDrawGridLines(false)
 
-            chart.xAxis.axisMinimum = -0.5f
-            chart.xAxis.axisMaximum = topPlantas.size - 0.5f
+            chartRanking.xAxis.axisMinimum = -0.5f
+            chartRanking.xAxis.axisMaximum = topPlantas.size - 0.5f
 
-            chart.setFitBars(true)
-            chart.data.barWidth = 0.9f
+            chartRanking.setFitBars(true)
+            chartRanking.data.barWidth = 0.9f
 
-            chart.setTouchEnabled(true)
-            chart.isHighlightPerTapEnabled = true
-            chart.isClickable = true
-            chart.isFocusable = true
+            chartRanking.setTouchEnabled(true)
+            chartRanking.isHighlightPerTapEnabled = true
+            chartRanking.isClickable = true
+            chartRanking.isFocusable = true
 
 
             val xAxis = chart.xAxis
@@ -239,14 +245,14 @@ class VentasAnalisisFragment :
             xAxis.labelRotationAngle = -70f
             xAxis.textSize = 15f
 
-            chart.description.isEnabled = false
-            chart.legend.isEnabled = false
-            chart.extraBottomOffset = 15f
-            chart.extraTopOffset = 120f
+            chartRanking.description.isEnabled = false
+            chartRanking.legend.isEnabled = false
+            chartRanking.extraBottomOffset = 15f
+            chartRanking.extraTopOffset = 120f
 
-            chart.setFitBars(true)
-            chart.animateY(1000)
-            chart.invalidate()
+            chartRanking.setFitBars(true)
+            chartRanking.animateY(1000)
+            chartRanking.invalidate()
 
 
 
@@ -283,6 +289,50 @@ class VentasAnalisisFragment :
                 override fun onNothingSelected() {}
             })
         }
+
+        viewModel.rentabilidad.observe(viewLifecycleOwner) { lista ->
+
+            val entries = lista.mapIndexed { index, item ->
+                BarEntry(index.toFloat(), item.totalGanado.toFloat())
+            }
+
+            val labels = lista.map { item ->
+                val partes = item.nombrePlanta.split(" ")
+                if (partes.size >= 2) {
+                    "${partes[0]} ${partes[1].first()}."
+                } else {
+                    item.nombrePlanta
+                }
+            }
+
+            val dataSet = BarDataSet(entries, "Top rentabilidad")
+
+            val colors = entries.mapIndexed { index, _ ->
+                when (index) {
+                    0 -> Color.parseColor("#FFD700") // 🥇 oro
+                    1 -> Color.parseColor("#C0C0C0") // 🥈 plata
+                    2 -> Color.parseColor("#CD7F32") // 🥉 bronce
+                    else -> Color.parseColor("#2196F3") // 🔵 azul
+                }
+            }
+
+            dataSet.colors = colors
+
+            val data = BarData(dataSet)
+            chartRentabilidad.data = data
+
+            val xAxis = chartRentabilidad.xAxis
+            xAxis.valueFormatter = IndexAxisValueFormatter(labels)
+            xAxis.labelRotationAngle = -70f
+            xAxis.textSize = 15f
+
+            chartRentabilidad.extraBottomOffset = 15f
+            chartRentabilidad.extraTopOffset = 120f
+
+            chartRentabilidad.description.isEnabled = false
+            chartRentabilidad.invalidate()
+        }
+
     }
 
 

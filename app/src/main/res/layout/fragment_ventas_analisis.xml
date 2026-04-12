@@ -81,6 +81,20 @@
             android:layout_marginTop="15dp"
             android:layout_marginBottom="16dp"/>
 
+
+        <!-- RENTABILIDAD-->
+        <TextView
+            android:text="Top rentabilidad"
+            android:textStyle="bold"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="12dp"/>
+
+        <com.github.mikephil.charting.charts.BarChart
+            android:id="@+id/chartRentabilidad"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"/>
+
         <!-- 🔵 VENTAS -->
         <TextView
             android:text="Ventas"

@@ -13,6 +13,7 @@ import com.emanuel.mivivero.data.model.ControlStock
 import com.emanuel.mivivero.data.model.PlantaAlbum
 import com.emanuel.mivivero.data.model.PlantaSimple
 import com.emanuel.mivivero.data.model.RankingPlanta
+import com.emanuel.mivivero.data.model.RentabilidadPlanta
 import com.emanuel.mivivero.data.model.ResumenPlanta
 import com.emanuel.mivivero.data.model.TotalAlbum
 import com.emanuel.mivivero.data.model.TotalPorAlbum
@@ -266,6 +267,18 @@ ORDER BY MIN(fecha)
     fun ventasAnio(): LiveData<List<VentaTiempo>>
 
 
+
+    @Query("""
+SELECT 
+    p.familia || ' ' || IFNULL(p.especie, '') as nombrePlanta,
+    SUM(v.cantidad * v.precioUnitario) as totalGanado
+FROM ventas v
+INNER JOIN plantas p ON p.id = v.plantaId
+GROUP BY v.plantaId
+ORDER BY totalGanado DESC
+LIMIT 10
+""")
+    fun topRentabilidad(): LiveData<List<RentabilidadPlanta>>
 
     // 🔹 eliminar
     @Delete
