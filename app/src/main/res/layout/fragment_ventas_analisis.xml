@@ -4,22 +4,62 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <!-- 🔥 ÚNICO HIJO -->
     <LinearLayout
         android:orientation="vertical"
         android:padding="16dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <TextView
-            android:text="Totales por álbum"
+        <!-- 🔵 FILTROS TIEMPO -->
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:padding="8dp">
 
+            <Button
+                android:id="@+id/btnSemana"
+                android:text="Semana"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <Button
+                android:id="@+id/btnMes"
+                android:text="Mes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <Button
+                android:id="@+id/btnAnio"
+                android:text="Año"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+
+        <!-- 🔵 GRÁFICO TIEMPO -->
+        <TextView
+            android:text="Evolución de ventas"
+            android:textStyle="bold"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="8dp"/>
+
+        <com.github.mikephil.charting.charts.LineChart
+            android:id="@+id/chartTiempo"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- 🔵 TOTALES -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerTotales"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 
+        <!-- 🔵 RANKING -->
         <TextView
             android:id="@+id/tvRankingTitulo"
             android:layout_width="match_parent"
@@ -38,8 +78,10 @@
             android:id="@+id/chartRanking"
             android:layout_width="match_parent"
             android:layout_height="350dp"
-            android:layout_marginTop="15dp"/>
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="16dp"/>
 
+        <!-- 🔵 VENTAS -->
         <TextView
             android:text="Ventas"
             android:layout_width="match_parent"

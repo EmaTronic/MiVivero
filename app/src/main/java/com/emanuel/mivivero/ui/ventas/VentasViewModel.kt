@@ -24,6 +24,11 @@ class VentasViewModel(application: Application)
 
     val totalesPorAlbum = db.ventaDao().totalPorAlbum()
 
+
+    val ventasSemana = db.ventaDao().ventasSemana()
+    val ventasMes = db.ventaDao().ventasMes()
+    val ventasAnio = db.ventaDao().ventasAnio()
+
     fun totalPorAlbum(albumId: Long) =
         db.ventaDao().totalPorAlbum(albumId)
 

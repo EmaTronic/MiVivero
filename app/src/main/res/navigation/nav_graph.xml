@@ -226,4 +226,6 @@
         android:name="com.emanuel.mivivero.ui.ventas.ResumenFragment"
         android:label="Resumen"/>
 
+
+
 </navigation>

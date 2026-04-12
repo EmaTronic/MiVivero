@@ -16,6 +16,7 @@ import com.emanuel.mivivero.data.model.RankingPlanta
 import com.emanuel.mivivero.data.model.ResumenPlanta
 import com.emanuel.mivivero.data.model.TotalAlbum
 import com.emanuel.mivivero.data.model.TotalPorAlbum
+import com.emanuel.mivivero.data.model.VentaTiempo
 
 @Dao
 interface VentaDao {
@@ -230,6 +231,40 @@ GROUP BY albumId
 ORDER BY totalGanado DESC
 """)
     fun totalPorAlbum(): LiveData<List<TotalAlbum>>
+
+
+    @Query("""
+SELECT 
+    strftime('%d/%m', fecha/1000, 'unixepoch') as periodo,
+    SUM(cantidad * precioUnitario) as total
+FROM ventas
+WHERE fecha >= strftime('%s','now','-7 days') * 1000
+GROUP BY strftime('%Y-%m-%d', fecha/1000, 'unixepoch')
+ORDER BY MIN(fecha)
+""")
+    fun ventasSemana(): LiveData<List<VentaTiempo>>
+
+    @Query("""
+SELECT 
+    strftime('%d/%m', fecha/1000, 'unixepoch') as periodo,
+    SUM(cantidad * precioUnitario) as total
+FROM ventas
+WHERE fecha >= strftime('%s','now','-30 days') * 1000
+GROUP BY strftime('%Y-%m-%d', fecha/1000, 'unixepoch')
+ORDER BY MIN(fecha)
+""")
+    fun ventasMes(): LiveData<List<VentaTiempo>>
+
+    @Query("""
+SELECT 
+    strftime('%m', fecha/1000, 'unixepoch') as periodo,
+    SUM(cantidad * precioUnitario) as total
+FROM ventas
+GROUP BY strftime('%Y-%m', fecha/1000, 'unixepoch')
+ORDER BY MIN(fecha)
+""")
+    fun ventasAnio(): LiveData<List<VentaTiempo>>
+
 
 
     // 🔹 eliminar
