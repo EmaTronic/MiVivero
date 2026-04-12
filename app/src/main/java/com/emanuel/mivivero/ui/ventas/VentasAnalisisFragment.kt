@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Button
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -14,7 +15,9 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.emanuel.mivivero.R
+import com.emanuel.mivivero.data.model.AnalisisPlanta
 import com.emanuel.mivivero.data.model.RankingPlanta
+import com.emanuel.mivivero.data.model.RentabilidadPlanta
 import com.emanuel.mivivero.data.model.VentaTiempo
 import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.data.BarDataSet
@@ -35,12 +38,15 @@ class VentasAnalisisFragment :
 
     private var topPlantas: List<RankingPlanta> = emptyList()
 
+    private var rankingList: List<RankingPlanta> = emptyList()
+    private var rentabilidadList: List<RentabilidadPlanta> = emptyList()
 
     private var modoActual = "SEMANA"
 
     private lateinit var chartTiempo: LineChart
 
 
+    private lateinit var tvInsights: TextView
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -54,6 +60,14 @@ class VentasAnalisisFragment :
 
         val chartRanking = view.findViewById<BarChart>(R.id.chartRanking)
         val chartRentabilidad = view.findViewById<BarChart>(R.id.chartRentabilidad)
+
+
+
+
+
+        //ANALISIS COMPARATIVOS
+        tvInsights = view.findViewById(R.id.tvInsights)
+
 
 
         btnSemana.isEnabled = false   // 🔥 activo por defecto
@@ -124,6 +138,10 @@ class VentasAnalisisFragment :
         // =========================
         // 🔵 OBSERVE RANKING
         // =========================
+
+
+
+
         val chart = view.findViewById<BarChart>(R.id.chartRanking)
 
         chartTiempo = view.findViewById<LineChart>(R.id.chartTiempo)
@@ -175,6 +193,8 @@ class VentasAnalisisFragment :
         }
 
         viewModel.ranking.observe(viewLifecycleOwner) { lista ->
+
+            rankingList = lista
 
             topPlantas = lista.take(10)
 
@@ -333,6 +353,12 @@ class VentasAnalisisFragment :
             chartRentabilidad.invalidate()
         }
 
+        viewModel.rentabilidad.observe(viewLifecycleOwner) { lista ->
+            rentabilidadList = lista
+            analizar(rankingList, rentabilidadList)
+        }
+
+
     }
 
 
@@ -458,6 +484,68 @@ class VentasAnalisisFragment :
         chart.description.isEnabled = false
 
         chart.invalidate()
+    }
+
+    private fun analizar(
+        ranking: List<RankingPlanta>,
+        rentabilidad: List<RentabilidadPlanta>
+    ) {
+
+        Log.e("DEBUG", "ranking size = ${ranking.size}")
+        Log.e("DEBUG", "rentabilidad size = ${rentabilidad.size}")
+
+        ranking.forEach { r ->
+            Log.e("RANK", "id=${r.plantaId} nombre=${r.nombrePlanta}")
+        }
+
+        rentabilidad.forEach { r ->
+            Log.e("RENT", "id=${r.plantaId} nombre=${r.nombrePlanta}")
+        }
+        val resultado = ranking.mapNotNull { r ->
+            val match = rentabilidad.find { it.plantaId == r.plantaId }
+
+            match?.let {
+                AnalisisPlanta(
+                    nombre = r.nombrePlanta,
+                    vendidas = r.totalVendidas,
+                    ganancia = it.totalGanado
+                )
+            }
+        }
+
+        if (resultado.isEmpty()) {
+            tvInsights.text = "Sin datos"
+            return
+        }
+
+        val maxVentas = resultado.maxOf { it.vendidas }
+        val maxGanancia = resultado.maxOf { it.ganancia }
+
+        val insights = mutableListOf<String>()
+
+        resultado.forEach {
+
+            val ratioVentas = it.vendidas.toFloat() / maxVentas
+            val ratioGanancia = it.ganancia.toFloat() / maxGanancia
+
+            val diferencia = ratioGanancia - ratioVentas
+
+            // 🔴 vende más de lo que gana
+            if (diferencia < -0.2f) {
+                insights.add("⚠ ${it.nombre} vende bien pero deja poca ganancia")
+            }
+
+            // 🟢 gana más de lo que vende
+            if (diferencia > 0.2f) {
+                insights.add("💰 ${it.nombre} muy rentable, potenciar")
+            }
+        }
+
+        tvInsights.text =
+            if (insights.isEmpty())
+                "Sin insights relevantes"
+            else
+                insights.joinToString("\n\n")
     }
 
 }

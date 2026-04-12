@@ -60,15 +60,15 @@ interface VentaDao {
 
     // 🔹 ranking plantas
     @Query("""
-    SELECT 
-        p.id as plantaId,
-        p.familia || ' ' || IFNULL(p.especie, '') as nombrePlanta,
-        SUM(v.cantidad) as totalVendidas
-    FROM ventas v
-    INNER JOIN plantas p ON p.id = v.plantaId
-    GROUP BY v.plantaId
-    ORDER BY totalVendidas DESC
-    """)
+SELECT 
+    p.id as plantaId,
+    p.familia || ' ' || IFNULL(p.especie, '') as nombrePlanta,
+    SUM(v.cantidad) as totalVendidas
+FROM ventas v
+INNER JOIN plantas p ON p.id = v.plantaId
+GROUP BY v.plantaId
+ORDER BY totalVendidas DESC
+""")
     fun rankingPlantas(): LiveData<List<RankingPlanta>>
 
     @Query("""
@@ -270,6 +270,7 @@ ORDER BY MIN(fecha)
 
     @Query("""
 SELECT 
+    p.id as plantaId,
     p.familia || ' ' || IFNULL(p.especie, '') as nombrePlanta,
     SUM(v.cantidad * v.precioUnitario) as totalGanado
 FROM ventas v

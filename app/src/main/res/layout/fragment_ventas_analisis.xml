@@ -95,6 +95,25 @@
             android:layout_width="match_parent"
             android:layout_height="300dp"/>
 
+
+        <!-- ANALISIS COMPARATIVO RENTABILIDAD VENTA -->
+
+        <TextView
+            android:id="@+id/tvInsightsTitulo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Insights"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:paddingTop="12dp"/>
+
+        <TextView
+            android:id="@+id/tvInsights"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Sin datos"
+            android:padding="8dp"/>
+
         <!-- 🔵 VENTAS -->
         <TextView
             android:text="Ventas"
