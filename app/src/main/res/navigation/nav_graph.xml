@@ -221,4 +221,9 @@
         android:name="com.emanuel.mivivero.ui.ventas.VentasTablaFragment"
         android:label="Ventas Tabla"/>
 
+    <fragment
+        android:id="@+id/resumenFragment"
+        android:name="com.emanuel.mivivero.ui.ventas.ResumenFragment"
+        android:label="Resumen"/>
+
 </navigation>

@@ -14,6 +14,7 @@ import com.emanuel.mivivero.data.model.PlantaAlbum
 import com.emanuel.mivivero.data.model.PlantaSimple
 import com.emanuel.mivivero.data.model.RankingPlanta
 import com.emanuel.mivivero.data.model.ResumenPlanta
+import com.emanuel.mivivero.data.model.TotalAlbum
 import com.emanuel.mivivero.data.model.TotalPorAlbum
 
 @Dao
@@ -212,6 +213,23 @@ interface VentaDao {
     GROUP BY p.id
     """)
     fun controlStock(albumId: Long): LiveData<List<ControlStock>>
+
+
+    @Query("""
+SELECT SUM(cantidad * precioUnitario) FROM ventas
+""")
+    fun totalGeneral(): LiveData<Double?>
+
+
+    @Query("""
+SELECT 
+    albumId,
+    SUM(cantidad * precioUnitario) as totalGanado
+FROM ventas
+GROUP BY albumId
+ORDER BY totalGanado DESC
+""")
+    fun totalPorAlbum(): LiveData<List<TotalAlbum>>
 
 
     // 🔹 eliminar

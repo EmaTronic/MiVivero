@@ -132,14 +132,14 @@ class VentasAnalisisFragment :
             xAxis.granularity = 1f
             xAxis.isGranularityEnabled = true
             xAxis.setDrawGridLines(false)
-            xAxis.position = XAxis.XAxisPosition.BOTTOM
+            xAxis.position = XAxis.XAxisPosition.TOP
             xAxis.labelRotationAngle = -70f
             xAxis.textSize = 15f
 
             chart.description.isEnabled = false
             chart.legend.isEnabled = false
-            chart.extraBottomOffset = 50f
-            chart.extraTopOffset = 80f
+            chart.extraBottomOffset = 15f
+            chart.extraTopOffset = 120f
 
             chart.setFitBars(true)
             chart.animateY(800)

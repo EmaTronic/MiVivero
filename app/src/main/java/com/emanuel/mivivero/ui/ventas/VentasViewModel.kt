@@ -19,6 +19,11 @@ class VentasViewModel(application: Application)
     val resumenAlbumes = db.ventaDao().obtenerResumenAlbumes()
     val ventas = db.ventaDao().obtenerVentas()
 
+
+    val totalGeneral = db.ventaDao().totalGeneral()
+
+    val totalesPorAlbum = db.ventaDao().totalPorAlbum()
+
     fun totalPorAlbum(albumId: Long) =
         db.ventaDao().totalPorAlbum(albumId)
 
