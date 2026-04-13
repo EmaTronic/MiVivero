@@ -6,11 +6,17 @@ import androidx.lifecycle.viewModelScope
 import com.emanuel.mivivero.data.db.entity.VentaDetalle
 import com.emanuel.mivivero.data.db.entity.VentaEntity
 import com.emanuel.mivivero.data.local.AppDatabase
+import com.emanuel.mivivero.data.local.entity.PlantaEntity
+import com.emanuel.mivivero.data.model.Planta
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class VentasViewModel(application: Application)
     : AndroidViewModel(application) {
 
+
+    private var listaPlantas: List<PlantaEntity> = emptyList()
+    private var plantaSeleccionada: PlantaEntity? = null
     private val db = AppDatabase.getInstance(application)
 
     val ventasDetalle = db.ventaDao().obtenerVentasDetalle()
@@ -30,6 +36,42 @@ class VentasViewModel(application: Application)
     val ventasAnio = db.ventaDao().ventasAnio()
 
     val rentabilidad = db.ventaDao().topRentabilidad()
+
+
+
+// =========================
+    // 🟢 PLANTAS (PARA NUEVA VENTA)
+    // =========================
+
+    suspend fun getPlantas(): List<PlantaEntity> {
+        return db.plantaDao().getAll()
+    }
+
+
+    // =========================
+    // 🔴 INSERTAR VENTA
+    // =========================
+
+    fun insertVenta(
+        plantaId: Long,
+        cantidad: Int,
+        precio: Double
+    ) {
+        viewModelScope.launch(Dispatchers.IO) {
+
+            db.ventaDao().insert(
+                VentaEntity(
+                    plantaId = plantaId,
+                    cantidad = cantidad,
+                    precioUnitario = precio,
+                    fecha = System.currentTimeMillis(),
+                    albumId = null // 🔥 venta aislada
+                )
+            )
+        }
+    }
+
+
 
     fun totalPorAlbum(albumId: Long) =
         db.ventaDao().totalPorAlbum(albumId)
@@ -155,6 +197,13 @@ class VentasViewModel(application: Application)
 
     fun controlStock(albumId: Long) =
         db.ventaDao().controlStock(albumId)
+
+
+
+
+
+
+
 
    suspend fun obtenerPlantasDisponibles(albumId: Long) =
         db.ventaDao().plantasDisponiblesParaVenta(albumId)

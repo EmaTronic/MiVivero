@@ -10,7 +10,7 @@ data class VentaEntity(
     val id: Long = 0L,
 
     val plantaId: Long,
-    val albumId: Long,
+    val albumId: Long?,
 
     val cantidad: Int,
     val precioUnitario: Double,

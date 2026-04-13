@@ -10,6 +10,7 @@ import com.emanuel.mivivero.data.db.entity.VentaDetalle
 import com.emanuel.mivivero.data.db.entity.VentaEntity
 import com.emanuel.mivivero.data.model.AlbumResumen
 import com.emanuel.mivivero.data.model.ControlStock
+import com.emanuel.mivivero.data.model.Planta
 import com.emanuel.mivivero.data.model.PlantaAlbum
 import com.emanuel.mivivero.data.model.PlantaSimple
 import com.emanuel.mivivero.data.model.RankingPlanta
@@ -280,6 +281,10 @@ ORDER BY totalGanado DESC
 LIMIT 10
 """)
     fun topRentabilidad(): LiveData<List<RentabilidadPlanta>>
+
+
+    @Query("SELECT * FROM plantas")
+    fun getAll(): List<Planta>
 
     // 🔹 eliminar
     @Delete

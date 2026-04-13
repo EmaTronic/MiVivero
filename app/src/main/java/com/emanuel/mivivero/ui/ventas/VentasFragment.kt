@@ -42,6 +42,11 @@ class VentasFragment : Fragment(R.layout.fragment_ventas) {
             findNavController().navigate(R.id.ventasAnalisisFragment)
         }
 
+        val btnNuevaVenta = view.findViewById<Button>(R.id.btnNuevaVenta)
+
+        btnNuevaVenta.setOnClickListener {
+            findNavController().navigate(R.id.nuevaVentaFragment)
+        }
 
         viewModel.getAlbumesPublicados()
             .observe(viewLifecycleOwner) { lista ->
@@ -51,6 +56,9 @@ class VentasFragment : Fragment(R.layout.fragment_ventas) {
                 adapter.actualizarLista(lista)
             }
         observarAlbumesPublicados()
+
+
+
     }
 
     // ================================

@@ -61,4 +61,7 @@ interface PlantaDao {
 
     @Query("SELECT * FROM plantas WHERE id = :id")
     suspend fun obtenerEntityPorId(id: Long): PlantaEntity?
+
+
+
 }

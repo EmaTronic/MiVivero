@@ -47,8 +47,6 @@ class VentasAnalisisFragment :
     private lateinit var chartTiempo: LineChart
 
 
-    private lateinit var tvInsights: TextView
-
     private lateinit var containerInsights: LinearLayout
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -518,7 +516,6 @@ class VentasAnalisisFragment :
         }
 
         if (resultado.isEmpty()) {
-            tvInsights.text = "Sin datos"
             return
         }
 
