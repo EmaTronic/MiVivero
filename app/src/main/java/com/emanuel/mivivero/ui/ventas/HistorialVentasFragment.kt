@@ -1,11 +1,13 @@
 package com.emanuel.mivivero.ui.ventas
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.Toast
+import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -49,6 +51,21 @@ class HistorialVentasFragment : Fragment(R.layout.fragment_historial_ventas) {
             exportarCSV(requireContext(), lista)
 
             Toast.makeText(requireContext(), "CSV generado", Toast.LENGTH_SHORT).show()
+
+            val file = File(requireContext().getExternalFilesDir(null), "ventas.csv")
+
+            val uri = FileProvider.getUriForFile(
+                requireContext(),
+                "${requireContext().packageName}.fileprovider",
+                file
+            )
+
+            val intent = Intent(Intent.ACTION_SEND)
+            intent.type = "text/csv"
+            intent.putExtra(Intent.EXTRA_STREAM, uri)
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+
+            startActivity(Intent.createChooser(intent, "Compartir CSV"))
         }
     }
 
@@ -59,15 +76,38 @@ class HistorialVentasFragment : Fragment(R.layout.fragment_historial_ventas) {
 
         file.bufferedWriter().use { writer ->
 
-            writer.write("Planta,Cantidad,Precio,Total\n")
+            val fecha = java.text.SimpleDateFormat(
+                "dd/MM/yyyy HH:mm",
+                java.util.Locale.getDefault()
+            ).format(java.util.Date())
 
-            lista.forEach {
+            writer.write("Generado por App Mi Vivero\n")
+            writer.write("Fecha de generación: $fecha\n\n")
 
-                val nombre = "${it.familia} ${it.especie ?: ""}"
-                val total = it.cantidad * it.precioUnitario
+            writer.write("Planta;Cantidad Total;Total $\n")
 
-                writer.write("$nombre,${it.cantidad},${it.precioUnitario},$total\n")
+            val agrupado = lista
+                .groupBy { "${it.familia} ${it.especie ?: ""}" }
+                .map { (nombre, ventas) ->
+
+                    val cantidadTotal = ventas.sumOf { it.cantidad }
+                    val totalDinero = ventas.sumOf { it.cantidad * it.precioUnitario }
+
+                    Triple(nombre, cantidadTotal, totalDinero)
+                }
+                .sortedBy { it.first.lowercase() }
+
+            agrupado.forEach { (nombre, cantidad, total) ->
+
+                writer.write(
+                    "$nombre;$cantidad;${"%.0f".format(total)}\n"
+                )
             }
+
+            // 🔥 TOTAL GENERAL
+            val totalGeneral = agrupado.sumOf { it.third }
+
+            writer.write("\nTOTAL GENERAL;;${"%.0f".format(totalGeneral)}\n")
         }
     }
 
