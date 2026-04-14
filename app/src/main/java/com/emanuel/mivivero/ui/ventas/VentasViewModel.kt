@@ -37,8 +37,7 @@ class VentasViewModel(application: Application)
 
     val rentabilidad = db.ventaDao().topRentabilidad()
 
-
-
+    val ventasHistorial = db.ventaDao().obtenerVentasCompletas()
 // =========================
     // 🟢 PLANTAS (PARA NUEVA VENTA)
     // =========================

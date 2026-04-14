@@ -8,7 +8,7 @@ import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.emanuel.mivivero.R
-import com.emanuel.mivivero.data.db.entity.VentaDetalle
+import com.emanuel.mivivero.data.model.VentaDetalle
 
 class VentasTablaAdapter(
     private val onEditar: (VentaDetalle) -> Unit,
@@ -69,7 +69,8 @@ class VentasTablaAdapter(
             holder.tvFecha.text = android.text.format.DateFormat
                 .format("dd/MM/yyyy", item.fecha)
 
-            holder.tvTotal.text = "$ ${item.total}"
+            val total = item.cantidad * item.precioUnitario
+            holder.tvTotal.text = "$ $total"
 
             holder.btnEditar.setOnClickListener {
                 Log.e("EDITAR_CLICK", "CLICK EN ${item.nombrePlanta}")

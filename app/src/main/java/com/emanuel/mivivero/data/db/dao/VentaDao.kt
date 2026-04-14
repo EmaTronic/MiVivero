@@ -6,8 +6,8 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
-import com.emanuel.mivivero.data.db.entity.VentaDetalle
 import com.emanuel.mivivero.data.db.entity.VentaEntity
+import com.emanuel.mivivero.data.model.VentaDetalle
 import com.emanuel.mivivero.data.model.AlbumResumen
 import com.emanuel.mivivero.data.model.ControlStock
 import com.emanuel.mivivero.data.model.Planta
@@ -18,6 +18,7 @@ import com.emanuel.mivivero.data.model.RentabilidadPlanta
 import com.emanuel.mivivero.data.model.ResumenPlanta
 import com.emanuel.mivivero.data.model.TotalAlbum
 import com.emanuel.mivivero.data.model.TotalPorAlbum
+import com.emanuel.mivivero.data.model.VentaHistorial
 import com.emanuel.mivivero.data.model.VentaTiempo
 
 @Dao
@@ -281,6 +282,22 @@ ORDER BY totalGanado DESC
 LIMIT 10
 """)
     fun topRentabilidad(): LiveData<List<RentabilidadPlanta>>
+
+
+    @Query("""
+SELECT 
+    v.id,
+    v.fecha,
+    v.cantidad,
+    v.precioUnitario,
+    p.familia AS familia,
+    p.especie AS especie
+FROM ventas v
+INNER JOIN plantas p ON p.id = v.plantaId
+ORDER BY v.fecha DESC
+""")
+    fun obtenerVentasCompletas(): LiveData<List<VentaHistorial>>
+
 
 
     @Query("SELECT * FROM plantas")

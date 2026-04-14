@@ -3,42 +3,33 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="12dp">
 
+        <!-- 🔵 BOTÓN VER VENTAS -->
         <Button
-            android:id="@+id/btnHistorial"
+            android:id="@+id/btnVerVentas"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="📊 Ver historial de ventas"/>
+            android:text="📊 Ver ventas"/>
+
+        <!-- 🔵 BOTÓN EXPORTAR -->
         <Button
-            android:id="@+id/btnIrAnalisis"
+            android:id="@+id/btnExportar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Ver análisis"/>
+            android:text="📤 Exportar CSV"/>
 
+        <!-- 🔵 LISTA -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerVentas"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Ventas"
-            android:textSize="20sp"
-            android:textStyle="bold"/>
-        <Button
-            android:id="@+id/btnNuevaVenta"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="➕ Nueva venta"/>
-
     </LinearLayout>
-
 </androidx.constraintlayout.widget.ConstraintLayout>

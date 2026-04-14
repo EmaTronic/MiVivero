@@ -32,12 +32,15 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        isCoreLibraryDesugaringEnabled = true
+
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+
     }
 
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "17"
     }
 
     buildFeatures {
@@ -69,6 +72,8 @@ dependencies {
     implementation("androidx.recyclerview:recyclerview:1.3.2")
 
 
+
+
     // JSON
     implementation("com.google.code.gson:gson:2.10.1")
 
@@ -91,4 +96,8 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 
+
+
+
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
 }

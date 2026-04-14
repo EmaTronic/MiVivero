@@ -14,6 +14,7 @@ import com.emanuel.mivivero.R
 import com.emanuel.mivivero.data.model.ControlStock
 import com.emanuel.mivivero.data.model.ResumenPlanta
 import com.emanuel.mivivero.ui.ventas.VentasTablaAdapter
+import com.emanuel.mivivero.data.model.VentaDetalle
 
 class VentasTablaFragment :
     Fragment(R.layout.fragment_ventas_tabla) {

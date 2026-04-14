@@ -48,6 +48,12 @@ class VentasFragment : Fragment(R.layout.fragment_ventas) {
             findNavController().navigate(R.id.nuevaVentaFragment)
         }
 
+        val btnHistorial = view.findViewById<Button>(R.id.btnHistorial)
+
+        btnHistorial.setOnClickListener {
+            findNavController().navigate(R.id.historialVentasFragment)
+        }
+
         viewModel.getAlbumesPublicados()
             .observe(viewLifecycleOwner) { lista ->
 
