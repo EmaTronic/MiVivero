@@ -290,6 +290,7 @@ SELECT
     v.fecha,
     v.cantidad,
     v.precioUnitario,
+    v.albumId AS albumId,
     p.familia AS familia,
     p.especie AS especie
 FROM ventas v

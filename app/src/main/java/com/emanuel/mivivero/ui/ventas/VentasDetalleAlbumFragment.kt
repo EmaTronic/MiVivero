@@ -38,6 +38,8 @@ class VentasDetalleAlbumFragment :
         tvSubtotal = view.findViewById(R.id.tvSubtotal)
         btnGuardar = view.findViewById(R.id.btnGuardarVentas)
 
+
+
         recycler.layoutManager = LinearLayoutManager(requireContext())
 
         viewModel.totalPorAlbum(albumId)
@@ -46,6 +48,7 @@ class VentasDetalleAlbumFragment :
                 val totalSeguro = total ?: 0.0
                 tvTotal.text = "Total: $ $totalSeguro"
             }
+
 
 
         val btnVerVentas = view.findViewById<Button>(R.id.btnVerVentas)
@@ -67,6 +70,7 @@ class VentasDetalleAlbumFragment :
                 tvSubtotal.text = "Subtotal: $ $subtotal"
             },
         )
+
 
         recycler.adapter = adapter
 

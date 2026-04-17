@@ -10,12 +10,6 @@
         android:layout_height="match_parent"
         android:padding="12dp">
 
-        <!-- 🔵 BOTÓN VER VENTAS -->
-        <Button
-            android:id="@+id/btnVerVentas"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="📊 Ver ventas"/>
 
         <!-- 🔵 BOTÓN EXPORTAR -->
         <Button

@@ -35,7 +35,8 @@ class HistorialVentasFragment : Fragment(R.layout.fragment_historial_ventas) {
         recycler.layoutManager = LinearLayoutManager(requireContext())
         recycler.adapter = adapter
 
-        // 🔵 ver ventas
+
+// 🔵 carga automática al entrar al historial
         viewModel.ventasHistorial.observe(viewLifecycleOwner) {
             Log.e("HISTORIAL", "size = ${it.size}")
             adapter.submitList(it)
@@ -84,7 +85,7 @@ class HistorialVentasFragment : Fragment(R.layout.fragment_historial_ventas) {
             writer.write("Generado por App Mi Vivero\n")
             writer.write("Fecha de generación: $fecha\n\n")
 
-            writer.write("Planta;Cantidad Total;Total $\n")
+            writer.write("Ranking;Planta;Cantidad Total;Total $;Porcentaje\n")
 
             val agrupado = lista
                 .groupBy { "${it.familia} ${it.especie ?: ""}" }
@@ -95,19 +96,23 @@ class HistorialVentasFragment : Fragment(R.layout.fragment_historial_ventas) {
 
                     Triple(nombre, cantidadTotal, totalDinero)
                 }
-                .sortedBy { it.first.lowercase() }
+                .sortedByDescending { it.third }
 
-            agrupado.forEach { (nombre, cantidad, total) ->
+            val totalGeneral = agrupado.sumOf { it.third }
+
+            agrupado.forEachIndexed { index, (nombre, cantidad, total) ->
+
+                val porcentaje = if (totalGeneral > 0)
+                    (total / totalGeneral) * 100 else 0.0
 
                 writer.write(
-                    "$nombre;$cantidad;${"%.0f".format(total)}\n"
+                    "${index + 1};$nombre;$cantidad;${"%.0f".format(total)};${"%.1f".format(porcentaje)}%\n"
                 )
             }
 
-            // 🔥 TOTAL GENERAL
-            val totalGeneral = agrupado.sumOf { it.third }
-
-            writer.write("\nTOTAL GENERAL;;${"%.0f".format(totalGeneral)}\n")
+            writer.write("\nTOTAL GENERAL;;;${
+                "%.0f".format(totalGeneral)
+            }\n")
         }
     }
 
