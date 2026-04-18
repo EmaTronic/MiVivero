@@ -10,6 +10,12 @@ import com.emanuel.mivivero.data.local.entity.PlantaEntity
 import com.emanuel.mivivero.data.model.Planta
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import androidx.lifecycle.asFlow
+import androidx.lifecycle.asLiveData
+import androidx.lifecycle.map
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
+import java.util.Calendar
 
 class VentasViewModel(application: Application)
     : AndroidViewModel(application) {
@@ -38,6 +44,105 @@ class VentasViewModel(application: Application)
     val rentabilidad = db.ventaDao().topRentabilidad()
 
     val ventasHistorial = db.ventaDao().obtenerVentasCompletas()
+
+
+// =========================
+// 🔵 FILTROS
+// =========================
+
+    private val filtroPeriodo = MutableStateFlow(PeriodoFiltro.TODO)
+    private val filtroAlbum = MutableStateFlow<Long?>(null)
+    private val filtroTexto = MutableStateFlow("")
+    private val orden = MutableStateFlow(Orden.FECHA)
+
+    // 🔵 RESULTADO FINAL
+    val ventasFiltradas = combine(
+        ventasHistorial.asFlow(),
+        filtroPeriodo,
+        filtroAlbum,
+        filtroTexto,
+        orden
+    ) { lista, periodo, albumId, texto, orden ->
+
+        var result = lista
+
+        val ahora = System.currentTimeMillis()
+
+        // 🔴 PERIODO
+        result = when (periodo) {
+            PeriodoFiltro.HOY -> {
+                val inicio = inicioDia(ahora)
+                result.filter { it.fecha >= inicio }
+            }
+
+            PeriodoFiltro.SIETE_DIAS -> {
+                val desde = ahora - (7 * 24 * 60 * 60 * 1000)
+                result.filter { it.fecha >= desde }
+            }
+
+            PeriodoFiltro.MES -> {
+                val inicio = inicioMes(ahora)
+                result.filter { it.fecha >= inicio }
+            }
+
+            PeriodoFiltro.TODO -> result
+        }
+
+        // 🔴 ALBUM
+        albumId?.let {
+            result = result.filter { it.albumId == albumId }
+        }
+
+        // 🔴 TEXTO
+        if (texto.isNotEmpty()) {
+            result = result.filter {
+                (it.familia + " " + (it.especie ?: ""))
+                    .contains(texto, true)
+            }
+        }
+
+        // 🔴 ORDEN
+        result = when (orden) {
+            Orden.GANANCIA -> result.sortedByDescending { it.cantidad * it.precioUnitario }
+            Orden.AZ -> result.sortedBy { it.familia + (it.especie ?: "") }
+            Orden.FECHA -> result.sortedByDescending { it.fecha }
+        }
+
+        result
+    }.asLiveData()
+
+    // 🔵 INDICADORES
+    val totalFiltrado = ventasFiltradas.map {
+        it.sumOf { v -> v.cantidad * v.precioUnitario }
+    }
+
+    val cantidadResultados = ventasFiltradas.map { it.size }
+
+    // 🔵 SETTERS
+    fun setPeriodo(p: PeriodoFiltro) { filtroPeriodo.value = p }
+    fun setAlbum(id: Long?) { filtroAlbum.value = id }
+    fun setBusqueda(txt: String) { filtroTexto.value = txt }
+    fun setOrden(o: Orden) { orden.value = o }
+
+    // 🔧 UTILS
+    private fun inicioDia(t: Long): Long {
+        val c = Calendar.getInstance()
+        c.timeInMillis = t
+        c.set(Calendar.HOUR_OF_DAY, 0)
+        c.set(Calendar.MINUTE, 0)
+        c.set(Calendar.SECOND, 0)
+        return c.timeInMillis
+    }
+
+    private fun inicioMes(t: Long): Long {
+        val c = Calendar.getInstance()
+        c.timeInMillis = t
+        c.set(Calendar.DAY_OF_MONTH, 1)
+        return c.timeInMillis
+    }
+
+
+
 // =========================
     // 🟢 PLANTAS (PARA NUEVA VENTA)
     // =========================
@@ -198,5 +303,15 @@ class VentasViewModel(application: Application)
 
    suspend fun obtenerPlantasDisponibles(albumId: Long) =
         db.ventaDao().plantasDisponiblesParaVenta(albumId)
+
+
+
+    enum class PeriodoFiltro {
+        HOY, SIETE_DIAS, MES, TODO
+    }
+
+    enum class Orden {
+        FECHA, GANANCIA, AZ
+    }
 
 }

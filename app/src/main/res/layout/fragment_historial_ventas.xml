@@ -4,21 +4,92 @@
     android:layout_height="match_parent">
 
     <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="12dp">
 
+        <!-- 🔍 BUSCADOR -->
+        <AutoCompleteTextView
+            android:id="@+id/etBuscar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Buscar planta"/>
 
-        <!-- 🔵 BOTÓN EXPORTAR -->
+        <!-- 📅 FILTROS PERIODO -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnHoy"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Hoy"/>
+
+            <Button
+                android:id="@+id/btnSemana"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="7 días"/>
+
+            <Button
+                android:id="@+id/btnMes"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Mes"/>
+
+            <Button
+                android:id="@+id/btnTodo"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Todo"/>
+        </LinearLayout>
+
+        <!-- 🔽 ORDEN -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnGanancia"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Mayor $" />
+
+            <Button
+                android:id="@+id/btnAZ"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="A-Z"/>
+        </LinearLayout>
+
+        <!-- 📊 RESUMEN -->
+        <TextView
+            android:id="@+id/tvResumen"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Resumen"
+            android:textStyle="bold"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"/>
+
+        <!-- 📤 EXPORTAR -->
         <Button
             android:id="@+id/btnExportar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="📤 Exportar CSV"/>
 
-        <!-- 🔵 LISTA -->
+        <!-- 📋 LISTA -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerVentas"
             android:layout_width="match_parent"

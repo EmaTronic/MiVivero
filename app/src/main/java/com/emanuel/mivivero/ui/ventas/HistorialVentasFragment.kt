@@ -3,9 +3,9 @@ package com.emanuel.mivivero.ui.ventas
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Button
+import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
@@ -15,7 +15,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.emanuel.mivivero.R
 import com.emanuel.mivivero.data.model.VentaHistorial
 import java.io.File
-import java.io.FileOutputStream
+import android.widget.AutoCompleteTextView
+import androidx.core.widget.addTextChangedListener
 
 class HistorialVentasFragment : Fragment(R.layout.fragment_historial_ventas) {
 
@@ -26,6 +27,8 @@ class HistorialVentasFragment : Fragment(R.layout.fragment_historial_ventas) {
 
     private val adapter = VentasHistorialAdapter()
 
+    private lateinit var tvResumen: TextView
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -35,10 +38,53 @@ class HistorialVentasFragment : Fragment(R.layout.fragment_historial_ventas) {
         recycler.layoutManager = LinearLayoutManager(requireContext())
         recycler.adapter = adapter
 
+        tvResumen = view.findViewById(R.id.tvResumen)
+
+        viewModel.totalFiltrado.observe(viewLifecycleOwner) { total ->
+            val cant = viewModel.cantidadResultados.value ?: 0
+            tvResumen.text = "Mostrando $cant - $${"%.0f".format(total)}"
+        }
+
+
+        view.findViewById<Button>(R.id.btnHoy).setOnClickListener {
+            viewModel.setPeriodo(VentasViewModel.PeriodoFiltro.HOY)
+        }
+
+        view.findViewById<Button>(R.id.btnSemana).setOnClickListener {
+            viewModel.setPeriodo(VentasViewModel.PeriodoFiltro.SIETE_DIAS)
+        }
+
+        view.findViewById<Button>(R.id.btnMes).setOnClickListener {
+            viewModel.setPeriodo(VentasViewModel.PeriodoFiltro.MES)
+        }
+
+        view.findViewById<Button>(R.id.btnTodo).setOnClickListener {
+            viewModel.setPeriodo(VentasViewModel.PeriodoFiltro.TODO)
+        }
+
+
+        view.findViewById<Button>(R.id.btnGanancia).setOnClickListener {
+            viewModel.setOrden(VentasViewModel.Orden.GANANCIA)
+        }
+
+        view.findViewById<Button>(R.id.btnAZ).setOnClickListener {
+            viewModel.setOrden(VentasViewModel.Orden.AZ)
+        }
+
+        val etBuscar = view.findViewById<AutoCompleteTextView>(R.id.etBuscar)
+
+        etBuscar.addTextChangedListener(object : android.text.TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                viewModel.setBusqueda(s.toString())
+            }
+
+            override fun afterTextChanged(s: android.text.Editable?) {}
+        })
 
 // 🔵 carga automática al entrar al historial
-        viewModel.ventasHistorial.observe(viewLifecycleOwner) {
-            Log.e("HISTORIAL", "size = ${it.size}")
+        viewModel.ventasFiltradas.observe(viewLifecycleOwner) {
             adapter.submitList(it)
         }
 
@@ -115,8 +161,4 @@ class HistorialVentasFragment : Fragment(R.layout.fragment_historial_ventas) {
             }\n")
         }
     }
-
-
-
-
 }
