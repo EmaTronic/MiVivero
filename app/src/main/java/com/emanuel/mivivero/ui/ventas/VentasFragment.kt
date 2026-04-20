@@ -3,6 +3,7 @@ package com.emanuel.mivivero.ui.ventas
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -17,19 +18,24 @@ class VentasFragment : Fragment(R.layout.fragment_ventas) {
     private var _binding: FragmentVentasBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: AlbumesViewModel by viewModels()
+    private val albumesViewModel: AlbumesViewModel by viewModels()
+    private val ventasViewModel: VentasViewModel by viewModels()
 
     private lateinit var adapter: AlbumesAdapter
-
-
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
 
+
+
+
         _binding = FragmentVentasBinding.bind(view)
 
+
+        val btnInsertarPlantas = view.findViewById<Button>(R.id.btnInsertarPlantas)
+        val btnInsertarVentas = view.findViewById<Button>(R.id.btnInsertarVentas)
 
 
         configurarRecycler()
@@ -54,7 +60,7 @@ class VentasFragment : Fragment(R.layout.fragment_ventas) {
             findNavController().navigate(R.id.historialVentasFragment)
         }
 
-        viewModel.getAlbumesPublicados()
+        albumesViewModel.getAlbumesPublicados()
             .observe(viewLifecycleOwner) { lista ->
 
                 android.util.Log.e("VENTAS_DEBUG", "cantidad = ${lista.size}")
@@ -64,6 +70,22 @@ class VentasFragment : Fragment(R.layout.fragment_ventas) {
         observarAlbumesPublicados()
 
 
+
+        btnInsertarPlantas.setOnClickListener {
+
+            android.util.Log.e("BTN_TEST", "CLICK PLANTAS")
+
+            ventasViewModel.insertarPlantasTest(requireContext())
+
+            Toast.makeText(requireContext(), "Plantas creadas", Toast.LENGTH_SHORT).show()
+        }
+
+        btnInsertarVentas.setOnClickListener {
+
+            ventasViewModel.insertarVentasTestMasivo()
+
+            Toast.makeText(requireContext(), "Ventas creadas", Toast.LENGTH_SHORT).show()
+        }
 
     }
 
@@ -101,7 +123,7 @@ class VentasFragment : Fragment(R.layout.fragment_ventas) {
 
     private fun observarAlbumesPublicados() {
 
-        viewModel.getAlbumesPublicados()
+        albumesViewModel.getAlbumesPublicados()
             .observe(viewLifecycleOwner) { lista ->
 
                 android.util.Log.e("VENTAS_DEBUG", "cantidad = ${lista.size}")

@@ -1,6 +1,8 @@
 package com.emanuel.mivivero.ui.ventas
 
+import android.R.attr.id
 import android.app.Application
+import android.content.Context
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.emanuel.mivivero.data.db.entity.VentaDetalle
@@ -13,8 +15,11 @@ import kotlinx.coroutines.launch
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.map
+import com.emanuel.mivivero.R
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import java.io.File
+import java.io.FileOutputStream
 import java.util.Calendar
 
 class VentasViewModel(application: Application)
@@ -291,6 +296,163 @@ class VentasViewModel(application: Application)
     }
 
 
+    private fun copiarImagenADisco(context: Context): String {
+
+        return try {
+
+            val input = context.resources.openRawResource(R.raw.planta_dummy)
+
+            val file = File(
+                context.filesDir,
+                "planta_${java.util.UUID.randomUUID()}.jpg"
+            )
+
+            val output = FileOutputStream(file)
+
+            input.copyTo(output)
+
+            output.close()
+            input.close()
+
+            android.util.Log.e("IMG_OK", file.absolutePath)
+
+            file.absolutePath
+
+        } catch (e: Exception) {
+
+            android.util.Log.e("IMG_ERROR", e.message ?: "error")
+
+            ""
+        }
+    }
+
+    fun insertarPlantasTest(context: Context) {
+        viewModelScope.launch(Dispatchers.IO) {
+
+            val nombres = listOf(
+                "Acer Palmatum",
+                "Ficus Benjamina",
+                "Lavanda Officinalis",
+                "Monstera Deliciosa",
+                "Pothos Aureum",
+                "Rosmarinus Officinalis",
+                "Mentha Spicata",
+                "Ocimum Basilicum",
+                "Salvia Officinalis",
+                "Thymus Vulgaris",
+                "Eucalyptus Globulus",
+                "Pinus Radiata",
+                "Quercus Robur",
+                "Betula Pendula",
+                "Cedrus Libani",
+                "Cupressus Sempervirens",
+                "Araucaria Araucana",
+                "Magnolia Grandiflora",
+                "Jasminum Officinale",
+                "Hibiscus Rosa",
+                "Bougainvillea Spectabilis",
+                "Camellia Japonica",
+                "Gardenia Jasminoides",
+                "Nerium Oleander",
+                "Plumeria Rubra",
+                "Dracaena Marginata",
+                "Yucca Elephantipes",
+                "Sansevieria Trifasciata",
+                "Zamioculcas Zamiifolia",
+                "Chlorophytum Comosum",
+                "Dieffenbachia Seguine",
+                "Philodendron Hederaceum",
+                "Calathea Orbifolia",
+                "Alocasia Amazonica",
+                "Colocasia Esculenta",
+                "Tradescantia Zebrina",
+                "Begonia Rex",
+                "Impatiens Walleriana",
+                "Petunia Hybrida",
+                "Geranium Peltatum"
+            )
+
+            nombres.forEachIndexed { index, nombre ->
+
+                try {
+
+                    val partes = nombre.split(" ")
+
+                    val ruta = copiarImagenADisco(context)
+
+                    android.util.Log.e("PLANTA_INSERT", "OK: $nombre")
+
+                    db.plantaDao().insert(
+                        PlantaEntity(
+                            numeroPlanta = index + 1,
+                            familia = partes[0],
+                            especie = partes.getOrNull(1),
+                            lugar = "",
+                            lugarId = null,
+                            fechaIngreso = System.currentTimeMillis(),
+                            cantidad = (5..20).random(),
+                            aLaVenta = true,
+                            observaciones = null,
+                            fechaFoto = System.currentTimeMillis(),
+                            fotoRuta = ruta
+                        )
+                    )
+
+
+                    android.util.Log.e("PLANTA_ID", "ID=$id | $nombre")
+                } catch (e: Exception) {
+                    android.util.Log.e("PLANTA_ERROR", "ERROR en $nombre -> ${e.message}")
+                }
+            }
+        }
+    }
+
+
+    fun insertarVentasTestMasivo() {
+        viewModelScope.launch(Dispatchers.IO) {
+
+            val random = kotlin.random.Random(System.currentTimeMillis())
+            val ahora = System.currentTimeMillis()
+
+            val unDia = 24L * 60 * 60 * 1000
+            val unMes = 30L * unDia
+
+            // 🔴 USAR IDs REALES
+            val plantas = db.plantaDao().getAll().map { it.id }
+
+            if (plantas.isEmpty()) {
+                android.util.Log.e("VENTAS_TEST", "NO HAY PLANTAS")
+                return@launch
+            }
+
+            for (mes in 0 until 10) {
+
+                val baseMes = ahora - (mes * unMes)
+
+                repeat(5) {  // 🔴 5 ventas por mes
+
+                    val plantaId = plantas.random(random)
+
+                    val fechaRandom = baseMes - random.nextLong(0, 25 * unDia)
+
+                    val cantidad = random.nextInt(1, 10)
+                    val precio = random.nextDouble(500.0, 5000.0)
+
+                    db.ventaDao().insert(
+                        VentaEntity(
+                            plantaId = plantaId,
+                            albumId = null,
+                            cantidad = cantidad,
+                            precioUnitario = precio,
+                            fecha = fechaRandom
+                        )
+                    )
+                }
+            }
+
+            android.util.Log.e("VENTAS_TEST", "VENTAS GENERADAS")
+        }
+    }
     fun resumenPorPlanta(albumId: Long) =
         db.ventaDao().resumenPorPlanta(albumId)
 

@@ -167,7 +167,7 @@ class CrearPlantaFragment : Fragment(R.layout.fragment_crear_planta) {
                 if (plantaId != -1L)
                     plantaId
                 else
-                    ahora
+                    0L
 
             val numeroFinal =
                 if (plantaExistente != null)

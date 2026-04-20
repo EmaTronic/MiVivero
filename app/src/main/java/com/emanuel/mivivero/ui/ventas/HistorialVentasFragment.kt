@@ -29,6 +29,8 @@ class HistorialVentasFragment : Fragment(R.layout.fragment_historial_ventas) {
 
     private lateinit var tvResumen: TextView
 
+
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -39,6 +41,12 @@ class HistorialVentasFragment : Fragment(R.layout.fragment_historial_ventas) {
         recycler.adapter = adapter
 
         tvResumen = view.findViewById(R.id.tvResumen)
+
+
+        //INSTANCIA DE BOTONES DE PRUEBA YTESTEO - BORRAR DESPUES
+
+
+
 
         viewModel.totalFiltrado.observe(viewLifecycleOwner) { total ->
             val cant = viewModel.cantidadResultados.value ?: 0
@@ -114,6 +122,9 @@ class HistorialVentasFragment : Fragment(R.layout.fragment_historial_ventas) {
 
             startActivity(Intent.createChooser(intent, "Compartir CSV"))
         }
+
+
+
     }
 
     // 🔥 FUNCIÓN EXPORTAR

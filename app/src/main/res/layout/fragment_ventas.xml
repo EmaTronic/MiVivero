@@ -21,6 +21,17 @@
             android:layout_height="wrap_content"
             android:text="Ver análisis"/>
 
+        <Button
+            android:id="@+id/btnInsertarVentas"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Crear Ventas"/>
+        <Button
+            android:id="@+id/btnInsertarPlantas"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Crear Plantas"/>
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerVentas"
             android:layout_width="match_parent"
