@@ -224,7 +224,7 @@ class VentasAnalisisFragment :
                     0 -> Color.parseColor("#FFD700")
                     1 -> Color.parseColor("#C0C0C0")
                     2 -> Color.parseColor("#CD7F32")
-                    else -> Color.parseColor("#81D4FA")
+                    else -> Color.parseColor("#2E7D32")
                 }
             }
 
@@ -246,8 +246,6 @@ class VentasAnalisisFragment :
             chartRanking.axisLeft.gridColor = Color.LTGRAY
             chartRanking.xAxis.setDrawGridLines(false)
 
-            chartRanking.xAxis.axisMinimum = -0.5f
-            chartRanking.xAxis.axisMaximum = topPlantas.size - 0.5f
 
             chartRanking.setFitBars(true)
             chartRanking.data.barWidth = 0.9f
@@ -258,11 +256,11 @@ class VentasAnalisisFragment :
             chartRanking.isFocusable = true
 
 
-            val xAxis = chart.xAxis
+            val xAxis = chartRanking.xAxis
             xAxis.valueFormatter = IndexAxisValueFormatter(labels)
             xAxis.granularity = 1f
             xAxis.isGranularityEnabled = true
-            xAxis.setDrawGridLines(false)
+
             xAxis.position = XAxis.XAxisPosition.TOP
             xAxis.labelRotationAngle = -70f
             xAxis.textSize = 15f
@@ -272,33 +270,35 @@ class VentasAnalisisFragment :
             chartRanking.extraBottomOffset = 15f
             chartRanking.extraTopOffset = 90f
 
-            chartRanking.setFitBars(true)
+            xAxis.granularity = 1f
+            xAxis.isGranularityEnabled = true
+
+
+            chartRanking.xAxis.setDrawGridLines(true)
+
+            chartRanking.xAxis.gridLineWidth = 1f
+
+            chartRanking.xAxis.axisMinimum = -0.5f
+            chartRanking.xAxis.axisMaximum = topPlantas.size - 0.5f
+
             chartRanking.animateY(1000)
             chartRanking.invalidate()
 
+            chartRanking.data.barWidth = 0.7f
+
+            xAxis.setLabelCount(topPlantas.size, false)
 
 
+            chartRanking.setOnChartGestureListener(object : com.github.mikephil.charting.listener.OnChartGestureListener {
 
+                override fun onChartDoubleTapped(me: android.view.MotionEvent?) {
 
-            chart.setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
-
-                override fun onValueSelected(e: Entry?, h: Highlight?) {
-
-                    Log.e("TEST", "CLICK DETECTADO")
-
-                    val index = h?.x?.toInt() ?: return
-
-                    Log.e("INDEX", "index = $index size = ${topPlantas.size}")
+                    val highlight = chartRanking.highlighted?.firstOrNull() ?: return
+                    val index = highlight.x.toInt()
 
                     if (index >= topPlantas.size) return
 
                     val planta = topPlantas[index]
-
-                    Toast.makeText(
-                        requireContext(),
-                        "${planta.nombrePlanta}\nVendidas: ${planta.totalVendidas}",
-                        Toast.LENGTH_SHORT
-                    ).show()
 
                     val bundle = Bundle().apply {
                         putLong("plantaId", planta.plantaId)
@@ -310,18 +310,26 @@ class VentasAnalisisFragment :
                     )
                 }
 
-                override fun onNothingSelected() {}
+                override fun onChartGestureStart(me: android.view.MotionEvent?, lastPerformedGesture: com.github.mikephil.charting.listener.ChartTouchListener.ChartGesture?) {}
+                override fun onChartGestureEnd(me: android.view.MotionEvent?, lastPerformedGesture: com.github.mikephil.charting.listener.ChartTouchListener.ChartGesture?) {}
+                override fun onChartLongPressed(me: android.view.MotionEvent?) {}
+                override fun onChartSingleTapped(me: android.view.MotionEvent?) {}
+                override fun onChartFling(me1: android.view.MotionEvent?, me2: android.view.MotionEvent?, velocityX: Float, velocityY: Float) {}
+                override fun onChartScale(me: android.view.MotionEvent?, scaleX: Float, scaleY: Float) {}
+                override fun onChartTranslate(me: android.view.MotionEvent?, dX: Float, dY: Float) {}
             })
         }
 
         viewModel.rentabilidad.observe(viewLifecycleOwner) { lista ->
 
-            val entries = lista.mapIndexed { index, item ->
+            val topRentabilidad = lista.take(10)
+
+            val entries = topRentabilidad.mapIndexed { index, item ->
                 val valor = kotlin.math.ln(item.totalGanado + 1).toFloat()
                 BarEntry(index.toFloat(), valor)
             }
 
-            val labels = lista.map { item ->
+            val labels = topRentabilidad.map { item ->
                 val partes = item.nombrePlanta.split(" ")
                 if (partes.size >= 2) {
                     "${partes[0]} ${partes[1].first()}."
@@ -344,33 +352,66 @@ class VentasAnalisisFragment :
             dataSet.colors = colors
 
             val data = BarData(dataSet)
-            chartRentabilidad.data = data
+            data.barWidth = 0.7f
 
+            chartRentabilidad.data = data
 
             val xAxis = chartRentabilidad.xAxis
             xAxis.valueFormatter = IndexAxisValueFormatter(labels)
             xAxis.labelRotationAngle = -70f
             xAxis.textSize = 15f
+            xAxis.granularity = 1f
+            xAxis.isGranularityEnabled = true
+            xAxis.setLabelCount(topRentabilidad.size, false)
+
+            chartRentabilidad.xAxis.axisMinimum = -0.5f
+            chartRentabilidad.xAxis.axisMaximum = topRentabilidad.size - 0.5f
+
 
             chartRentabilidad.extraBottomOffset = 15f
-            chartRentabilidad.extraTopOffset = 120f
+            chartRentabilidad.extraTopOffset = 90f
 
-            chartRentabilidad.axisRight.isEnabled = false
             chartRentabilidad.setFitBars(true)
-            chartRentabilidad.data.barWidth = 0.9f
-
-
-            chartRentabilidad.description.isEnabled = false
             chartRentabilidad.invalidate()
 
 
-        }
 
-        viewModel.rentabilidad.observe(viewLifecycleOwner) { lista ->
+
+            chartRentabilidad.setOnChartGestureListener(object : com.github.mikephil.charting.listener.OnChartGestureListener {
+
+                override fun onChartDoubleTapped(me: android.view.MotionEvent?) {
+
+                    val highlight = chartRentabilidad.highlighted?.firstOrNull() ?: return
+                    val index = highlight.x.toInt()
+
+                    if (index >= topRentabilidad.size) return
+
+                    val planta = topRentabilidad[index]
+
+                    val bundle = Bundle().apply {
+                        putLong("plantaId", planta.plantaId)
+                    }
+
+                    findNavController().navigate(
+                        R.id.plantaDetalleFragment,
+                        bundle
+                    )
+                }
+
+                override fun onChartGestureStart(me: android.view.MotionEvent?, lastPerformedGesture: com.github.mikephil.charting.listener.ChartTouchListener.ChartGesture?) {}
+                override fun onChartGestureEnd(me: android.view.MotionEvent?, lastPerformedGesture: com.github.mikephil.charting.listener.ChartTouchListener.ChartGesture?) {}
+                override fun onChartLongPressed(me: android.view.MotionEvent?) {}
+                override fun onChartSingleTapped(me: android.view.MotionEvent?) {}
+                override fun onChartFling(me1: android.view.MotionEvent?, me2: android.view.MotionEvent?, velocityX: Float, velocityY: Float) {}
+                override fun onChartScale(me: android.view.MotionEvent?, scaleX: Float, scaleY: Float) {}
+                override fun onChartTranslate(me: android.view.MotionEvent?, dX: Float, dY: Float) {}
+            })
+
+
             rentabilidadList = lista
             analizar(rankingList, rentabilidadList)
-        }
 
+        }
 
     }
 
