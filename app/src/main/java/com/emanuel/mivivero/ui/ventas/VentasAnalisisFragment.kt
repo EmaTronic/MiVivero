@@ -270,11 +270,13 @@ class VentasAnalisisFragment :
             chartRanking.description.isEnabled = false
             chartRanking.legend.isEnabled = false
             chartRanking.extraBottomOffset = 15f
-            chartRanking.extraTopOffset = 120f
+            chartRanking.extraTopOffset = 90f
 
             chartRanking.setFitBars(true)
             chartRanking.animateY(1000)
             chartRanking.invalidate()
+
+
 
 
 
@@ -315,7 +317,8 @@ class VentasAnalisisFragment :
         viewModel.rentabilidad.observe(viewLifecycleOwner) { lista ->
 
             val entries = lista.mapIndexed { index, item ->
-                BarEntry(index.toFloat(), item.totalGanado.toFloat())
+                val valor = kotlin.math.ln(item.totalGanado + 1).toFloat()
+                BarEntry(index.toFloat(), valor)
             }
 
             val labels = lista.map { item ->
@@ -343,6 +346,7 @@ class VentasAnalisisFragment :
             val data = BarData(dataSet)
             chartRentabilidad.data = data
 
+
             val xAxis = chartRentabilidad.xAxis
             xAxis.valueFormatter = IndexAxisValueFormatter(labels)
             xAxis.labelRotationAngle = -70f
@@ -351,8 +355,15 @@ class VentasAnalisisFragment :
             chartRentabilidad.extraBottomOffset = 15f
             chartRentabilidad.extraTopOffset = 120f
 
+            chartRentabilidad.axisRight.isEnabled = false
+            chartRentabilidad.setFitBars(true)
+            chartRentabilidad.data.barWidth = 0.9f
+
+
             chartRentabilidad.description.isEnabled = false
             chartRentabilidad.invalidate()
+
+
         }
 
         viewModel.rentabilidad.observe(viewLifecycleOwner) { lista ->
