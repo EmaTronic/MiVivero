@@ -301,6 +301,24 @@ ORDER BY v.fecha DESC
 
 
 
+
+    @Query("""
+SELECT p.id as plantaId,
+       (p.familia || ' ' || IFNULL(p.especie, '')) as nombrePlanta,
+       SUM(v.cantidad) as totalVendidas
+FROM ventas v
+JOIN plantas p ON p.id = v.plantaId
+WHERE v.fecha >= :inicio AND v.fecha < :fin
+GROUP BY p.id
+ORDER BY totalVendidas DESC
+""")
+    suspend fun rankingPorPeriodo(
+        inicio: Long,
+        fin: Long
+    ): List<RankingPlanta>
+
+
+
     @Query("SELECT * FROM plantas")
     fun getAll(): List<Planta>
 

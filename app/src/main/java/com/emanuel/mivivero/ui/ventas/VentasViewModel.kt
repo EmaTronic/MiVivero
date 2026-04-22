@@ -18,6 +18,8 @@ import androidx.lifecycle.asFlow
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.map
 import com.emanuel.mivivero.R
+import com.emanuel.mivivero.data.model.RankingPlanta
+import com.emanuel.mivivero.data.model.VariacionPlanta
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import java.io.File
@@ -483,8 +485,63 @@ class VentasViewModel(application: Application)
         db.ventaDao().controlStock(albumId)
 
 
+
+    fun calcularVariacion(
+        actual: List<RankingPlanta>,
+        anterior: List<RankingPlanta>
+    ): List<VariacionPlanta> {
+
+        return actual.map { act ->
+
+            val ant = anterior.find { it.plantaId == act.plantaId }
+
+            val valorAnterior = ant?.totalVendidas ?: 0
+
+            val variacion = if (valorAnterior == 0) {
+                if (act.totalVendidas > 0) 100.0 else 0.0
+            } else {
+                ((act.totalVendidas - valorAnterior).toDouble() / valorAnterior) * 100
+            }
+
+            VariacionPlanta(
+                plantaId = act.plantaId,
+                nombre = act.nombrePlanta,
+                actual = act.totalVendidas,
+                anterior = valorAnterior,
+                variacion = variacion
+            )
+        }
+    }
+
+
+
+    fun obtenerVariacionSemana(
+        callback: (List<VariacionPlanta>) -> Unit
+    ) {
+        viewModelScope.launch(Dispatchers.IO) {
+
+            val ahora = System.currentTimeMillis()
+            val unDia = 24L * 60 * 60 * 1000
+
+            val inicioSemanaActual = ahora - (7 * unDia)
+            val inicioSemanaAnterior = ahora - (14 * unDia)
+
+            val rankingActual = db.ventaDao()
+                .rankingPorPeriodo(inicioSemanaActual, ahora)
+
+            val rankingAnterior = db.ventaDao()
+                .rankingPorPeriodo(inicioSemanaAnterior, inicioSemanaActual)
+
+            val variaciones = calcularVariacion(rankingActual, rankingAnterior)
+
+            callback(variaciones)
+        }
+    }
+
    suspend fun obtenerPlantasDisponibles(albumId: Long) =
         db.ventaDao().plantasDisponiblesParaVenta(albumId)
+
+
 
 
 
