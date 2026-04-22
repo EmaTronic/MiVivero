@@ -4,6 +4,8 @@ import android.R.attr.id
 import android.app.Application
 import android.content.Context
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.viewModelScope
 import com.emanuel.mivivero.data.db.entity.VentaDetalle
 import com.emanuel.mivivero.data.db.entity.VentaEntity
@@ -49,6 +51,8 @@ class VentasViewModel(application: Application)
     val rentabilidad = db.ventaDao().topRentabilidad()
 
     val ventasHistorial = db.ventaDao().obtenerVentasCompletas()
+
+
 
 
 // =========================
@@ -122,6 +126,22 @@ class VentasViewModel(application: Application)
     }
 
     val cantidadResultados = ventasFiltradas.map { it.size }
+
+
+
+    val resumen: LiveData<Pair<Int, Double>> = MediatorLiveData<Pair<Int, Double>>().apply {
+
+        fun actualizar() {
+            val cant = cantidadResultados.value ?: 0
+            val total = totalFiltrado.value ?: 0.0
+            value = Pair(cant, total)
+        }
+
+        addSource(cantidadResultados) { actualizar() }
+        addSource(totalFiltrado) { actualizar() }
+    }
+
+
 
     // 🔵 SETTERS
     fun setPeriodo(p: PeriodoFiltro) { filtroPeriodo.value = p }

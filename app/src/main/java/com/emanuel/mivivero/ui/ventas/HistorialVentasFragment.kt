@@ -48,8 +48,7 @@ class HistorialVentasFragment : Fragment(R.layout.fragment_historial_ventas) {
 
 
 
-        viewModel.totalFiltrado.observe(viewLifecycleOwner) { total ->
-            val cant = viewModel.cantidadResultados.value ?: 0
+        viewModel.resumen.observe(viewLifecycleOwner) { (cant, total) ->
             tvResumen.text = "Mostrando $cant - $${"%.0f".format(total)}"
         }
 
