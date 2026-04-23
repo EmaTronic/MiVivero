@@ -17,8 +17,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.emanuel.mivivero.R
 import com.emanuel.mivivero.data.model.AnalisisPlanta
+import com.emanuel.mivivero.data.model.Insight
 import com.emanuel.mivivero.data.model.RankingPlanta
 import com.emanuel.mivivero.data.model.RentabilidadPlanta
+import com.emanuel.mivivero.data.model.TipoInsight
 import com.emanuel.mivivero.data.model.VentaTiempo
 import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.data.BarDataSet
@@ -546,7 +548,7 @@ class VentasAnalisisFragment :
 
         viewModel.obtenerDatosSemanas { actual, anterior, semana2 ->
 
-            val insights = mutableListOf<String>()
+            val insights = mutableListOf<Insight>()
 
             val variaciones = viewModel.calcularVariacion(actual, anterior)
             val predicciones = viewModel.predecirSemanaSiguiente(actual, anterior)
@@ -555,53 +557,92 @@ class VentasAnalisisFragment :
 
             // 📈 VARIACIÓN
             variaciones.forEach {
-                when {
-                    it.variacion > 20 -> insights.add("📈 ${it.nombre} creciendo fuerte")
-                    it.variacion < -20 -> insights.add("📉 ${it.nombre} en caída")
+                variaciones.forEach { variacion ->
+
+                    when {
+                        variacion.variacion > 20 -> insights.add(
+                            Insight(
+                                plantaId = variacion.plantaId,
+                                nombre = variacion.nombre,
+                                mensaje = "Creciendo fuerte (${variacion.variacion.toInt()}%)",
+                                tipo = TipoInsight.CRECIMIENTO,
+                                prioridad = 3
+                            )
+                        )
+
+                        variacion.variacion < -20 -> insights.add(
+                            Insight(
+                                plantaId = variacion.plantaId,
+                                nombre = variacion.nombre,
+                                mensaje = "En caída (${variacion.variacion.toInt()}%)",
+                                tipo = TipoInsight.CAIDA,
+                                prioridad = 3
+                            )
+                        )
+                    }
                 }
             }
 
             // 🔥 SCORE
-            scores.take(3).forEach {
-                insights.add("🔥 ${it.nombre} es top para vender")
+            scores.take(3).forEach { score ->
+
+                insights.add(
+                    Insight(
+                        plantaId = score.plantaId,
+                        nombre = score.nombre,
+                        mensaje = "Es top para vender",
+                        tipo = TipoInsight.TOP,
+                        prioridad = 4
+                    )
+                )
             }
 
             // 🔮 PREDICCIÓN
-            predicciones.forEach {
-                insights.add(it)
+            predicciones.forEach { texto ->
+
+                insights.add(
+                    Insight(
+                        plantaId = -1, // temporal
+                        nombre = texto,
+                        mensaje = "",
+                        tipo = TipoInsight.PREDICCION,
+                        prioridad = 2
+                    )
+                )
             }
 
             // ⚠ ALERTAS
-            alertas.forEach {
-                insights.add(it)
+            alertas.forEach { texto ->
+
+                insights.add(
+                    Insight(
+                        plantaId = -1, // ⚠ temporal
+                        nombre = texto,
+                        mensaje = "",
+                        tipo = TipoInsight.ALERTA,
+                        prioridad = 5
+                    )
+                )
             }
 
-            // 📊 TENDENCIA REAL
-            actual.forEach { a ->
-                val v1 = anterior.find { it.plantaId == a.plantaId }?.totalVendidas ?: 0
-                val v2 = semana2.find { it.plantaId == a.plantaId }?.totalVendidas ?: 0
 
-                if (a.totalVendidas > v1 && v1 > v2) {
-                    insights.add("📈 ${a.nombrePlanta} creciendo sostenidamente")
-                }
-
-                if (a.totalVendidas < v1 && v1 < v2) {
-                    insights.add("📉 ${a.nombrePlanta} en caída sostenida")
-                }
-            }
 
             requireActivity().runOnUiThread {
 
                 containerInsights.removeAllViews()
 
-                if (insights.isEmpty()) {
+                val insightsFinal = insights
+                    .distinctBy { it.plantaId to it.tipo } // 🔥 clave real
+                    .sortedByDescending { it.prioridad }
+
+                if (insightsFinal.isEmpty()) {
                     val tv = TextView(requireContext())
                     tv.text = "Sin insights relevantes"
                     containerInsights.addView(tv)
                     return@runOnUiThread
                 }
 
-                insights.take(6).forEach { texto ->
+                insightsFinal.take(6).forEach { insight ->
 
                     val item = layoutInflater.inflate(R.layout.item_insight, containerInsights, false)
 
@@ -609,21 +650,21 @@ class VentasAnalisisFragment :
                     val tvNombre = item.findViewById<TextView>(R.id.tvNombre)
                     val tvDescripcion = item.findViewById<TextView>(R.id.tvDescripcion)
 
-                    when {
-                        texto.contains("📈") -> tvTitulo.text = "Crecimiento"
-                        texto.contains("📉") -> tvTitulo.text = "Caída"
-                        texto.contains("🔥") -> tvTitulo.text = "Top"
-                        texto.contains("⚠") -> tvTitulo.text = "Alerta"
+                    tvTitulo.text = when (insight.tipo) {
+                        TipoInsight.CRECIMIENTO -> "Crecimiento"
+                        TipoInsight.CAIDA -> "Caída"
+                        TipoInsight.TOP -> "Top"
+                        TipoInsight.ALERTA -> "Alerta"
+                        TipoInsight.PREDICCION -> "Predicción"
                     }
 
-                    val partes = texto.split(" ", limit = 2)
-
-                    tvNombre.text = partes.getOrNull(0) ?: ""
-                    tvDescripcion.text = partes.getOrNull(1) ?: texto
+                    tvNombre.text = insight.nombre
+                    tvDescripcion.text = insight.mensaje
 
                     containerInsights.addView(item)
                 }
             }
+
         }
     }
 
