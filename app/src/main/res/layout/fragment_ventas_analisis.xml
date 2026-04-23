@@ -125,6 +125,15 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 
+        <!-- 3 RECOMENDACIONES-->
+        <LinearLayout
+            android:id="@+id/containerTopAcciones"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="8dp"/>
+
+
     </LinearLayout>
 
 </ScrollView>

@@ -51,6 +51,8 @@ class VentasAnalisisFragment :
 
     private lateinit var containerInsights: LinearLayout
 
+    private lateinit var containerTopAcciones: LinearLayout
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -65,6 +67,7 @@ class VentasAnalisisFragment :
         val chartRentabilidad = view.findViewById<BarChart>(R.id.chartRentabilidad)
 
 
+        containerTopAcciones = view.findViewById(R.id.containerTopAcciones)
 
 
 
@@ -554,10 +557,10 @@ class VentasAnalisisFragment :
             val predicciones = viewModel.predecirSemanaSiguiente(actual, anterior)
             val scores = viewModel.calcularScore(actual, rentabilidad, variaciones)
             val alertas = viewModel.generarAlertas(actual, rentabilidad)
+            val acciones = viewModel.generarAcciones(actual, rentabilidad, variaciones)
 
             // 📈 VARIACIÓN
-            variaciones.forEach {
-                variaciones.forEach { variacion ->
+                   variaciones.forEach { variacion ->
 
                     when {
                         variacion.variacion > 20 -> insights.add(
@@ -581,7 +584,7 @@ class VentasAnalisisFragment :
                         )
                     }
                 }
-            }
+
 
             // 🔥 SCORE
             scores.take(3).forEach { score ->
@@ -598,36 +601,16 @@ class VentasAnalisisFragment :
             }
 
             // 🔮 PREDICCIÓN
-            predicciones.forEach { texto ->
+            insights.addAll(predicciones)
 
-                insights.add(
-                    Insight(
-                        plantaId = -1, // temporal
-                        nombre = texto,
-                        mensaje = "",
-                        tipo = TipoInsight.PREDICCION,
-                        prioridad = 2
-                    )
-                )
-            }
 
             // ⚠ ALERTAS
-            alertas.forEach { texto ->
+            insights.addAll(alertas)
 
-                insights.add(
-                    Insight(
-                        plantaId = -1, // ⚠ temporal
-                        nombre = texto,
-                        mensaje = "",
-                        tipo = TipoInsight.ALERTA,
-                        prioridad = 5
-                    )
-                )
-            }
+            // ACCIONES
+            insights.addAll(acciones)
 
-
-
-            requireActivity().runOnUiThread {
+            view?.post {
 
                 containerInsights.removeAllViews()
 
@@ -639,8 +622,11 @@ class VentasAnalisisFragment :
                     val tv = TextView(requireContext())
                     tv.text = "Sin insights relevantes"
                     containerInsights.addView(tv)
-                    return@runOnUiThread
+                    return@post
                 }
+
+
+
 
                 insightsFinal.take(6).forEach { insight ->
 
@@ -656,12 +642,41 @@ class VentasAnalisisFragment :
                         TipoInsight.TOP -> "Top"
                         TipoInsight.ALERTA -> "Alerta"
                         TipoInsight.PREDICCION -> "Predicción"
+                        TipoInsight.ACCION -> "Acción"
                     }
 
                     tvNombre.text = insight.nombre
                     tvDescripcion.text = insight.mensaje
 
                     containerInsights.addView(item)
+                }
+
+
+                val accionesTop = insightsFinal
+                    .filter { it.tipo == TipoInsight.ACCION }
+                    .take(3)
+
+
+                containerTopAcciones.removeAllViews()
+
+                accionesTop.forEach { insight ->
+
+                    val tv = TextView(requireContext())
+
+                    tv.text = "👉 ${insight.nombre}: ${insight.mensaje}"
+                    tv.textSize = 16f
+                    tv.setPadding(24, 16, 24, 16)
+
+                    // 🎨 COLOR SEGÚN PRIORIDAD
+                    if (insight.prioridad >= 5) {
+                        tv.setBackgroundColor(Color.parseColor("#FFEBEE")) // 🔴 urgente
+                    } else {
+                        tv.setBackgroundColor(Color.parseColor("#E8F5E9")) // 🟢 normal
+                    }
+
+
+
+                    containerTopAcciones.addView(tv)
                 }
             }
 

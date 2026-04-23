@@ -94,21 +94,6 @@ ORDER BY totalVendidas DESC
     """)
     fun obtenerTotalGeneral(): LiveData<Double>
 
-    @Query("""
-    SELECT 
-        v.id AS id,
-        v.plantaId AS plantaId,
-        (p.familia || ' ' || IFNULL(p.especie, '')) AS nombrePlanta,
-        v.cantidad AS cantidad,
-        v.precioUnitario AS precioUnitario,
-        v.fecha AS fecha
-    FROM ventas v
-    LEFT JOIN plantas p ON p.id = v.plantaId
-    ORDER BY v.fecha DESC
-    """)
-    suspend fun obtenerVentasDetalleDirecto(): List<VentaDetalle>
-
-
 
 
     @Query("""

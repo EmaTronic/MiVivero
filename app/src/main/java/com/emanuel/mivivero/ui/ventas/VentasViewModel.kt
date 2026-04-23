@@ -7,20 +7,20 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.viewModelScope
-import com.emanuel.mivivero.data.db.entity.VentaDetalle
 import com.emanuel.mivivero.data.db.entity.VentaEntity
 import com.emanuel.mivivero.data.local.AppDatabase
 import com.emanuel.mivivero.data.local.entity.PlantaEntity
-import com.emanuel.mivivero.data.model.Planta
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.map
 import com.emanuel.mivivero.R
+import com.emanuel.mivivero.data.model.Insight
 import com.emanuel.mivivero.data.model.RankingPlanta
 import com.emanuel.mivivero.data.model.RentabilidadPlanta
 import com.emanuel.mivivero.data.model.ScorePlanta
+import com.emanuel.mivivero.data.model.TipoInsight
 import com.emanuel.mivivero.data.model.VariacionPlanta
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
@@ -32,13 +32,11 @@ class VentasViewModel(application: Application)
     : AndroidViewModel(application) {
 
 
-    private var listaPlantas: List<PlantaEntity> = emptyList()
-    private var plantaSeleccionada: PlantaEntity? = null
     private val db = AppDatabase.getInstance(application)
 
-    val ventasDetalle = db.ventaDao().obtenerVentasDetalle()
+
     val ranking = db.ventaDao().rankingPlantas()
-    val totalPorAlbum = db.ventaDao().obtenerTotalPorAlbum()
+
     val resumenAlbumes = db.ventaDao().obtenerResumenAlbumes()
     val ventas = db.ventaDao().obtenerVentas()
 
@@ -517,81 +515,6 @@ class VentasViewModel(application: Application)
 
 
 
-    fun obtenerVariacionSemana(
-        callback: (List<VariacionPlanta>) -> Unit
-    ) {
-        viewModelScope.launch(Dispatchers.IO) {
-
-            val ahora = System.currentTimeMillis()
-            val unDia = 24L * 60 * 60 * 1000
-
-            val inicioSemanaActual = ahora - (7 * unDia)
-            val inicioSemanaAnterior = ahora - (14 * unDia)
-
-            val rankingActual = db.ventaDao()
-                .rankingPorPeriodo(inicioSemanaActual, ahora)
-
-            val rankingAnterior = db.ventaDao()
-                .rankingPorPeriodo(inicioSemanaAnterior, inicioSemanaActual)
-
-            val variaciones = calcularVariacion(rankingActual, rankingAnterior)
-
-
-
-
-
-            callback(variaciones)
-        }
-    }
-
-
-    fun obtenerTendenciasSemana(
-        callback: (List<String>) -> Unit
-    ) {
-        viewModelScope.launch(Dispatchers.IO) {
-
-            val ahora = System.currentTimeMillis()
-            val unDia = 24L * 60 * 60 * 1000
-
-            val s0 = ahora
-            val s1 = ahora - (7 * unDia)
-            val s2 = ahora - (14 * unDia)
-            val s3 = ahora - (21 * unDia)
-
-            val semanaActual = db.ventaDao().rankingPorPeriodo(s1, s0)
-            val semana1 = db.ventaDao().rankingPorPeriodo(s2, s1)
-            val semana2 = db.ventaDao().rankingPorPeriodo(s3, s2)
-
-            val tendencias = mutableListOf<String>()
-
-            semanaActual.forEach { actual ->
-
-                val v1 = semana1.find { it.plantaId == actual.plantaId }?.totalVendidas ?: 0
-                val v2 = semana2.find { it.plantaId == actual.plantaId }?.totalVendidas ?: 0
-
-                val v0 = actual.totalVendidas
-
-                // 📈 crecimiento sostenido
-                if (v0 > v1 && v1 > v2) {
-                    tendencias.add("📈 ${actual.nombrePlanta} creciendo 3 semanas seguidas")
-                }
-
-                // 📉 caída sostenida
-                if (v0 < v1 && v1 < v2) {
-                    tendencias.add("📉 ${actual.nombrePlanta} en caída sostenida")
-                }
-
-                // ⚠ pico raro
-                if (v0 > v1 * 2 && v1 <= v2) {
-                    tendencias.add("⚠ ${actual.nombrePlanta} subió fuerte esta semana sin tendencia previa")
-                }
-            }
-
-            callback(tendencias)
-        }
-    }
-
-
 
     fun calcularScore(
         ranking: List<RankingPlanta>,
@@ -638,23 +561,40 @@ class VentasViewModel(application: Application)
     fun predecirSemanaSiguiente(
         semanaActual: List<RankingPlanta>,
         semanaAnterior: List<RankingPlanta>
-    ): List<String> {
+    ): List<Insight> {
 
-        val predicciones = mutableListOf<String>()
+        val predicciones = mutableListOf<Insight>()
 
         semanaActual.forEach { actual ->
 
             val anterior = semanaAnterior
-                .find { it.plantaId == actual.plantaId }?.totalVendidas ?: 0
+                .find { it.plantaId == actual.plantaId }
+                ?.totalVendidas ?: 0
 
             val delta = actual.totalVendidas - anterior
 
             if (delta > 0) {
-                predicciones.add("📈 ${actual.nombrePlanta} podría seguir creciendo")
+                predicciones.add(
+                    Insight(
+                        plantaId = actual.plantaId,
+                        nombre = actual.nombrePlanta,
+                        mensaje = "Podría seguir creciendo",
+                        tipo = TipoInsight.PREDICCION,
+                        prioridad = 2
+                    )
+                )
             }
 
             if (delta < 0) {
-                predicciones.add("📉 ${actual.nombrePlanta} podría seguir cayendo")
+                predicciones.add(
+                    Insight(
+                        plantaId = actual.plantaId,
+                        nombre = actual.nombrePlanta,
+                        mensaje = "Podría seguir cayendo",
+                        tipo = TipoInsight.PREDICCION,
+                        prioridad = 2
+                    )
+                )
             }
         }
 
@@ -665,9 +605,9 @@ class VentasViewModel(application: Application)
     fun generarAlertas(
         ranking: List<RankingPlanta>,
         rentabilidad: List<RentabilidadPlanta>
-    ): List<String> {
+    ): List<Insight> {
 
-        val alertas = mutableListOf<String>()
+        val alertas = mutableListOf<Insight>()
 
         ranking.forEach { r ->
 
@@ -676,11 +616,27 @@ class VentasViewModel(application: Application)
             rent?.let {
 
                 if (r.totalVendidas > 20 && it.totalGanado < 5000) {
-                    alertas.add("⚠ ${r.nombrePlanta} vende mucho pero deja poca ganancia")
+                    alertas.add(
+                        Insight(
+                            plantaId = r.plantaId,
+                            nombre = r.nombrePlanta,
+                            mensaje = "Vende mucho pero deja poca ganancia",
+                            tipo = TipoInsight.ALERTA,
+                            prioridad = 5
+                        )
+                    )
                 }
 
                 if (r.totalVendidas < 5 && it.totalGanado > 10000) {
-                    alertas.add("💰 ${r.nombrePlanta} es rentable pero se vende poco")
+                    alertas.add(
+                        Insight(
+                            plantaId = r.plantaId,
+                            nombre = r.nombrePlanta,
+                            mensaje = "Muy rentable pero con pocas ventas",
+                            tipo = TipoInsight.ALERTA,
+                            prioridad = 5
+                        )
+                    )
                 }
             }
         }
@@ -713,6 +669,80 @@ class VentasViewModel(application: Application)
             callback(actual, anterior, semana2)
         }
     }
+
+    fun generarAcciones(
+        ranking: List<RankingPlanta>,
+        rentabilidad: List<RentabilidadPlanta>,
+        variaciones: List<VariacionPlanta>
+    ): List<Insight> {
+
+        val acciones = mutableListOf<Insight>()
+
+        ranking.forEach { r ->
+
+            val rent = rentabilidad.find { it.plantaId == r.plantaId }
+            val varr = variaciones.find { it.plantaId == r.plantaId }
+
+            if (rent == null || varr == null) return@forEach
+
+            // 🟢 CRECE FUERTE → aprovechar
+            if (varr.variacion > 30) {
+                acciones.add(
+                    Insight(
+                        plantaId = r.plantaId,
+                        nombre = r.nombrePlanta,
+                        mensaje = "Publicar más (demanda en crecimiento)",
+                        tipo = TipoInsight.ACCION,
+                        prioridad = 4
+                    )
+                )
+            }
+
+            // 🔴 CAÍDA FUERTE → revisar
+            if (varr.variacion < -30) {
+                acciones.add(
+                    Insight(
+                        plantaId = r.plantaId,
+                        nombre = r.nombrePlanta,
+                        mensaje = "Revisar producto o presentación",
+                        tipo = TipoInsight.ACCION,
+                        prioridad = 5
+                    )
+                )
+            }
+
+            // 🟡 POCA VENTA PERO RENTABLE → visibilizar
+            if (r.totalVendidas < 5 && rent.totalGanado > 10000) {
+                acciones.add(
+                    Insight(
+                        plantaId = r.plantaId,
+                        nombre = r.nombrePlanta,
+                        mensaje = "Promocionar (alto margen, baja rotación)",
+                        tipo = TipoInsight.ACCION,
+                        prioridad = 4
+                    )
+                )
+            }
+
+            // 🔵 MUCHA DEMANDA → posible falta de stock
+            if (r.totalVendidas > 20) {
+                acciones.add(
+                    Insight(
+                        plantaId = r.plantaId,
+                        nombre = r.nombrePlanta,
+                        mensaje = "Revisar stock (alta salida)",
+                        tipo = TipoInsight.ACCION,
+                        prioridad = 5
+                    )
+                )
+            }
+        }
+
+        return acciones
+    }
+
+
+
 
    suspend fun obtenerPlantasDisponibles(albumId: Long) =
         db.ventaDao().plantasDisponiblesParaVenta(albumId)

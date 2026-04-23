@@ -13,5 +13,6 @@ enum class TipoInsight {
     CAIDA,
     ALERTA,
     TOP,
-    PREDICCION
+    PREDICCION,
+    ACCION
 }
