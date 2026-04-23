@@ -544,21 +544,49 @@ class VentasAnalisisFragment :
         rentabilidad: List<RentabilidadPlanta>
     ) {
 
-        val insights = mutableListOf<String>()
-
-        viewModel.obtenerVariacionSemana { variaciones ->
+        viewModel.obtenerDatosSemanas { actual, anterior, semana2 ->
 
             val insights = mutableListOf<String>()
 
-            variaciones.forEach {
+            val variaciones = viewModel.calcularVariacion(actual, anterior)
+            val predicciones = viewModel.predecirSemanaSiguiente(actual, anterior)
+            val scores = viewModel.calcularScore(actual, rentabilidad, variaciones)
+            val alertas = viewModel.generarAlertas(actual, rentabilidad)
 
+            // 📈 VARIACIÓN
+            variaciones.forEach {
                 when {
-                    it.variacion > 20 -> {
-                        insights.add("📈 ${it.nombre} creciendo fuerte (+${"%.0f".format(it.variacion)}%)")
-                    }
-                    it.variacion < -20 -> {
-                        insights.add("📉 ${it.nombre} en caída (${ "%.0f".format(it.variacion)}%)")
-                    }
+                    it.variacion > 20 -> insights.add("📈 ${it.nombre} creciendo fuerte")
+                    it.variacion < -20 -> insights.add("📉 ${it.nombre} en caída")
+                }
+            }
+
+            // 🔥 SCORE
+            scores.take(3).forEach {
+                insights.add("🔥 ${it.nombre} es top para vender")
+            }
+
+            // 🔮 PREDICCIÓN
+            predicciones.forEach {
+                insights.add(it)
+            }
+
+            // ⚠ ALERTAS
+            alertas.forEach {
+                insights.add(it)
+            }
+
+            // 📊 TENDENCIA REAL
+            actual.forEach { a ->
+                val v1 = anterior.find { it.plantaId == a.plantaId }?.totalVendidas ?: 0
+                val v2 = semana2.find { it.plantaId == a.plantaId }?.totalVendidas ?: 0
+
+                if (a.totalVendidas > v1 && v1 > v2) {
+                    insights.add("📈 ${a.nombrePlanta} creciendo sostenidamente")
+                }
+
+                if (a.totalVendidas < v1 && v1 < v2) {
+                    insights.add("📉 ${a.nombrePlanta} en caída sostenida")
                 }
             }
 
@@ -573,7 +601,7 @@ class VentasAnalisisFragment :
                     return@runOnUiThread
                 }
 
-                insights.forEach { texto ->
+                insights.take(6).forEach { texto ->
 
                     val item = layoutInflater.inflate(R.layout.item_insight, containerInsights, false)
 
@@ -582,12 +610,10 @@ class VentasAnalisisFragment :
                     val tvDescripcion = item.findViewById<TextView>(R.id.tvDescripcion)
 
                     when {
-                        texto.contains("📈") -> {
-                            tvTitulo.text = "Crecimiento"
-                        }
-                        texto.contains("📉") -> {
-                            tvTitulo.text = "Caída"
-                        }
+                        texto.contains("📈") -> tvTitulo.text = "Crecimiento"
+                        texto.contains("📉") -> tvTitulo.text = "Caída"
+                        texto.contains("🔥") -> tvTitulo.text = "Top"
+                        texto.contains("⚠") -> tvTitulo.text = "Alerta"
                     }
 
                     val partes = texto.split(" ", limit = 2)
@@ -598,57 +624,6 @@ class VentasAnalisisFragment :
                     containerInsights.addView(item)
                 }
             }
-        }
-
-
-        val resultado = ranking.mapNotNull { r ->
-            val match = rentabilidad.find { it.plantaId == r.plantaId }
-
-            match?.let {
-                AnalisisPlanta(
-                    nombre = r.nombrePlanta,
-                    vendidas = r.totalVendidas,
-                    ganancia = it.totalGanado
-                )
-            }
-        }
-
-        if (resultado.isEmpty()) return
-
-        containerInsights.removeAllViews()
-
-        if (insights.isEmpty()) {
-
-            val textView = TextView(requireContext())
-            textView.text = "Sin insights relevantes"
-            containerInsights.addView(textView)
-            return
-        }
-
-        insights.forEach { texto ->
-            val item = layoutInflater.inflate(R.layout.item_insight, containerInsights, false)
-
-            val tvTitulo = item.findViewById<TextView>(R.id.tvTitulo)
-            val tvNombre = item.findViewById<TextView>(R.id.tvNombre)
-            val tvDescripcion = item.findViewById<TextView>(R.id.tvDescripcion)
-
-            when {
-                texto.contains("📈") -> {
-                    tvTitulo.text = "Crecimiento"
-                    item.setBackgroundColor(Color.parseColor("#C8E6C9"))
-                }
-                texto.contains("📉") -> {
-                    tvTitulo.text = "Caída"
-                    item.setBackgroundColor(Color.parseColor("#FFCDD2"))
-                }
-            }
-
-            val partes = texto.split(" ", limit = 2)
-
-            tvNombre.text = partes.getOrNull(0) ?: ""
-            tvDescripcion.text = partes.getOrNull(1) ?: texto
-
-            containerInsights.addView(item)
         }
     }
 

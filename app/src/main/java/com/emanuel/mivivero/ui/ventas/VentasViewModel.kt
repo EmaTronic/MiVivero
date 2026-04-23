@@ -19,6 +19,8 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.map
 import com.emanuel.mivivero.R
 import com.emanuel.mivivero.data.model.RankingPlanta
+import com.emanuel.mivivero.data.model.RentabilidadPlanta
+import com.emanuel.mivivero.data.model.ScorePlanta
 import com.emanuel.mivivero.data.model.VariacionPlanta
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
@@ -534,7 +536,181 @@ class VentasViewModel(application: Application)
 
             val variaciones = calcularVariacion(rankingActual, rankingAnterior)
 
+
+
+
+
             callback(variaciones)
+        }
+    }
+
+
+    fun obtenerTendenciasSemana(
+        callback: (List<String>) -> Unit
+    ) {
+        viewModelScope.launch(Dispatchers.IO) {
+
+            val ahora = System.currentTimeMillis()
+            val unDia = 24L * 60 * 60 * 1000
+
+            val s0 = ahora
+            val s1 = ahora - (7 * unDia)
+            val s2 = ahora - (14 * unDia)
+            val s3 = ahora - (21 * unDia)
+
+            val semanaActual = db.ventaDao().rankingPorPeriodo(s1, s0)
+            val semana1 = db.ventaDao().rankingPorPeriodo(s2, s1)
+            val semana2 = db.ventaDao().rankingPorPeriodo(s3, s2)
+
+            val tendencias = mutableListOf<String>()
+
+            semanaActual.forEach { actual ->
+
+                val v1 = semana1.find { it.plantaId == actual.plantaId }?.totalVendidas ?: 0
+                val v2 = semana2.find { it.plantaId == actual.plantaId }?.totalVendidas ?: 0
+
+                val v0 = actual.totalVendidas
+
+                // 📈 crecimiento sostenido
+                if (v0 > v1 && v1 > v2) {
+                    tendencias.add("📈 ${actual.nombrePlanta} creciendo 3 semanas seguidas")
+                }
+
+                // 📉 caída sostenida
+                if (v0 < v1 && v1 < v2) {
+                    tendencias.add("📉 ${actual.nombrePlanta} en caída sostenida")
+                }
+
+                // ⚠ pico raro
+                if (v0 > v1 * 2 && v1 <= v2) {
+                    tendencias.add("⚠ ${actual.nombrePlanta} subió fuerte esta semana sin tendencia previa")
+                }
+            }
+
+            callback(tendencias)
+        }
+    }
+
+
+
+    fun calcularScore(
+        ranking: List<RankingPlanta>,
+        rentabilidad: List<RentabilidadPlanta>,
+        variaciones: List<VariacionPlanta>
+    ): List<ScorePlanta> {
+
+        val maxVentas = ranking.maxOfOrNull { it.totalVendidas } ?: 1
+        val maxGanancia = rentabilidad.maxOfOrNull { it.totalGanado } ?: 1.0
+
+        return ranking.mapNotNull { r ->
+
+            val rent = rentabilidad.find { it.plantaId == r.plantaId }
+            val varr = variaciones.find { it.plantaId == r.plantaId }
+
+            rent?.let {
+
+                val scoreVentas = r.totalVendidas.toDouble() / maxVentas
+                val scoreGanancia = it.totalGanado / maxGanancia
+
+                val scoreTendencia = when {
+                    varr == null -> 0.5
+                    varr.variacion > 20 -> 1.0
+                    varr.variacion < -20 -> 0.0
+                    else -> 0.5
+                }
+
+                val scoreFinal =
+                    (scoreVentas * 0.4) +
+                            (scoreGanancia * 0.4) +
+                            (scoreTendencia * 0.2)
+
+                ScorePlanta(
+                    plantaId = r.plantaId,
+                    nombre = r.nombrePlanta,
+                    score = scoreFinal
+                )
+            }
+        }.sortedByDescending { it.score }
+    }
+
+
+
+    fun predecirSemanaSiguiente(
+        semanaActual: List<RankingPlanta>,
+        semanaAnterior: List<RankingPlanta>
+    ): List<String> {
+
+        val predicciones = mutableListOf<String>()
+
+        semanaActual.forEach { actual ->
+
+            val anterior = semanaAnterior
+                .find { it.plantaId == actual.plantaId }?.totalVendidas ?: 0
+
+            val delta = actual.totalVendidas - anterior
+
+            if (delta > 0) {
+                predicciones.add("📈 ${actual.nombrePlanta} podría seguir creciendo")
+            }
+
+            if (delta < 0) {
+                predicciones.add("📉 ${actual.nombrePlanta} podría seguir cayendo")
+            }
+        }
+
+        return predicciones
+    }
+
+
+    fun generarAlertas(
+        ranking: List<RankingPlanta>,
+        rentabilidad: List<RentabilidadPlanta>
+    ): List<String> {
+
+        val alertas = mutableListOf<String>()
+
+        ranking.forEach { r ->
+
+            val rent = rentabilidad.find { it.plantaId == r.plantaId }
+
+            rent?.let {
+
+                if (r.totalVendidas > 20 && it.totalGanado < 5000) {
+                    alertas.add("⚠ ${r.nombrePlanta} vende mucho pero deja poca ganancia")
+                }
+
+                if (r.totalVendidas < 5 && it.totalGanado > 10000) {
+                    alertas.add("💰 ${r.nombrePlanta} es rentable pero se vende poco")
+                }
+            }
+        }
+
+        return alertas
+    }
+
+
+    fun obtenerDatosSemanas(
+        callback: (
+            actual: List<RankingPlanta>,
+            anterior: List<RankingPlanta>,
+            semana2: List<RankingPlanta>
+        ) -> Unit
+    ) {
+        viewModelScope.launch(Dispatchers.IO) {
+
+            val ahora = System.currentTimeMillis()
+            val dia = 24L * 60 * 60 * 1000
+
+            val s0 = ahora
+            val s1 = ahora - (7 * dia)
+            val s2 = ahora - (14 * dia)
+            val s3 = ahora - (21 * dia)
+
+            val actual = db.ventaDao().rankingPorPeriodo(s1, s0)
+            val anterior = db.ventaDao().rankingPorPeriodo(s2, s1)
+            val semana2 = db.ventaDao().rankingPorPeriodo(s3, s2)
+
+            callback(actual, anterior, semana2)
         }
     }
 
